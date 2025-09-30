@@ -122,16 +122,41 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      _user = await _apiService.register(
-        name: name,
+      // Use Supabase Auth for registration
+      final client = supa.Supabase.instance.client;
+
+      final response = await client.auth.signUp(
         email: email,
         password: password,
-        phoneNumber: phoneNumber,
+        data: <String, dynamic>{
+          'full_name': name,
+          if (phoneNumber != null) 'phone': phoneNumber,
+        },
       );
-      
+
+      final authUser = response.user ?? client.auth.currentUser;
+      if (authUser == null) {
+        _setError('Signup failed');
+        return false;
+      }
+
+      // Optionally upsert to profiles table
+      try {
+        await client.from('profiles').upsert({
+          'id': authUser.id,
+          'name': name,
+          'email': email,
+          'phone': phoneNumber,
+        });
+      } catch (_) {
+        // Non-fatal if profiles table or policy not set yet
+      }
+
+      _user = _userFromSupabase(authUser);
+
       // Save user data locally
       await _saveUserData();
-      
+
       _setState(AuthState.authenticated);
       return true;
     } catch (e) {
