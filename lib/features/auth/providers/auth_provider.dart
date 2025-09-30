@@ -230,9 +230,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     try {
       _setLoading(true);
-      
-      // Clear server-side session
-      await _apiService.logout();
+      // Sign out from Supabase session
+      try {
+        await supa.Supabase.instance.client.auth.signOut();
+      } catch (_) {
+        // ignore network errors during sign-out; continue local cleanup
+      }
       
       // Clear local data
       await _clearUserData();
