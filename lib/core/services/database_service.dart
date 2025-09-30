@@ -253,10 +253,45 @@ class DatabaseService {
       final data = await supabase
           .from('restaurants')
           .select()
-          .or('name.ilike.%$query%,cuisine.ilike.%$query%');
-      return data;
+          .ilike('name', '%$query%');
+      // Map to UI-friendly result rows
+      return data.map<Map<String, dynamic>>((row) => {
+        'type': 'restaurant',
+        'id': (row['id'] ?? '').toString(),
+        'name': row['name'] ?? '',
+        'subtitle': row['location'] ?? '',
+        'image': (row['image'] as String?)?.trim().isNotEmpty == true
+            ? row['image'] as String
+            : 'https://picsum.photos/seed/${row['id']}/400/300',
+        'rating': (row['rating'] is num) ? (row['rating'] as num).toDouble() : 0.0,
+      }).toList();
     } catch (e) {
       print('Error searching restaurants: $e');
+      return [];
+    }
+  }
+
+  /// Search foods (menu items) by name/description
+  Future<List<Map<String, dynamic>>> searchFoods(String query) async {
+    try {
+      final data = await supabase
+          .from('menu_items')
+          .select('id, name, description, price, image, restaurant_id, restaurants(name)')
+          .ilike('name', '%$query%');
+      return data.map<Map<String, dynamic>>((row) => {
+        'type': 'food',
+        'id': (row['id'] ?? '').toString(),
+        'name': row['name'] ?? '',
+        'subtitle': (row['restaurants'] != null && row['restaurants']['name'] != null)
+            ? row['restaurants']['name'] as String
+            : (row['description'] ?? ''),
+        'image': (row['image'] as String?)?.trim().isNotEmpty == true
+            ? row['image'] as String
+            : 'https://picsum.photos/seed/menu_${row['id']}/400/300',
+        'price': (row['price'] is num) ? (row['price'] as num).toDouble() : 0.0,
+      }).toList();
+    } catch (e) {
+      print('Error searching foods: $e');
       return [];
     }
   }

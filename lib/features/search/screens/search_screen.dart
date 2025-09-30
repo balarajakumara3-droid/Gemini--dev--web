@@ -224,22 +224,33 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     }
     
-    // TODO: Implement actual search with RestaurantProvider
-    // For now, show no results to remove dummy data
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          _isSearching = false;
-        });
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Search functionality will be implemented with real data'),
-            backgroundColor: AppTheme.primaryColor,
-          ),
-        );
-      }
-    });
+    _searchSupabase(query);
+  }
+
+  Future<void> _searchSupabase(String query) async {
+    try {
+      // Lazy import to avoid large refactor; use DatabaseService directly
+      final db = DatabaseService();
+      final restaurants = await db.searchRestaurants(query);
+      final foods = await db.searchFoods(query);
+      final results = <Map<String, dynamic>>[...restaurants, ...foods];
+      setState(() {
+        _searchResults = results;
+        _currentResults = results;
+        _isSearching = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isSearching = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Search failed'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+    }
   }
   
   Widget _buildSearchResults() {
