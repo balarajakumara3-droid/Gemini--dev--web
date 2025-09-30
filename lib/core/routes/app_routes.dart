@@ -2,7 +2,6 @@ import '../../features/home/screens/main_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/cart/screens/cart_screen.dart';
-import '../../features/checkout/screens/checkout_screen.dart';
 import '../../features/orders/screens/order_history_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
@@ -29,7 +28,6 @@ class AppRoutes {
     register: (context) => const RegisterScreen(),
     main: (context) => const MainScreen(),
     cart: (context) => const CartScreen(),
-    checkout: (context) => const CheckoutScreen(),
     orderHistory: (context) => const OrderHistoryScreen(),
     profile: (context) => const ProfileScreen(),
     editProfile: (context) => const EditProfileScreen(),

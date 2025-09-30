@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDummyKeyForDevelopment123456789</string>
+	<key>GCM_SENDER_ID</key>
+	<string>262061264030</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.food_delivery_app</string>
+	<key>PROJECT_ID</key>
+	<string>food-delivery-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>food-delivery-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:262061264030:ios:dummy123456789</string>
+	<key>DATABASE_URL</key>
+	<string>https://food-delivery-dev.firebaseio.com</string>
+	<key>CLIENT_ID</key>
+	<string>262061264030-lpolbv9h3udesl36q07d9405s38mn88o.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.262061264030-lpolbv9h3udesl36q07d9405s38mn88o</string>
+</dict>
+</plist>
