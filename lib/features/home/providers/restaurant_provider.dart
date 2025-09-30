@@ -150,39 +150,14 @@ class RestaurantProvider extends ChangeNotifier {
     String? sortBy,
   }) async {
     try {
-      if (!refresh && _restaurants.isNotEmpty) {
-        _applyFilters();
-        return;
-      }
-
-      _setLoading(true);
-      _clearError();
-
-      final restaurants = await _apiService.getRestaurants(
-        latitude: _userLatitude,
-        longitude: _userLongitude,
+      // Route all loads through Supabase-first flow to avoid placeholder API
+      await fetchRestaurantsWithSupabase(
+        refresh: refresh,
         category: category,
-        sortBy: sortBy ?? _sortBy,
+        sortBy: sortBy,
       );
-
-      _restaurants = restaurants;
-      _extractCategories();
-      _applyFilters();
-
-      // Cache restaurants locally
-      for (final restaurant in restaurants) {
-        await _databaseService.cacheRestaurant(restaurant);
-      }
-
-    } catch (e) {
-      _setError(_getErrorMessage(e));
-      
-      // Try to load from cache if network fails
-      if (_restaurants.isEmpty) {
-        await _loadFromCache();
-      }
     } finally {
-      _setLoading(false);
+      // fetchRestaurantsWithSupabase handles loading/error
     }
   }
 

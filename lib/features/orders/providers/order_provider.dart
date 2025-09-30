@@ -71,23 +71,25 @@ class OrderProvider extends ChangeNotifier {
   Future<void> fetchOrders({bool refresh = false}) async {
     try {
       if (!refresh && _orders.isNotEmpty) return;
-      
+
       _setLoading(true);
       _clearError();
 
-      final orders = await _apiService.getOrders();
-      
-      _orders = orders;
-      
-      // Cache orders locally
-      for (final order in orders) {
+      // Load orders from Supabase (assumes 'orders' table)
+      final data = await _databaseService.supabase
+          .from('orders')
+          .select()
+          .order('order_time', ascending: false);
+
+      final fetched = data.map<Order>((json) => Order.fromJson(json)).toList();
+      _orders = fetched;
+
+      // Cache locally
+      for (final order in fetched) {
         await _databaseService.cacheOrder(order);
       }
-      
     } catch (e) {
       _setError(_getErrorMessage(e));
-      
-      // Load from cache if API fails
       await _loadOrdersFromCache();
     } finally {
       _setLoading(false);
@@ -107,8 +109,15 @@ class OrderProvider extends ChangeNotifier {
         notifyListeners();
       }
 
-      // Fetch fresh data
-      _currentOrder = await _apiService.getOrderDetails(orderId);
+      // Fetch fresh data from Supabase
+      final data = await _databaseService.supabase
+          .from('orders')
+          .select()
+          .eq('id', orderId)
+          .maybeSingle();
+      if (data != null) {
+        _currentOrder = Order.fromJson(data);
+      }
       
       // Update in orders list
       final index = _orders.indexWhere((order) => order.id == orderId);
@@ -132,7 +141,14 @@ class OrderProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      await _apiService.cancelOrder(orderId, reason);
+      // Update on Supabase
+      await _databaseService.supabase
+          .from('orders')
+          .update({
+            'status': OrderStatus.cancelled.name,
+            'cancellation_reason': reason,
+          })
+          .eq('id', orderId);
       
       // Update local order status
       final index = _orders.indexWhere((order) => order.id == orderId);
