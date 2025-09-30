@@ -162,7 +162,47 @@ class DatabaseService {
       // The 'from('restaurants').select()' is a Dart command
       // The supabase_flutter package translates this into a secure API call
       final data = await supabase.from('restaurants').select();
-      return data;
+
+      // Map Supabase row shape (with integer id, minimal columns)
+      // into the rich Restaurant model shape our app expects.
+      final List<Map<String, dynamic>> mapped = data.map<Map<String, dynamic>>((row) {
+        return {
+          'id': (row['id'] ?? '').toString(),
+          'name': row['name'] ?? '',
+          'description': row['description'] ?? '',
+          'image_url': row['image'] ?? '',
+          'cuisines': <String>[],
+          'rating': (row['rating'] is num) ? (row['rating'] as num).toDouble() : 0.0,
+          'review_count': 0,
+          'delivery_time': '30-40 mins',
+          'delivery_fee': 0.0,
+          'minimum_order': 0.0,
+          'is_open': true,
+          'is_vegetarian': false,
+          'is_pure_veg': false,
+          'address': {
+            'id': 'addr_${row['id'] ?? '0'}',
+            'user_id': '',
+            'name': 'Location',
+            'address_line1': row['location'] ?? '',
+            'address_line2': '',
+            'city': row['location'] ?? '',
+            'state': '',
+            'country': '',
+            'postal_code': '',
+            'latitude': null,
+            'longitude': null,
+            'is_default': false,
+            'created_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toIso8601String(),
+          },
+          'offers': <String>[],
+          'menu': <Map<String, dynamic>>[],
+          'distance': 0.0,
+        };
+      }).toList();
+
+      return mapped;
     } catch (e) {
       // Handle any errors, e.g., show a message to the user
       print('Error fetching restaurants: $e');
