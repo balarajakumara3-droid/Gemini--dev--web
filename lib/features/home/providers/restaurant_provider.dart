@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../../core/models/restaurant.dart';
+import '../../../core/models/offer.dart';
 import '../../../core/services/api_service.dart';
 import '../../../core/services/database_service.dart';
 
@@ -11,6 +12,7 @@ class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> _restaurants = [];
   List<Restaurant> _filteredRestaurants = [];
   List<String> _categories = [];
+  List<Offer> _offers = [];
   Restaurant? _selectedRestaurant;
   List<FoodCategory> _menu = [];
   bool _isLoading = false;
@@ -26,6 +28,7 @@ class RestaurantProvider extends ChangeNotifier {
   List<Restaurant> get restaurants => _filteredRestaurants;
   List<Restaurant> get allRestaurants => _restaurants;
   List<String> get categories => _categories;
+  List<Offer> get offers => _offers;
   Restaurant? get selectedRestaurant => _selectedRestaurant;
   List<FoodCategory> get menu => _menu;
   bool get isLoading => _isLoading;
@@ -38,6 +41,24 @@ class RestaurantProvider extends ChangeNotifier {
     _userLatitude = latitude;
     _userLongitude = longitude;
     notifyListeners();
+  }
+
+  // Load dummy restaurants (for development/testing)
+  void loadDummyRestaurants(List<Map<String, dynamic>> dummyData) {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      // Convert dummy data to Restaurant objects
+      _restaurants = dummyData.map((data) => Restaurant.fromJson(data)).toList();
+      _extractCategories();
+      _applyFilters();
+      
+    } catch (e) {
+      _setError('Failed to load dummy data: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
 
   // Fetch restaurants with Supabase integration
@@ -395,6 +416,42 @@ class RestaurantProvider extends ChangeNotifier {
   // Refresh data
   Future<void> refresh() async {
     await fetchRestaurants(refresh: true);
+  }
+
+  // Fetch initial data for the home screen
+  Future<void> fetchInitialData() async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      // Attempt to fetch from Supabase with fallback
+      await fetchRestaurantsWithSupabase(refresh: true);
+      
+      // Also fetch offers
+      await fetchOffers();
+      
+    } catch (e) {
+      _setError('Failed to load initial data: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Fetch offers from Supabase
+  Future<void> fetchOffers() async {
+    try {
+      final offersData = await _databaseService.supabase
+          .from('offers')
+          .select()
+          .eq('is_active', true)
+          .gte('end_date', DateTime.now().toIso8601String());
+      
+      _offers = offersData.map((json) => Offer.fromJson(json)).toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching offers: $e');
+      // Don't throw error for offers as they're not critical
+    }
   }
 
   // Private helper methods

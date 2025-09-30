@@ -41,19 +41,8 @@ class _HomeScreenSwiggyState extends State<HomeScreenSwiggy> {
     {'title': '₹125 OFF', 'subtitle': 'USE SAVE125', 'color': Colors.purple},
   ];
   
-  // Restaurant dummy data (50 restaurants)
-  final List<Map<String, dynamic>> _dummyRestaurants = [
-    {'id': '1', 'name': 'Pizza Palace', 'cuisine': 'Italian, Pizza', 'rating': 4.5, 'deliveryTime': '25-30 min', 'deliveryFee': 2.99, 'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', 'isOpen': true, 'promoted': true, 'discount': '40% OFF'},
-    {'id': '2', 'name': 'Burger House', 'cuisine': 'American, Burgers', 'rating': 4.4, 'deliveryTime': '20-25 min', 'deliveryFee': 1.99, 'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=200&fit=crop', 'isOpen': true, 'promoted': true, 'discount': '₹100 OFF'},
-    {'id': '3', 'name': 'Sushi Express', 'cuisine': 'Japanese, Sushi', 'rating': 4.7, 'deliveryTime': '30-35 min', 'deliveryFee': 3.99, 'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=200&fit=crop', 'isOpen': true, 'promoted': true, 'discount': 'FREE DELIVERY'},
-    {'id': '4', 'name': 'Spice Garden', 'cuisine': 'Indian, Curry', 'rating': 4.6, 'deliveryTime': '25-30 min', 'deliveryFee': 2.49, 'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=200&fit=crop', 'isOpen': true, 'promoted': true, 'discount': '30% OFF'},
-    {'id': '5', 'name': 'Sweet Dreams', 'cuisine': 'Desserts, Ice Cream', 'rating': 4.8, 'deliveryTime': '15-20 min', 'deliveryFee': 1.99, 'image': 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=300&h=200&fit=crop', 'isOpen': true, 'promoted': true, 'discount': 'BUY 1 GET 1'},
-    {'id': '6', 'name': 'Slice Heaven', 'cuisine': 'Italian, Pizza', 'rating': 4.3, 'deliveryTime': '20-25 min', 'deliveryFee': 1.99, 'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop', 'isOpen': true},
-    {'id': '7', 'name': 'Grill Masters', 'cuisine': 'American, Burgers', 'rating': 4.4, 'deliveryTime': '15-20 min', 'deliveryFee': 1.49, 'image': 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=200&fit=crop', 'isOpen': true},
-    {'id': '8', 'name': 'Dragon Wok', 'cuisine': 'Chinese, Stir Fry', 'rating': 4.3, 'deliveryTime': '25-30 min', 'deliveryFee': 2.49, 'image': 'https://images.unsplash.com/photo-1559314809-0f31657def5e?w=300&h=200&fit=crop', 'isOpen': true},
-    {'id': '9', 'name': 'Thai Spice', 'cuisine': 'Thai, Curry', 'rating': 4.4, 'deliveryTime': '20-25 min', 'deliveryFee': 2.99, 'image': 'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=300&h=200&fit=crop', 'isOpen': true},
-    {'id': '10', 'name': 'Coffee Central', 'cuisine': 'Coffee, Beverages', 'rating': 4.5, 'deliveryTime': '10-15 min', 'deliveryFee': 0.99, 'image': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=200&fit=crop', 'isOpen': true},
-  ];
+  // Restaurant data will be loaded from RestaurantProvider
+  List<Map<String, dynamic>> _dummyRestaurants = [];
 
   @override
   void initState() {
@@ -284,7 +273,37 @@ class _HomeScreenSwiggyState extends State<HomeScreenSwiggy> {
                 const SizedBox(height: 8),
                 Text('${_dummyRestaurants.length} restaurants delivering to you', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
                 const SizedBox(height: 16),
-                ...(_dummyRestaurants.map((restaurant) => _buildRestaurantListItem(restaurant)).toList()),
+                if (_dummyRestaurants.isEmpty)
+                  Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        Icon(
+                          Icons.restaurant,
+                          size: 64,
+                          color: AppTheme.textSecondary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No restaurants available',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Restaurants will appear here when they become available in your area',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  )
+                else
+                  ...(_dummyRestaurants.map((restaurant) => _buildRestaurantListItem(restaurant)).toList()),
               ],
             ),
           ),

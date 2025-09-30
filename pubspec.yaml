@@ -30,6 +30,9 @@ dependencies:
   # UI Components
   cached_network_image: ^3.3.0
   
+  # Image Handling
+  image_picker: ^1.0.4
+  
   # Utilities
   shared_preferences: ^2.2.2
   permission_handler: ^11.0.1

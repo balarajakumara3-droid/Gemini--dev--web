@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/theme/app_theme.dart';
+import '../../../core/models/order.dart';
 import '../providers/order_provider.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -18,6 +20,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Load orders when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<OrderProvider>(context, listen: false).fetchOrders();
+    });
   }
 
   @override
@@ -43,6 +49,38 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       ),
       body: Consumer<OrderProvider>(
         builder: (context, orderProvider, child) {
+          if (orderProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (orderProvider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: AppTheme.errorColor,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    orderProvider.errorMessage!,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppTheme.errorColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => orderProvider.fetchOrders(refresh: true),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
           return TabBarView(
             controller: _tabController,
             children: [
@@ -56,18 +94,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   }
 
   Widget _buildOngoingOrders(OrderProvider orderProvider) {
-    // Mock ongoing orders
-    final ongoingOrders = [
-      _MockOrder(
-        id: '1',
-        restaurantName: 'Pizza Palace',
-        status: 'Preparing',
-        total: 450.0,
-        items: ['Margherita Pizza', 'Garlic Bread'],
-        orderTime: DateTime.now().subtract(const Duration(minutes: 15)),
-        estimatedDelivery: DateTime.now().add(const Duration(minutes: 25)),
-      ),
-    ];
+    // Use actual orders from provider
+    final ongoingOrders = orderProvider.orders
+        .where((order) => 
+            order.status != OrderStatus.delivered && 
+            order.status != OrderStatus.cancelled)
+        .toList();
 
     if (ongoingOrders.isEmpty) {
       return _buildEmptyState(
@@ -77,38 +109,26 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: ongoingOrders.length,
-      itemBuilder: (context, index) {
-        final order = ongoingOrders[index];
-        return _buildOngoingOrderCard(order);
-      },
+    return RefreshIndicator(
+      onRefresh: () => orderProvider.fetchOrders(refresh: true),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: ongoingOrders.length,
+        itemBuilder: (context, index) {
+          final order = ongoingOrders[index];
+          return _buildOngoingOrderCard(order);
+        },
+      ),
     );
   }
 
   Widget _buildOrderHistory(OrderProvider orderProvider) {
-    // Mock order history
-    final historyOrders = [
-      _MockOrder(
-        id: '2',
-        restaurantName: 'Burger House',
-        status: 'Delivered',
-        total: 320.0,
-        items: ['Classic Burger', 'French Fries', 'Coke'],
-        orderTime: DateTime.now().subtract(const Duration(days: 1)),
-        estimatedDelivery: DateTime.now().subtract(const Duration(days: 1, hours: -1)),
-      ),
-      _MockOrder(
-        id: '3',
-        restaurantName: 'Sushi Express',
-        status: 'Delivered',
-        total: 680.0,
-        items: ['California Roll', 'Salmon Sashimi', 'Miso Soup'],
-        orderTime: DateTime.now().subtract(const Duration(days: 3)),
-        estimatedDelivery: DateTime.now().subtract(const Duration(days: 3, hours: -1)),
-      ),
-    ];
+    // Use actual completed orders from provider
+    final historyOrders = orderProvider.orders
+        .where((order) => 
+            order.status == OrderStatus.delivered || 
+            order.status == OrderStatus.cancelled)
+        .toList();
 
     if (historyOrders.isEmpty) {
       return _buildEmptyState(
@@ -118,13 +138,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: historyOrders.length,
-      itemBuilder: (context, index) {
-        final order = historyOrders[index];
-        return _buildHistoryOrderCard(order);
-      },
+    return RefreshIndicator(
+      onRefresh: () => orderProvider.fetchOrders(refresh: true),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: historyOrders.length,
+        itemBuilder: (context, index) {
+          final order = historyOrders[index];
+          return _buildHistoryOrderCard(order);
+        },
+      ),
     );
   }
 
@@ -161,7 +184,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  Widget _buildOngoingOrderCard(_MockOrder order) {
+  Widget _buildOngoingOrderCard(Order order) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -185,7 +208,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    order.status,
+                    _getStatusText(order.status),
                     style: TextStyle(
                       color: _getStatusColor(order.status),
                       fontSize: 12,
@@ -197,7 +220,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              order.items.join(', '),
+              order.items.map((item) => item.food.name).join(', '),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppTheme.textSecondary,
               ),
@@ -209,27 +232,36 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 Text(
                   '₹${order.total.toStringAsFixed(0)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
-                Text(
-                  'Arriving in ${_getEstimatedTime(order.estimatedDelivery)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppTheme.successColor,
+                if (order.estimatedDeliveryTime != null)
+                  Text(
+                    'Est. ${_formatTime(order.estimatedDeliveryTime!)}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  _trackOrder(order);
-                },
-                child: const Text('Track Order'),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _trackOrder(order),
+                    child: const Text('Track Order'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _contactRestaurant(order),
+                    child: const Text('Contact'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -237,7 +269,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  Widget _buildHistoryOrderCard(_MockOrder order) {
+  Widget _buildHistoryOrderCard(Order order) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -264,7 +296,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              order.items.join(', '),
+              order.items.map((item) => item.food.name).join(', '),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppTheme.textSecondary,
               ),
@@ -276,27 +308,44 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 Text(
                   '₹${order.total.toStringAsFixed(0)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        _reorderItems(order);
-                      },
-                      child: const Text('Reorder'),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(order.status).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _getStatusText(order.status),
+                    style: TextStyle(
+                      color: _getStatusColor(order.status),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () {
-                        _rateOrder(order);
-                      },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _reorderItems(order),
+                    child: const Text('Reorder'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (order.status == OrderStatus.delivered)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _rateOrder(order),
                       child: const Text('Rate'),
                     ),
-                  ],
-                ),
+                  ),
               ],
             ),
           ],
@@ -305,27 +354,58 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'preparing':
-        return AppTheme.warningColor;
-      case 'on the way':
-        return AppTheme.infoColor;
-      case 'delivered':
+  Color _getStatusColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.placed:
+        return Colors.orange;
+      case OrderStatus.confirmed:
+        return Colors.blue;
+      case OrderStatus.preparing:
+        return Colors.purple;
+      case OrderStatus.readyForPickup:
+        return Colors.amber;
+      case OrderStatus.outForDelivery:
+        return Colors.indigo;
+      case OrderStatus.delivered:
         return AppTheme.successColor;
-      default:
-        return AppTheme.textSecondary;
+      case OrderStatus.cancelled:
+        return AppTheme.errorColor;
     }
   }
 
-  String _getEstimatedTime(DateTime estimatedDelivery) {
-    final difference = estimatedDelivery.difference(DateTime.now());
-    if (difference.inMinutes <= 0) {
-      return 'Any moment';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} min';
+  String _getStatusText(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.placed:
+        return 'Placed';
+      case OrderStatus.confirmed:
+        return 'Confirmed';
+      case OrderStatus.preparing:
+        return 'Preparing';
+      case OrderStatus.readyForPickup:
+        return 'Ready';
+      case OrderStatus.outForDelivery:
+        return 'Out for Delivery';
+      case OrderStatus.delivered:
+        return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = dateTime.difference(now);
+    
+    if (difference.isNegative) {
+      return 'Delivered';
+    }
+    
+    final minutes = difference.inMinutes;
+    if (minutes < 60) {
+      return '${minutes}m';
     } else {
-      return '${difference.inHours}h ${difference.inMinutes % 60}m';
+      final hours = difference.inHours;
+      return '${hours}h ${minutes % 60}m';
     }
   }
 
@@ -342,7 +422,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     }
   }
 
-  void _trackOrder(_MockOrder order) {
+  void _trackOrder(Order order) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Tracking order ${order.id}'),
@@ -351,7 +431,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  void _reorderItems(_MockOrder order) {
+  void _contactRestaurant(Order order) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Contacting ${order.restaurantName}'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  void _reorderItems(Order order) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Reordering from ${order.restaurantName}'),
@@ -360,7 +449,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  void _rateOrder(_MockOrder order) {
+  void _rateOrder(Order order) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Rating order from ${order.restaurantName}'),
@@ -368,24 +457,4 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       ),
     );
   }
-}
-
-class _MockOrder {
-  final String id;
-  final String restaurantName;
-  final String status;
-  final double total;
-  final List<String> items;
-  final DateTime orderTime;
-  final DateTime estimatedDelivery;
-
-  _MockOrder({
-    required this.id,
-    required this.restaurantName,
-    required this.status,
-    required this.total,
-    required this.items,
-    required this.orderTime,
-    required this.estimatedDelivery,
-  });
 }

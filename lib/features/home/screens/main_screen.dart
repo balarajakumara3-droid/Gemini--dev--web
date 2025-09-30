@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/providers/order_provider.dart';
-import '../screens/home_screen_swiggy.dart';
+import '../screens/home_screen.dart';
 import '../../search/screens/search_screen.dart';
 import '../../cart/screens/cart_screen.dart';
 import '../../orders/screens/order_history_screen.dart';
@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
   final PageController _pageController = PageController();
 
   final List<Widget> _screens = [
-    const HomeScreenSwiggy(),
+    const HomeScreen(),
     const SearchScreen(),
     const CartScreen(),
     const OrderHistoryScreen(),

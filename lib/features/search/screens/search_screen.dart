@@ -14,33 +14,11 @@ class _SearchScreenState extends State<SearchScreen> {
   final List<String> _recentSearches = ['Pizza', 'Burger', 'Chinese Food', 'Ice Cream'];
   final List<String> _popularSearches = ['Biryani', 'Dosa', 'North Indian', 'South Indian', 'Fast Food'];
   
-  // Dummy search results
-  final List<Map<String, dynamic>> _searchResults = [
-    {
-      'type': 'restaurant',
-      'name': 'Pizza Palace',
-      'subtitle': 'Italian, Pizza',
-      'rating': 4.5,
-      'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100&h=100&fit=crop',
-    },
-    {
-      'type': 'food',
-      'name': 'Margherita Pizza',
-      'subtitle': 'Pizza Palace',
-      'price': 299,
-      'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100&h=100&fit=crop',
-    },
-    {
-      'type': 'restaurant',
-      'name': 'Burger House',
-      'subtitle': 'American, Burgers',
-      'rating': 4.2,
-      'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&h=100&fit=crop',
-    },
-  ];
-  
-  bool _isSearching = false;
+  // Search results from provider
+  List<Map<String, dynamic>> _searchResults = [];
   List<Map<String, dynamic>> _currentResults = [];
+  bool _isSearching = false;
+  bool _hasSearched = false;
   
   // Filter options
   String _selectedCuisine = 'All';
@@ -130,11 +108,9 @@ class _SearchScreenState extends State<SearchScreen> {
         onChanged: (value) {
           setState(() {
             _isSearching = value.isNotEmpty;
-            if (value.isNotEmpty) {
-              _currentResults = _searchResults.where((item) {
-                return item['name'].toLowerCase().contains(value.toLowerCase()) ||
-                       item['subtitle'].toLowerCase().contains(value.toLowerCase());
-              }).toList();
+            if (value.isEmpty) {
+              _hasSearched = false;
+              _currentResults = [];
             }
           });
         },
@@ -233,10 +209,9 @@ class _SearchScreenState extends State<SearchScreen> {
   void _performSearch(String query) {
     setState(() {
       _isSearching = true;
-      _currentResults = _searchResults.where((item) {
-        return item['name'].toLowerCase().contains(query.toLowerCase()) ||
-               item['subtitle'].toLowerCase().contains(query.toLowerCase());
-      }).toList();
+      _hasSearched = true;
+      // Clear previous results since we're removing dummy data
+      _currentResults = [];
     });
     
     // Add to recent searches if not already there
@@ -249,12 +224,22 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     }
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Found ${_currentResults.length} results for: $query'),
-        backgroundColor: AppTheme.primaryColor,
-      ),
-    );
+    // TODO: Implement actual search with RestaurantProvider
+    // For now, show no results to remove dummy data
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Search functionality will be implemented with real data'),
+            backgroundColor: AppTheme.primaryColor,
+          ),
+        );
+      }
+    });
   }
   
   Widget _buildSearchResults() {

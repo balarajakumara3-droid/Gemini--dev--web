@@ -21,80 +21,91 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   
-  // Dummy menu items for the restaurant
-  final List<Map<String, dynamic>> _menuItems = [
+  // Dummy menu data
+  final List<Map<String, dynamic>> _dummyMenuItems = [
     {
       'id': '1',
       'name': 'Margherita Pizza',
-      'description': 'Fresh tomatoes, mozzarella cheese, basil leaves',
-      'price': 299.0,
-      'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop',
+      'description': 'Fresh tomato sauce, mozzarella cheese, and basil',
+      'price': 12.99,
+      'image_url': 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=300&h=200&fit=crop',
       'category': 'Pizza',
-      'isVeg': true,
-      'rating': 4.5,
-      'preparationTime': '15-20 min',
+      'is_vegetarian': true,
+      'is_popular': true
     },
     {
       'id': '2',
       'name': 'Pepperoni Pizza',
       'description': 'Classic pepperoni with mozzarella cheese',
-      'price': 399.0,
-      'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
+      'price': 15.99,
+      'image_url': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
       'category': 'Pizza',
-      'isVeg': false,
-      'rating': 4.3,
-      'preparationTime': '18-22 min',
+      'is_vegetarian': false,
+      'is_popular': true
     },
     {
       'id': '3',
-      'name': 'Garlic Bread',
-      'description': 'Crispy bread with garlic butter and herbs',
-      'price': 149.0,
-      'image': 'https://images.unsplash.com/photo-1573821663912-6df460f9c684?w=300&h=200&fit=crop',
-      'category': 'Appetizer',
-      'isVeg': true,
-      'rating': 4.2,
-      'preparationTime': '8-12 min',
+      'name': 'Caesar Salad',
+      'description': 'Crispy romaine lettuce with caesar dressing',
+      'price': 8.99,
+      'image_url': 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&h=200&fit=crop',
+      'category': 'Salads',
+      'is_vegetarian': true,
+      'is_popular': false
     },
     {
       'id': '4',
-      'name': 'Caesar Salad',
-      'description': 'Fresh lettuce, croutons, parmesan cheese, caesar dressing',
-      'price': 199.0,
-      'image': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&h=200&fit=crop',
-      'category': 'Salad',
-      'isVeg': true,
-      'rating': 4.1,
-      'preparationTime': '5-8 min',
+      'name': 'Chicken Wings',
+      'description': 'Spicy buffalo wings with ranch dressing',
+      'price': 11.99,
+      'image_url': 'https://images.unsplash.com/photo-1527477396002-952d92456975?w=300&h=200&fit=crop',
+      'category': 'Appetizers',
+      'is_vegetarian': false,
+      'is_popular': true
     },
     {
       'id': '5',
-      'name': 'Chicken Wings',
-      'description': 'Spicy buffalo wings with blue cheese dip',
-      'price': 349.0,
-      'image': 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=300&h=200&fit=crop',
-      'category': 'Appetizer',
-      'isVeg': false,
-      'rating': 4.4,
-      'preparationTime': '12-15 min',
-    },
-    {
-      'id': '6',
       'name': 'Chocolate Cake',
       'description': 'Rich chocolate cake with chocolate frosting',
-      'price': 179.0,
-      'image': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=200&fit=crop',
-      'category': 'Dessert',
-      'isVeg': true,
-      'rating': 4.6,
-      'preparationTime': '5 min',
-    },
+      'price': 6.99,
+      'image_url': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=200&fit=crop',
+      'category': 'Desserts',
+      'is_vegetarian': true,
+      'is_popular': false
+    }
   ];
+  
+  List<Map<String, dynamic>> _menuItems = [];
+  bool _isLoadingMenu = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadMenuItems();
+  }
+
+  Future<void> _loadMenuItems() async {
+    setState(() {
+      _isLoadingMenu = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Simulate loading delay
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      setState(() {
+        _menuItems = _dummyMenuItems;
+        _isLoadingMenu = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingMenu = false;
+        _errorMessage = 'Failed to load menu: $e';
+      });
+    }
   }
 
   @override
@@ -290,6 +301,70 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   }
 
   Widget _buildMenuTab() {
+    if (_isLoadingMenu) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppTheme.errorColor,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage!,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: AppTheme.errorColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loadMenuItems,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_menuItems.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.restaurant_menu,
+              size: 64,
+              color: AppTheme.textSecondary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Menu coming soon',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This restaurant is setting up their menu',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     final categories = _menuItems.map((item) => item['category'] as String).toSet().toList();
     
     return ListView.builder(
