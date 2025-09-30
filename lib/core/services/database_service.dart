@@ -170,7 +170,9 @@ class DatabaseService {
           'id': (row['id'] ?? '').toString(),
           'name': row['name'] ?? '',
           'description': row['description'] ?? '',
-          'image_url': row['image'] ?? '',
+          'image_url': (row['image'] as String?)?.trim().isNotEmpty == true
+              ? row['image'] as String
+              : 'https://picsum.photos/seed/${row['id']}/1200/600',
           'cuisines': <String>[],
           'rating': (row['rating'] is num) ? (row['rating'] as num).toDouble() : 0.0,
           'review_count': 0,

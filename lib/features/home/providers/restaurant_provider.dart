@@ -192,8 +192,31 @@ class RestaurantProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _clearError();
+      // Load menu from Supabase `menu_items` and map to our model
+      final rows = await _databaseService.getRestaurantMenu(restaurantId);
+      final items = rows.map((row) {
+        // Provide network placeholder if image is missing
+        final String imageUrl = (row['image'] as String?)?.trim().isNotEmpty == true
+            ? row['image'] as String
+            : 'https://picsum.photos/seed/${row['id']}/800/600';
+        return Food(
+          id: (row['id'] ?? '').toString(),
+          name: row['name'] ?? '',
+          description: row['description'] ?? '',
+          imageUrl: imageUrl,
+          price: (row['price'] is num) ? (row['price'] as num).toDouble() : 0.0,
+          category: 'Menu',
+        );
+      }).toList();
 
-      _menu = await _apiService.getRestaurantMenu(restaurantId);
+      _menu = [
+        FoodCategory(
+          id: 'menu_${restaurantId}',
+          name: 'Menu',
+          description: '',
+          items: items,
+        ),
+      ];
       
     } catch (e) {
       _setError(_getErrorMessage(e));
