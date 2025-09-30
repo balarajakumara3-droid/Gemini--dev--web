@@ -96,11 +96,24 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      _user = await _apiService.login(email, password);
-      
+      // Supabase password login
+      final client = supa.Supabase.instance.client;
+      final response = await client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      final authUser = response.user ?? client.auth.currentUser;
+      if (authUser == null) {
+        _setError('Invalid email or password');
+        return false;
+      }
+
+      _user = _userFromSupabase(authUser);
+
       // Save user data locally
       await _saveUserData();
-      
+
       _setState(AuthState.authenticated);
       return true;
     } catch (e) {
