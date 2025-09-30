@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/app_config.dart';
+import '../../../core/services/database_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
