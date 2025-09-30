@@ -43,24 +43,6 @@ class RestaurantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Load dummy restaurants (for development/testing)
-  void loadDummyRestaurants(List<Map<String, dynamic>> dummyData) {
-    try {
-      _setLoading(true);
-      _clearError();
-      
-      // Convert dummy data to Restaurant objects
-      _restaurants = dummyData.map((data) => Restaurant.fromJson(data)).toList();
-      _extractCategories();
-      _applyFilters();
-      
-    } catch (e) {
-      _setError('Failed to load dummy data: $e');
-    } finally {
-      _setLoading(false);
-    }
-  }
-
   // Fetch restaurants with Supabase integration
   Future<void> fetchRestaurantsWithSupabase({
     bool refresh = false,

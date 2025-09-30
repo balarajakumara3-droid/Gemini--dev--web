@@ -303,24 +303,10 @@ class AuthProvider extends ChangeNotifier {
 
       // Check if running on iOS simulator - Google Sign-In may not work properly
       if (defaultTargetPlatform == TargetPlatform.iOS) {
-        // For development purposes, simulate successful Google Sign-In
+        // For development purposes, show error instead of mock user
         if (kDebugMode) {
-          // Create a mock user for testing in simulator
-          final mockUser = supa.User(
-            id: 'mock-google-user-${DateTime.now().millisecondsSinceEpoch}',
-            appMetadata: {},
-            userMetadata: {
-              'full_name': 'Test User',
-              'email': 'test@example.com',
-              'avatar_url': '',
-            },
-            aud: 'authenticated',
-            createdAt: DateTime.now().toIso8601String(),
-          );
-          
-          _user = _userFromSupabase(mockUser);
-          _setState(AuthState.authenticated);
-          return true;
+          _setError('Google Sign-In not available in simulator. Use a real device for testing.');
+          return false;
         }
       }
 

@@ -20,134 +20,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isLocationPermissionGranted = false;
-  
-  // Dummy restaurant data with better images
-  final List<Map<String, dynamic>> _dummyRestaurants = [
-    {
-      'id': '1',
-      'name': 'Domino\'s Pizza',
-      'cuisine_type': 'Pizzas, Italian, Pastas, Desserts',
-      'rating': 4.3,
-      'delivery_time': '25-30',
-      'delivery_fee': 0,
-      'image_url': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=250&fit=crop',
-      'is_open': true,
-      'discount': '₹125 OFF ABOVE ₹199',
-      'promoted': true
-    },
-    {
-      'id': '2',
-      'name': 'McDonald\'s',
-      'cuisine_type': 'Burgers, Beverages, Cafe, Desserts',
-      'rating': 4.4,
-      'delivery_time': '20-25',
-      'delivery_fee': 0,
-      'image_url': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=250&fit=crop',
-      'is_open': true,
-      'discount': '₹100 OFF ABOVE ₹199',
-      'promoted': false
-    },
-    {
-      'id': '3',
-      'name': 'KFC',
-      'cuisine_type': 'Burgers, Fast Food, Rolls',
-      'rating': 4.2,
-      'delivery_time': '30-35',
-      'delivery_fee': 3.0,
-      'image_url': 'https://images.unsplash.com/photo-1527477396002-952d92456975?w=400&h=250&fit=crop',
-      'is_open': true,
-      'discount': 'ITEMS AT ₹179',
-      'promoted': true
-    },
-    {
-      'id': '4',
-      'name': 'Subway',
-      'cuisine_type': 'Healthy Food, Salads, Snacks, Desserts',
-      'rating': 4.1,
-      'delivery_time': '35-40',
-      'delivery_fee': 2.0,
-      'image_url': 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=400&h=250&fit=crop',
-      'is_open': true,
-      'discount': 'UPTO 20% OFF',
-      'promoted': false
-    },
-    {
-      'id': '5',
-      'name': 'Starbucks Coffee',
-      'cuisine_type': 'Cafe, Beverages, Snacks, Desserts',
-      'rating': 4.5,
-      'delivery_time': '25-30',
-      'delivery_fee': 4.0,
-      'image_url': 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=400&h=250&fit=crop',
-      'is_open': true,
-      'discount': 'UPTO 15% OFF',
-      'promoted': false
-    },
-    {
-      'id': '6',
-      'name': 'Burger King',
-      'cuisine_type': 'Burgers, American',
-      'rating': 4.0,
-      'delivery_time': '45-50',
-      'delivery_fee': 0,
-      'image_url': 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=250&fit=crop',
-      'is_open': false,
-      'discount': 'ITEMS AT ₹129',
-      'promoted': false
-    }
-  ];
-
-  // Dummy food categories with images
-  final List<Map<String, dynamic>> _dummyCategories = [
-    {
-      'id': '1',
-      'name': 'Pizza',
-      'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=100&h=100&fit=crop'
-    },
-    {
-      'id': '2',
-      'name': 'Burgers',
-      'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&h=100&fit=crop'
-    },
-    {
-      'id': '3',
-      'name': 'Chinese',
-      'image': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=100&h=100&fit=crop'
-    },
-    {
-      'id': '4',
-      'name': 'Desserts',
-      'image': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop'
-    },
-    {
-      'id': '5',
-      'name': 'Beverages',
-      'image': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=100&h=100&fit=crop'
-    },
-    {
-      'id': '6',
-      'name': 'Indian',
-      'image': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=100&h=100&fit=crop'
-    }
-  ];
-
-  // Dummy offers/banners
-  final List<Map<String, dynamic>> _dummyOffers = [
-    {
-      'id': '1',
-      'title': 'Welcome Offer',
-      'subtitle': 'Get 60% OFF on your first order',
-      'image': 'https://images.unsplash.com/photo-1571091655789-405eb7a3a3a8?w=400&h=200&fit=crop',
-      'color': AppTheme.primaryColor
-    },
-    {
-      'id': '2',
-      'title': 'Free Delivery',
-      'subtitle': 'Free delivery on orders above ₹199',
-      'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop',
-      'color': AppTheme.successColor
-    }
-  ];
 
   @override
   void initState() {
@@ -191,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadRestaurants() async {
     final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
-    // Load dummy data into provider
-    restaurantProvider.loadDummyRestaurants(_dummyRestaurants);
+    // Fetch restaurants from provider instead of loading dummy data
+    await restaurantProvider.fetchRestaurants();
   }
 
   @override
@@ -212,9 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: [
             _buildSliverAppBar(),
             _buildSearchSection(),
-            _buildOffersSection(),
             _buildCategoriesSection(),
-            _buildSectionHeader('Popular Restaurants'),
+            _buildSectionHeader('Restaurants'),
             _buildRestaurantsSection(),
           ],
         ),
@@ -373,86 +244,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildOffersSection() {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: 180,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        child: PageView.builder(
-          itemCount: _dummyOffers.length,
-          itemBuilder: (context, index) {
-            final offer = _dummyOffers[index];
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  colors: [
-                    offer['color'],
-                    offer['color'].withOpacity(0.8),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: offer['image'],
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      color: Colors.black.withOpacity(0.3),
-                      colorBlendMode: BlendMode.darken,
-                      placeholder: (context, url) => Container(
-                        color: offer['color'].withOpacity(0.3),
-                        child: const Center(
-                          child: CircularProgressIndicator(color: Colors.white),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: offer['color'],
-                        child: const Icon(Icons.image, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 20,
-                    bottom: 20,
-                    right: 20,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          offer['title'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          offer['subtitle'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
   Widget _buildCategoriesSection() {
     return SliverToBoxAdapter(
       child: Container(
@@ -473,65 +264,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
+            Container(
               height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                itemCount: _dummyCategories.length,
-                itemBuilder: (context, index) {
-                  final category = _dummyCategories[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Navigate to category
-                    },
-                    child: Container(
-                      width: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.grey[300]!,
-                                width: 1,
-                              ),
-                            ),
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: category['image'],
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.fastfood),
-                                ),
-                                errorWidget: (context, url, error) => Container(
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.fastfood),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            category['name'],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.textPrimary,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+              child: Center(
+                child: Text(
+                  'Categories will be loaded from server',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
               ),
             ),
           ],
@@ -558,17 +300,75 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRestaurantsSection() {
-    return SliverPadding(
-      padding: const EdgeInsets.all(16),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final restaurant = _dummyRestaurants[index];
-            return _buildRestaurantCard(restaurant);
-          },
-          childCount: _dummyRestaurants.length,
-        ),
-      ),
+    return Consumer<RestaurantProvider>(
+      builder: (context, restaurantProvider, child) {
+        if (restaurantProvider.isLoading) {
+          return SliverToBoxAdapter(
+            child: Container(
+              height: 200,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+        
+        if (restaurantProvider.errorMessage != null) {
+          return SliverToBoxAdapter(
+            child: Container(
+              height: 200,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error, size: 48, color: Colors.red),
+                    const SizedBox(height: 8),
+                    Text('Error: ${restaurantProvider.errorMessage}'),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () => _loadRestaurants(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        
+        final restaurants = restaurantProvider.restaurants;
+        
+        if (restaurants.isEmpty) {
+          return SliverToBoxAdapter(
+            child: Container(
+              height: 200,
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.restaurant, size: 48, color: AppTheme.textSecondary),
+                    SizedBox(height: 8),
+                    Text('No restaurants found'),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        
+        return SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final restaurant = restaurants[index];
+                return _buildRestaurantCard(restaurant.toJson());
+              },
+              childCount: restaurants.length,
+            ),
+          ),
+        );
+      },
     );
   }
 

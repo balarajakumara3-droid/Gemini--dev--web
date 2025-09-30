@@ -11,8 +11,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _recentSearches = ['Pizza', 'Burger', 'Chinese Food', 'Ice Cream'];
-  final List<String> _popularSearches = ['Biryani', 'Dosa', 'North Indian', 'South Indian', 'Fast Food'];
+  final List<String> _recentSearches = [];
+  final List<String> _popularSearches = [];
   
   // Search results from provider
   List<Map<String, dynamic>> _searchResults = [];

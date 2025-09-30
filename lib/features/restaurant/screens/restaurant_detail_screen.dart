@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/restaurant.dart';
 import '../../../core/models/user.dart';
+import '../../../core/services/api_service.dart';
 import '../../cart/providers/cart_provider.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
@@ -20,60 +21,7 @@ class RestaurantDetailScreen extends StatefulWidget {
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
-  // Dummy menu data
-  final List<Map<String, dynamic>> _dummyMenuItems = [
-    {
-      'id': '1',
-      'name': 'Margherita Pizza',
-      'description': 'Fresh tomato sauce, mozzarella cheese, and basil',
-      'price': 12.99,
-      'image_url': 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=300&h=200&fit=crop',
-      'category': 'Pizza',
-      'is_vegetarian': true,
-      'is_popular': true
-    },
-    {
-      'id': '2',
-      'name': 'Pepperoni Pizza',
-      'description': 'Classic pepperoni with mozzarella cheese',
-      'price': 15.99,
-      'image_url': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
-      'category': 'Pizza',
-      'is_vegetarian': false,
-      'is_popular': true
-    },
-    {
-      'id': '3',
-      'name': 'Caesar Salad',
-      'description': 'Crispy romaine lettuce with caesar dressing',
-      'price': 8.99,
-      'image_url': 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&h=200&fit=crop',
-      'category': 'Salads',
-      'is_vegetarian': true,
-      'is_popular': false
-    },
-    {
-      'id': '4',
-      'name': 'Chicken Wings',
-      'description': 'Spicy buffalo wings with ranch dressing',
-      'price': 11.99,
-      'image_url': 'https://images.unsplash.com/photo-1527477396002-952d92456975?w=300&h=200&fit=crop',
-      'category': 'Appetizers',
-      'is_vegetarian': false,
-      'is_popular': true
-    },
-    {
-      'id': '5',
-      'name': 'Chocolate Cake',
-      'description': 'Rich chocolate cake with chocolate frosting',
-      'price': 6.99,
-      'image_url': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=200&fit=crop',
-      'category': 'Desserts',
-      'is_vegetarian': true,
-      'is_popular': false
-    }
-  ];
+  final ApiService _apiService = ApiService();
   
   List<Map<String, dynamic>> _menuItems = [];
   bool _isLoadingMenu = true;
@@ -93,11 +41,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     });
 
     try {
-      // Simulate loading delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Fetch menu items from API instead of using dummy data
+      final menu = await _apiService.getRestaurantMenu(widget.restaurant['id']);
       
       setState(() {
-        _menuItems = _dummyMenuItems;
+        _menuItems = menu.map((item) => item.toJson()).toList();
         _isLoadingMenu = false;
       });
     } catch (e) {
