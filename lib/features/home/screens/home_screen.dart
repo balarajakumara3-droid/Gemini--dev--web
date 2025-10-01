@@ -9,6 +9,10 @@ import '../../../core/app_config.dart';
 import '../providers/restaurant_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../restaurant/screens/restaurant_detail_screen.dart';
+import '../widgets/restaurant_card.dart';
+import '../widgets/category_slider.dart';
+import '../widgets/promotion_banner.dart';
+import '../widgets/search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,113 +99,84 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 120,
-      floating: false,
+      automaticallyImplyLeading: false,
+      toolbarHeight: 72,
       pinned: true,
       backgroundColor: Colors.white,
       elevation: 0,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey, width: 0.2),
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      titleSpacing: 16,
+      title: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Consumer<AuthProvider>(
-                    builder: (context, authProvider, child) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      _isLocationPermissionGranted 
-                                          ? Icons.location_on 
-                                          : Icons.location_off,
-                                      color: AppTheme.primaryColor,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        _isLocationPermissionGranted 
-                                            ? 'Home'
-                                            : 'Add Address',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppTheme.textPrimary,
-                                        ),
-                                      ),
-                                    ),
-                                    const Icon(
-                                      Icons.keyboard_arrow_down,
-                                      color: AppTheme.textSecondary,
-                                      size: 18,
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  _isLocationPermissionGranted 
-                                      ? 'Mumbai, Maharashtra 400001, India'
-                                      : 'Please add your delivery address',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AppTheme.textSecondary,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.favorite_border,
-                                  size: 20,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.person_outline,
-                                  size: 20,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                  Icon(
+                    _isLocationPermissionGranted 
+                        ? Icons.location_on 
+                        : Icons.location_off,
+                    color: AppTheme.primaryColor,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _isLocationPermissionGranted ? 'Home' : 'Add Address',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 2),
+              Text(
+                _isLocationPermissionGranted 
+                    ? 'Mumbai, Maharashtra 400001, India'
+                    : 'Please add your delivery address',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          );
+        },
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Row(
+            children: [
+              _HeaderIconButton(
+                icon: Icons.favorite_border,
+                onTap: () {
+                  // TODO: Navigate to favorites screen when available
+                },
+              ),
+              const SizedBox(width: 8),
+              _HeaderIconButton(
+                icon: Icons.person_outline,
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+              ),
+            ],
           ),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(8),
+        child: Container(
+          height: 0.2,
+          color: Colors.grey,
         ),
       ),
     );
@@ -245,41 +220,131 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCategoriesSection() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'What\'s on your mind?',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 100,
-              child: Center(
-                child: Text(
-                  'Categories will be loaded from server',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
+    return Consumer<RestaurantProvider>(
+      builder: (context, restaurantProvider, child) {
+        final categories = _orderedCategories(restaurantProvider.categories);
+        
+        return SliverToBoxAdapter(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'What\'s on your mind?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                if (categories.isNotEmpty)
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final category = categories[index];
+                        return Container(
+                          width: 80,
+                          margin: const EdgeInsets.only(right: 12),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Icon(
+                                  _getCategoryIcon(category),
+                                  color: AppTheme.primaryColor,
+                                  size: 30,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                category,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.textPrimary,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Container(
+                    height: 100,
+                    child: const Center(
+                      child: Text(
+                        'Loading categories...',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  List<String> _orderedCategories(List<String> categories) {
+    if (categories.isEmpty) return categories;
+    final List<String> others = List.from(categories.where((c) => c.toLowerCase() != 'all'));
+    others.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['All', ...others];
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'all':
+        return Icons.restaurant;
+      case 'pizza':
+        return Icons.local_pizza;
+      case 'burger':
+        return Icons.lunch_dining;
+      case 'chinese':
+        return Icons.ramen_dining;
+      case 'indian':
+        return Icons.emoji_food_beverage;
+      case 'italian':
+        return Icons.dinner_dining;
+      case 'mexican':
+        return Icons.restaurant;
+      case 'thai':
+        return Icons.ramen_dining;
+      case 'japanese':
+        return Icons.restaurant;
+      case 'fast food':
+        return Icons.fastfood;
+      case 'dessert':
+        return Icons.cake;
+      case 'beverage':
+        return Icons.local_drink;
+      default:
+        return Icons.restaurant;
+    }
   }
 
   Widget _buildSectionHeader(String title) {
@@ -610,5 +675,31 @@ class _HomeScreenState extends State<HomeScreen> {
     if (hour < 12) return 'Morning';
     if (hour < 17) return 'Afternoon';
     return 'Evening';
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderIconButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: AppTheme.textSecondary,
+        ),
+      ),
+    );
   }
 }

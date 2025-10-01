@@ -138,8 +138,6 @@ class ImageService {
     try {
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
-      
-      // Find the bucket name in the path and extract everything after it
       final bucketIndex = pathSegments.indexOf('food-images');
       if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
         return pathSegments.sublist(bucketIndex + 1).join('/');

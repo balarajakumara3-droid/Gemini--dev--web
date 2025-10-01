@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/models/user.dart' show User, Address;
-import '../../../core/services/api_service.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/services/database_service.dart';
 
 enum AuthState {
@@ -18,7 +18,7 @@ enum AuthState {
 }
 
 class AuthProvider extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final SupabaseService _supabaseService = SupabaseService();
   final DatabaseService _databaseService = DatabaseService();
   StreamSubscription<supa.AuthState>? _authSubscription;
 
@@ -40,23 +40,14 @@ class AuthProvider extends ChangeNotifier {
       // Avoid notifying listeners during widget build; defer state change
       _state = AuthState.loading;
       
-      // Load stored authentication token
-      await _apiService.loadAuthToken();
+      // Check if user is already authenticated with Supabase
+      final client = supa.Supabase.instance.client;
+      final session = client.auth.currentSession;
       
-      // Try to get user profile if token exists
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token');
-
       AuthState nextState;
-      if (token != null && token.isNotEmpty) {
-        try {
-          _user = await _apiService.getUserProfile();
-          nextState = AuthState.authenticated;
-        } catch (e) {
-          // Token might be expired
-          await _apiService.clearAuthToken();
-          nextState = AuthState.unauthenticated;
-        }
+      if (session?.user != null) {
+        _user = _userFromSupabase(session!.user);
+        nextState = AuthState.authenticated;
       } else {
         nextState = AuthState.unauthenticated;
       }
@@ -103,6 +94,8 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
+      debugPrint('auth: signed in userId: ${client.auth.currentSession?.user?.id}');
+
       final authUser = response.user ?? client.auth.currentUser;
       if (authUser == null) {
         _setError('Invalid email or password');
@@ -147,6 +140,8 @@ class AuthProvider extends ChangeNotifier {
         },
       );
 
+      debugPrint('auth: signed up userId: ${client.auth.currentUser?.id}');
+
       final authUser = response.user ?? client.auth.currentUser;
       if (authUser == null) {
         _setError('Signup failed');
@@ -155,11 +150,11 @@ class AuthProvider extends ChangeNotifier {
 
       // Optionally upsert to profiles table
       try {
-        await client.from('profiles').upsert({
+        await client.from('users').upsert({
           'id': authUser.id,
-          'name': name,
-          'email': email,
+          'full_name': name,
           'phone': phoneNumber,
+          'avatar_url': null,
         });
       } catch (_) {
         // Non-fatal if profiles table or policy not set yet
@@ -264,7 +259,16 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      _user = await _apiService.updateUserProfile(updatedUser);
+      // Update profile in Supabase
+      final client = supa.Supabase.instance.client;
+      await client.from('users').upsert({
+        'id': updatedUser.id,
+        'full_name': updatedUser.name,
+        'phone': updatedUser.phoneNumber,
+        'avatar_url': updatedUser.profileImage,
+      });
+
+      _user = updatedUser;
       await _saveUserData();
       
       notifyListeners();
@@ -494,9 +498,6 @@ class AuthProvider extends ChangeNotifier {
   }
 
   String _getErrorMessage(dynamic error) {
-    if (error is ApiException) {
-      return error.message;
-    }
     if (error is supa.AuthException) {
       return error.message;
     }
@@ -534,8 +535,14 @@ class AuthProvider extends ChangeNotifier {
     if (_user == null) return [];
     
     try {
-      // Try to get from API first
-      final addresses = await _apiService.getUserAddresses();
+      // Get addresses from Supabase
+      final client = supa.Supabase.instance.client;
+      final response = await client
+          .from('addresses')
+          .select()
+          .eq('user_id', _user!.id);
+      
+      final addresses = response.map((data) => Address.fromJson(data)).toList();
       
       // Cache locally
       for (final address in addresses) {
@@ -553,7 +560,25 @@ class AuthProvider extends ChangeNotifier {
     if (_user == null) return false;
     
     try {
-      final newAddress = await _apiService.addUserAddress(address);
+      // Add address to Supabase
+      final client = supa.Supabase.instance.client;
+      final response = await client
+          .from('addresses')
+          .insert({
+            'user_id': _user!.id,
+            'title': address.title,
+            'address_line_1': address.addressLine1,
+            'address_line_2': address.addressLine2,
+            'city': address.city,
+            'state': address.state,
+            'pincode': address.pincode,
+            'country': address.country,
+            'is_default': address.isDefault,
+          })
+          .select()
+          .single();
+      
+      final newAddress = Address.fromJson(response);
       await _databaseService.saveUserAddress(newAddress, _user!.id);
       return true;
     } catch (e) {
@@ -566,7 +591,14 @@ class AuthProvider extends ChangeNotifier {
     if (_user == null) return false;
     
     try {
-      await _apiService.deleteUserAddress(addressId);
+      // Delete address from Supabase
+      final client = supa.Supabase.instance.client;
+      await client
+          .from('addresses')
+          .delete()
+          .eq('id', addressId)
+          .eq('user_id', _user!.id);
+      
       await _databaseService.deleteUserAddress(addressId);
       return true;
     } catch (e) {

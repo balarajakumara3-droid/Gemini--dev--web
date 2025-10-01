@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/restaurant.dart';
 import '../../../core/models/user.dart';
-import '../../../core/services/api_service.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../cart/providers/cart_provider.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
@@ -21,7 +21,7 @@ class RestaurantDetailScreen extends StatefulWidget {
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ApiService _apiService = ApiService();
+  final SupabaseService _supabaseService = SupabaseService();
   
   List<Map<String, dynamic>> _menuItems = [];
   bool _isLoadingMenu = true;
@@ -41,11 +41,47 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     });
 
     try {
-      // Fetch menu items from API instead of using dummy data
-      final menu = await _apiService.getRestaurantMenu(widget.restaurant['id']);
+      // Fetch menu items from Supabase
+      final client = _supabaseService.client;
+      final response = await client
+          .from('menu_items')
+          .select()
+          .eq('restaurant_id', widget.restaurant['id']);
+      
+      // Convert menu items to Food objects and group by category
+      final menuItems = response.map((item) {
+        return {
+          'id': item['id']?.toString() ?? '',
+          'name': item['name'] ?? '',
+          'description': item['description'] ?? '',
+          'price': (item['price'] as num?)?.toDouble() ?? 0.0,
+          'image': item['image_url'] ?? '',
+          'category': item['category'] ?? 'Menu',
+        };
+      }).toList();
+      
+      // Group items by category
+      final Map<String, List<Map<String, dynamic>>> groupedItems = {};
+      for (final item in menuItems) {
+        final category = item['category'] as String;
+        if (!groupedItems.containsKey(category)) {
+          groupedItems[category] = [];
+        }
+        groupedItems[category]!.add(item);
+      }
+      
+      // Convert to FoodCategory format
+      final categories = groupedItems.entries.map((entry) {
+        return {
+          'id': 'category_${entry.key}',
+          'name': entry.key,
+          'description': '',
+          'items': entry.value,
+        };
+      }).toList();
       
       setState(() {
-        _menuItems = menu.map((item) => item.toJson()).toList();
+        _menuItems = categories;
         _isLoadingMenu = false;
       });
     } catch (e) {
@@ -181,11 +217,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                 const Icon(Icons.delivery_dining, color: AppTheme.textSecondary, size: 20),
                 const SizedBox(width: 4),
                 Text(
-                  widget.restaurant['deliveryFee'] == 0 
+                  (widget.restaurant['deliveryFee'] == null || widget.restaurant['deliveryFee'] == 0) 
                       ? 'Free' 
                       : '₹${widget.restaurant['deliveryFee']}',
                   style: TextStyle(
-                    color: widget.restaurant['deliveryFee'] == 0 
+                    color: (widget.restaurant['deliveryFee'] == null || widget.restaurant['deliveryFee'] == 0) 
                         ? AppTheme.successColor 
                         : AppTheme.textSecondary,
                     fontWeight: FontWeight.w600,

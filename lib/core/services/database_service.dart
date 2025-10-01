@@ -166,38 +166,59 @@ class DatabaseService {
       // Map Supabase row shape (with integer id, minimal columns)
       // into the rich Restaurant model shape our app expects.
       final List<Map<String, dynamic>> mapped = data.map<Map<String, dynamic>>((row) {
+        final dynamic addressJson = row['address'];
         return {
           'id': (row['id'] ?? '').toString(),
           'name': row['name'] ?? '',
           'description': row['description'] ?? '',
-          'image_url': (row['image'] as String?)?.trim().isNotEmpty == true
-              ? row['image'] as String
-              : 'https://picsum.photos/seed/${row['id']}/1200/600',
-          'cuisines': <String>[],
+          // Your schema uses logo_url
+          'image_url': (row['logo_url'] as String?)?.trim().isNotEmpty == true
+              ? row['logo_url'] as String
+              : '',
+          // Surface cuisine type for UI chips
+          'cuisines': (row['cuisine_type'] is String && (row['cuisine_type'] as String).isNotEmpty)
+              ? <String>[row['cuisine_type'] as String]
+              : <String>[],
+          'cuisine_type': row['cuisine_type'] ?? '',
           'rating': (row['rating'] is num) ? (row['rating'] as num).toDouble() : 0.0,
           'review_count': 0,
-          'delivery_time': '30-40 mins',
+          // Provide sane defaults the UI expects
+          'delivery_time': '30-40',
           'delivery_fee': 0.0,
           'minimum_order': 0.0,
-          'is_open': true,
+          'is_open': row['is_active'] == null ? true : (row['is_active'] as bool),
           'is_vegetarian': false,
           'is_pure_veg': false,
-          'address': {
-            'id': 'addr_${row['id'] ?? '0'}',
-            'user_id': '',
-            'name': 'Location',
-            'address_line1': row['location'] ?? '',
-            'address_line2': '',
-            'city': row['location'] ?? '',
-            'state': '',
-            'country': '',
-            'postal_code': '',
-            'latitude': null,
-            'longitude': null,
-            'is_default': false,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          },
+          // Map address jsonb from Supabase into the app's address shape
+          'address': addressJson is Map<String, dynamic>
+              ? {
+                  'id': 'addr_${row['id'] ?? '0'}',
+                  'user_id': '',
+                  'name': addressJson['name'] ?? 'Address',
+                  'address_line1': addressJson['line1'] ?? addressJson['address_line1'] ?? '',
+                  'address_line2': addressJson['line2'] ?? addressJson['address_line2'] ?? '',
+                  'city': addressJson['city'] ?? '',
+                  'state': addressJson['state'] ?? '',
+                  'pincode': addressJson['postal_code'] ?? addressJson['pincode'] ?? '',
+                  'country': addressJson['country'] ?? '',
+                  'latitude': addressJson['latitude'],
+                  'longitude': addressJson['longitude'],
+                  'is_default': false,
+                }
+              : {
+                  'id': 'addr_${row['id'] ?? '0'}',
+                  'user_id': '',
+                  'name': 'Address',
+                  'address_line1': '',
+                  'address_line2': '',
+                  'city': '',
+                  'state': '',
+                  'pincode': '',
+                  'country': '',
+                  'latitude': null,
+                  'longitude': null,
+                  'is_default': false,
+                },
           'offers': <String>[],
           'menu': <Map<String, dynamic>>[],
           'distance': 0.0,
@@ -262,7 +283,7 @@ class DatabaseService {
         'subtitle': row['location'] ?? '',
         'image': (row['image'] as String?)?.trim().isNotEmpty == true
             ? row['image'] as String
-            : 'https://picsum.photos/seed/${row['id']}/400/300',
+            : '',
         'rating': (row['rating'] is num) ? (row['rating'] as num).toDouble() : 0.0,
       }).toList();
     } catch (e) {
@@ -287,7 +308,7 @@ class DatabaseService {
             : (row['description'] ?? ''),
         'image': (row['image'] as String?)?.trim().isNotEmpty == true
             ? row['image'] as String
-            : 'https://picsum.photos/seed/menu_${row['id']}/400/300',
+            : '',
         'price': (row['price'] is num) ? (row['price'] as num).toDouble() : 0.0,
       }).toList();
     } catch (e) {
@@ -313,6 +334,16 @@ class DatabaseService {
         
         return restaurants;
       }
+
+      // If the canonical tables are empty, try fallback from food_items
+      final fallbackRows = await _getRestaurantsFromFoodItems();
+      if (fallbackRows.isNotEmpty) {
+        final restaurants = fallbackRows.map((json) => Restaurant.fromJson(json)).toList();
+        for (final restaurant in restaurants) {
+          await cacheRestaurant(restaurant);
+        }
+        return restaurants;
+      }
     } catch (e) {
       print('Supabase fetch failed, trying local cache: $e');
     }
@@ -321,6 +352,70 @@ class DatabaseService {
     // This would require implementing a method to get all cached restaurants
     // For now, return empty list
     return [];
+  }
+
+  /// Derive restaurants from `food_items` (dev/demo fallback)
+  Future<List<Map<String, dynamic>>> _getRestaurantsFromFoodItems() async {
+    try {
+      final rows = await supabase
+          .from('food_items')
+          .select('restaurant_name, restaurant_address, restaurant_rating, image_url')
+          .limit(1000);
+
+      if (rows.isEmpty) return [];
+
+      final Map<String, Map<String, dynamic>> nameToRestaurant = {};
+      for (final row in rows) {
+        final String name = (row['restaurant_name'] ?? '').toString();
+        if (name.isEmpty) continue;
+        nameToRestaurant.putIfAbsent(name, () {
+          final String imageUrl = (row['image_url'] as String?)?.trim().isNotEmpty == true
+              ? row['image_url'] as String
+              : '';
+          final String addressText = (row['restaurant_address'] ?? '').toString();
+          return {
+            'id': name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-') + '-fi',
+            'name': name,
+            'description': '',
+            'image_url': imageUrl,
+            'cuisines': <String>[],
+            'cuisine_type': '',
+            'rating': (row['restaurant_rating'] is num)
+                ? (row['restaurant_rating'] as num).toDouble()
+                : 0.0,
+            'review_count': 0,
+            'delivery_time': '30-40',
+            'delivery_fee': 0.0,
+            'minimum_order': 0.0,
+            'is_open': true,
+            'is_vegetarian': false,
+            'is_pure_veg': false,
+            'address': {
+              'id': 'addr_${name}',
+              'user_id': '',
+              'name': 'Address',
+              'address_line1': addressText,
+              'address_line2': '',
+              'city': addressText,
+              'state': '',
+              'pincode': '',
+              'country': '',
+              'latitude': null,
+              'longitude': null,
+              'is_default': false,
+            },
+            'offers': <String>[],
+            'menu': <Map<String, dynamic>>[],
+            'distance': 0.0,
+          };
+        });
+      }
+
+      return nameToRestaurant.values.toList();
+    } catch (e) {
+      print('Fallback from food_items failed: $e');
+      return [];
+    }
   }
 
   // Restaurant cache methods

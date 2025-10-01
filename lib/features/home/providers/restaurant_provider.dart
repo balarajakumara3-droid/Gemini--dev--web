@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/models/restaurant.dart';
 import '../../../core/models/offer.dart';
-import '../../../core/services/api_service.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/services/database_service.dart';
 
 class RestaurantProvider extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final SupabaseService _supabaseService = SupabaseService();
   final DatabaseService _databaseService = DatabaseService();
 
   List<Restaurant> _restaurants = [];
@@ -68,20 +68,14 @@ class RestaurantProvider extends ChangeNotifier {
         return;
       }
 
-      // Fallback to existing API service
-      final restaurants = await _apiService.getRestaurants(
-        latitude: _userLatitude,
-        longitude: _userLongitude,
-        category: category,
-        sortBy: sortBy ?? _sortBy,
-      );
-
-      _restaurants = restaurants;
+      // Fallback to Supabase service
+      final restaurantData = await _supabaseService.getRestaurants();
+      _restaurants = restaurantData.map((data) => Restaurant.fromJson(data)).toList();
       _extractCategories();
       _applyFilters();
 
       // Cache restaurants locally
-      for (final restaurant in restaurants) {
+      for (final restaurant in _restaurants) {
         await _databaseService.cacheRestaurant(restaurant);
       }
 
@@ -132,10 +126,9 @@ class RestaurantProvider extends ChangeNotifier {
       _clearError();
 
       final restaurantData = await _databaseService.searchRestaurants(query);
-      
       // Convert Map data to Restaurant objects
       _filteredRestaurants = restaurantData.map((data) => Restaurant.fromJson(data)).toList();
-      
+      notifyListeners();
     } catch (e) {
       _setError(_getErrorMessage(e));
     } finally {
@@ -150,12 +143,14 @@ class RestaurantProvider extends ChangeNotifier {
     String? sortBy,
   }) async {
     try {
-      // Route all loads through Supabase-first flow to avoid placeholder API
+      // Route all loads through Supabase-first flow
       await fetchRestaurantsWithSupabase(
         refresh: refresh,
         category: category,
         sortBy: sortBy,
       );
+      
+      notifyListeners();
     } finally {
       // fetchRestaurantsWithSupabase handles loading/error
     }
@@ -174,8 +169,11 @@ class RestaurantProvider extends ChangeNotifier {
         notifyListeners();
       }
 
-      // Fetch fresh data from API
-      _selectedRestaurant = await _apiService.getRestaurantDetails(restaurantId);
+      // Fetch fresh data from Supabase
+      final restaurantData = await _supabaseService.getRestaurantById(restaurantId);
+      if (restaurantData != null) {
+        _selectedRestaurant = Restaurant.fromJson(restaurantData);
+      }
       
       // Cache the updated data
       await _databaseService.cacheRestaurant(_selectedRestaurant!);
@@ -195,10 +193,9 @@ class RestaurantProvider extends ChangeNotifier {
       // Load menu from Supabase `menu_items` and map to our model
       final rows = await _databaseService.getRestaurantMenu(restaurantId);
       final items = rows.map((row) {
-        // Provide network placeholder if image is missing
-        final String imageUrl = (row['image'] as String?)?.trim().isNotEmpty == true
-            ? row['image'] as String
-            : 'https://picsum.photos/seed/${row['id']}/800/600';
+        final String imageUrl = (row['image_url'] as String?)?.trim().isNotEmpty == true
+            ? row['image_url'] as String
+            : '';
         return Food(
           id: (row['id'] ?? '').toString(),
           name: row['name'] ?? '',
@@ -208,6 +205,30 @@ class RestaurantProvider extends ChangeNotifier {
           category: 'Menu',
         );
       }).toList();
+
+      // If nothing from canonical table, try deriving from food_items by restaurant name
+      if (items.isEmpty && _selectedRestaurant != null) {
+        final String name = _selectedRestaurant!.name;
+        try {
+          final fallback = await _databaseService.supabase
+              .from('food_items')
+              .select('item_name, item_description, price, image_url')
+              .eq('restaurant_name', name);
+          final fiItems = (fallback as List<dynamic>).map((row) {
+            return Food(
+              id: row['item_name'] ?? '',
+              name: row['item_name'] ?? '',
+              description: row['item_description'] ?? '',
+              imageUrl: (row['image_url'] as String?)?.trim().isNotEmpty == true
+                  ? row['image_url'] as String
+                  : '',
+              price: (row['price'] is num) ? (row['price'] as num).toDouble() : 0.0,
+              category: 'Menu',
+            );
+          }).toList();
+          items.addAll(fiItems);
+        } catch (_) {}
+      }
 
       _menu = [
         FoodCategory(
@@ -238,18 +259,8 @@ class RestaurantProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      final restaurants = await _apiService.searchRestaurants(
-        query: query,
-        latitude: _userLatitude,
-        longitude: _userLongitude,
-        category: category,
-        cuisine: cuisine,
-        minRating: minRating,
-        maxDeliveryTime: maxDeliveryTime,
-        isVegetarian: isVegetarian,
-      );
-
-      _filteredRestaurants = restaurants;
+      final restaurantData = await _supabaseService.searchRestaurants(query);
+      _filteredRestaurants = restaurantData.map((data) => Restaurant.fromJson(data)).toList();
       
     } catch (e) {
       _setError(_getErrorMessage(e));
@@ -450,9 +461,6 @@ class RestaurantProvider extends ChangeNotifier {
   }
 
   String _getErrorMessage(dynamic error) {
-    if (error is ApiException) {
-      return error.message;
-    }
     return error.toString();
   }
 }

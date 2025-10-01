@@ -145,7 +145,7 @@ class Order {
       total: (json['total'] ?? 0.0).toDouble(),
       couponCode: json['coupon_code'],
       specialInstructions: json['special_instructions'],
-      orderTime: DateTime.parse(json['order_time'] ?? DateTime.now().toIso8601String()),
+      orderTime: json['order_time'] != null ? DateTime.parse(json['order_time']) : DateTime.now(),
       estimatedDeliveryTime: json['estimated_delivery_time'] != null
           ? DateTime.parse(json['estimated_delivery_time'])
           : null,

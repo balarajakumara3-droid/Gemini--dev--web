@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/cart.dart';
 import '../../../core/models/user.dart';
-import '../../../core/services/api_service.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/services/database_service.dart';
 
 class OrderProvider extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final SupabaseService _supabaseService = SupabaseService();
   final DatabaseService _databaseService = DatabaseService();
 
   List<Order> _orders = [];
@@ -46,8 +46,15 @@ class OrderProvider extends ChangeNotifier {
         specialInstructions: specialInstructions,
       );
 
-      // Send to API
-      final createdOrder = await _apiService.createOrder(order);
+      // Create order in Supabase
+      final client = _supabaseService.client;
+      final response = await client
+          .from('orders')
+          .insert(order.toJson())
+          .select()
+          .single();
+      
+      final createdOrder = Order.fromJson(response);
       
       // Cache locally
       await _databaseService.cacheOrder(createdOrder);
@@ -79,7 +86,7 @@ class OrderProvider extends ChangeNotifier {
       final data = await _databaseService.supabase
           .from('orders')
           .select()
-          .order('order_time', ascending: false);
+          .order('created_at', ascending: false);
 
       final fetched = data.map<Order>((json) => Order.fromJson(json)).toList();
       _orders = fetched;
@@ -350,9 +357,6 @@ class OrderProvider extends ChangeNotifier {
   }
 
   String _getErrorMessage(dynamic error) {
-    if (error is ApiException) {
-      return error.message;
-    }
     return error.toString();
   }
 
