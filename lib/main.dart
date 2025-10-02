@@ -8,6 +8,7 @@ import 'core/routes/app_routes.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/home/providers/restaurant_provider.dart';
 import 'features/cart/providers/cart_provider.dart';
+import 'features/cart/providers/simple_cart_provider.dart';
 import 'features/favorites/providers/favorites_provider.dart';
 import 'features/orders/providers/order_provider.dart';
 import 'features/splash/screens/splash_screen.dart';
@@ -40,6 +41,7 @@ class FoodDeliveryApp extends StatelessWidget {
           return cartProvider;
         }),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => SimpleCartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: MaterialApp(

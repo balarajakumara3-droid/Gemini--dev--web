@@ -43,6 +43,12 @@ dependencies:
   
   # Date & Time
   intl: ^0.19.0
+  
+  # Excel file handling
+  excel: ^4.0.3
+  
+  # CSV file handling
+  csv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -54,5 +60,12 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/food/
+    - assets/images/food/categories/
+    - assets/images/food/restaurants/
+    - assets/images/food/menu-items/
+    - assets/images/food/offers/
     - assets/icons/
+    - assets/data/
+    - assets/data/food_data.json
           

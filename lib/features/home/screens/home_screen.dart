@@ -13,6 +13,9 @@ import '../widgets/restaurant_card.dart';
 import '../widgets/category_slider.dart';
 import '../widgets/promotion_banner.dart';
 import '../widgets/search_bar.dart';
+import '../widgets/food_grid.dart';
+import '../../search/screens/search_results_screen.dart';
+import '../../cart/providers/simple_cart_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -88,10 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: [
             _buildSliverAppBar(),
             _buildSearchSection(),
-            _buildOffersSection(),
-            _buildCategoriesSection(),
-            _buildSectionHeader('Restaurants'),
-            _buildRestaurantsSection(),
+            // Show food items from JSON data
+            const FoodGrid(),
           ],
         ),
       ),
@@ -163,6 +164,46 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const SizedBox(width: 8),
+              Consumer<SimpleCartProvider>(
+                builder: (context, cartProvider, child) {
+                  return Stack(
+                    children: [
+                      _HeaderIconButton(
+                        icon: Icons.shopping_cart_outlined,
+                        onTap: () {
+                          Navigator.pushNamed(context, '/cart');
+                        },
+                      ),
+                      if (cartProvider.itemCount > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              minHeight: 20,
+                            ),
+                            child: Text(
+                              '${cartProvider.itemCount}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(width: 8),
               _HeaderIconButton(
                 icon: Icons.person_outline,
                 onTap: () {
@@ -190,7 +231,12 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/search');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SearchResultsScreen(initialQuery: ''),
+              ),
+            );
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

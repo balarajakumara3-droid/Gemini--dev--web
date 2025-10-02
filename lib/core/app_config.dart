@@ -145,6 +145,43 @@ class AppAssets {
   static const String emptyCart = 'assets/images/empty_cart.png';
   static const String noOrders = 'assets/images/no_orders.png';
   
+  // Food Categories
+  static const String categoryPizza = 'assets/images/food/categories/pizza.png';
+  static const String categoryBurger = 'assets/images/food/categories/burger.png';
+  static const String categorySushi = 'assets/images/food/categories/sushi.png';
+  static const String categoryIndian = 'assets/images/food/categories/indian.png';
+  static const String categoryChinese = 'assets/images/food/categories/chinese.png';
+  static const String categoryItalian = 'assets/images/food/categories/italian.png';
+  static const String categoryDessert = 'assets/images/food/categories/dessert.png';
+  static const String categoryBeverage = 'assets/images/food/categories/beverage.png';
+  static const String categoryHealthy = 'assets/images/food/categories/healthy.png';
+  static const String categoryFastFood = 'assets/images/food/categories/fast_food.png';
+  
+  // Sample Menu Items (you can add more as needed)
+  static const String foodMargheritaPizza = 'assets/images/food/menu-items/margherita_pizza.png';
+  static const String foodCheeseburger = 'assets/images/food/menu-items/cheeseburger.png';
+  static const String foodSalmonSushi = 'assets/images/food/menu-items/salmon_sushi.png';
+  static const String foodButterChicken = 'assets/images/food/menu-items/butter_chicken.png';
+  static const String foodFriedRice = 'assets/images/food/menu-items/fried_rice.png';
+  static const String foodPasta = 'assets/images/food/menu-items/pasta.png';
+  static const String foodChocolateCake = 'assets/images/food/menu-items/chocolate_cake.png';
+  static const String foodCoffee = 'assets/images/food/menu-items/coffee.png';
+  static const String foodSalad = 'assets/images/food/menu-items/salad.png';
+  static const String foodFrenchFries = 'assets/images/food/menu-items/french_fries.png';
+  
+  // Restaurant Images
+  static const String restaurantPizzaHut = 'assets/images/food/restaurants/pizza_hut.png';
+  static const String restaurantMcDonalds = 'assets/images/food/restaurants/mcdonalds.png';
+  static const String restaurantKFC = 'assets/images/food/restaurants/kfc.png';
+  static const String restaurantSubway = 'assets/images/food/restaurants/subway.png';
+  static const String restaurantDominos = 'assets/images/food/restaurants/dominos.png';
+  
+  // Offer Banners
+  static const String offer50Off = 'assets/images/food/offers/50_percent_off.png';
+  static const String offerFreeDelivery = 'assets/images/food/offers/free_delivery.png';
+  static const String offerBuyOneGetOne = 'assets/images/food/offers/buy_one_get_one.png';
+  static const String offerNewUser = 'assets/images/food/offers/new_user_discount.png';
+  
   // Icons
   static const String home = 'assets/icons/home.png';
   static const String search = 'assets/icons/search.png';
@@ -155,4 +192,39 @@ class AppAssets {
   static const String star = 'assets/icons/star.png';
   static const String heart = 'assets/icons/heart.png';
   static const String filter = 'assets/icons/filter.png';
+  
+  // Helper method to get category image by name
+  static String getCategoryImage(String categoryName) {
+    switch (categoryName.toLowerCase()) {
+      case 'pizza':
+        return categoryPizza;
+      case 'burger':
+      case 'burgers':
+        return categoryBurger;
+      case 'sushi':
+      case 'japanese':
+        return categorySushi;
+      case 'indian':
+        return categoryIndian;
+      case 'chinese':
+        return categoryChinese;
+      case 'italian':
+        return categoryItalian;
+      case 'dessert':
+      case 'desserts':
+        return categoryDessert;
+      case 'beverage':
+      case 'beverages':
+      case 'drinks':
+        return categoryBeverage;
+      case 'healthy':
+      case 'salad':
+        return categoryHealthy;
+      case 'fast food':
+      case 'fastfood':
+        return categoryFastFood;
+      default:
+        return placeholder;
+    }
+  }
 }
