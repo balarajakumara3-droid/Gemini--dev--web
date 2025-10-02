@@ -41,47 +41,59 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     });
 
     try {
-      // Fetch menu items from Supabase
       final client = _supabaseService.client;
-      final response = await client
-          .from('menu_items')
-          .select()
-          .eq('restaurant_id', widget.restaurant['id']);
+      List<dynamic> response = [];
       
-      // Convert menu items to Food objects and group by category
+      // First try to get menu items from menu_items table using restaurant_id
+      try {
+        response = await client
+            .from('menu_items')
+            .select()
+            .eq('restaurant_id', widget.restaurant['id']);
+        
+        print('Menu items query result: ${response.length} items found');
+      } catch (e) {
+        print('Menu items table query failed: $e');
+      }
+      
+      // If no menu items found, try food_items table using restaurant name
+      if (response.isEmpty) {
+        try {
+          final restaurantName = widget.restaurant['name'];
+          if (restaurantName != null) {
+            response = await client
+                .from('food_items')
+                .select('id, item_name, item_description, price, image_url')
+                .eq('restaurant_name', restaurantName);
+            
+            print('Food items query result: ${response.length} items found for $restaurantName');
+          }
+        } catch (e) {
+          print('Food items table query failed: $e');
+        }
+      }
+      
+      // Convert response to standardized format
       final menuItems = response.map((item) {
+        // Handle both menu_items and food_items table structures
+        final isFromFoodItems = item.containsKey('item_name');
+        
         return {
-          'id': item['id']?.toString() ?? '',
-          'name': item['name'] ?? '',
-          'description': item['description'] ?? '',
+          'id': item['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          'name': isFromFoodItems ? (item['item_name'] ?? '') : (item['name'] ?? ''),
+          'description': isFromFoodItems ? (item['item_description'] ?? '') : (item['description'] ?? ''),
           'price': (item['price'] as num?)?.toDouble() ?? 0.0,
           'image': item['image_url'] ?? '',
           'category': item['category'] ?? 'Menu',
+          'isVeg': item['is_vegetarian'] ?? false,
+          'rating': 4.0,
+          'preparationTime': '15-20 mins',
         };
       }).toList();
       
-      // Group items by category
-      final Map<String, List<Map<String, dynamic>>> groupedItems = {};
-      for (final item in menuItems) {
-        final category = item['category'] as String;
-        if (!groupedItems.containsKey(category)) {
-          groupedItems[category] = [];
-        }
-        groupedItems[category]!.add(item);
-      }
-      
-      // Convert to FoodCategory format
-      final categories = groupedItems.entries.map((entry) {
-        return {
-          'id': 'category_${entry.key}',
-          'name': entry.key,
-          'description': '',
-          'items': entry.value,
-        };
-      }).toList();
-      
+      // Store menu items directly (not grouped by category)
       setState(() {
-        _menuItems = categories;
+        _menuItems = menuItems;
         _isLoadingMenu = false;
       });
     } catch (e) {
@@ -349,7 +361,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
       );
     }
 
-    final categories = _menuItems.map((item) => item['category'] as String).toSet().toList();
+    final categories = _menuItems.map((item) => (item['category'] as String?) ?? 'Menu').toSet().toList();
     
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -391,19 +403,25 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                 borderRadius: BorderRadius.circular(8),
                 color: AppTheme.backgroundColor,
               ),
-              child: ClipRRect(
+                child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  item['image'] ?? '',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.fastfood,
-                    color: AppTheme.primaryColor,
-                    size: 40,
-                  ),
-                ),
+                child: (item['image'] != null && item['image'].toString().isNotEmpty)
+                    ? Image.network(
+                        item['image'],
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.fastfood,
+                          color: AppTheme.primaryColor,
+                          size: 40,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.fastfood,
+                        color: AppTheme.primaryColor,
+                        size: 40,
+                      ),
               ),
             ),
             const SizedBox(width: 12),

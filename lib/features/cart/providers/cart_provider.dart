@@ -26,6 +26,12 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Clear cart completely
+  void clearCart() {
+    _cart = Cart.empty(_cart.userId);
+    notifyListeners();
+  }
+
   // Add item to cart
   void addItem(Food food, Restaurant restaurant, {
     List<AddonOption> selectedAddons = const [],
@@ -134,11 +140,6 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-  // Clear entire cart
-  void clearCart() {
-    _cart = Cart.empty(_cart.userId);
-    notifyListeners();
-  }
 
   // Apply coupon/discount
   void applyCoupon(String couponCode, double discountAmount) {

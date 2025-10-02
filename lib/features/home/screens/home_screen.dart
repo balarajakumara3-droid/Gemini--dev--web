@@ -88,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: [
             _buildSliverAppBar(),
             _buildSearchSection(),
+            _buildOffersSection(),
             _buildCategoriesSection(),
             _buildSectionHeader('Restaurants'),
             _buildRestaurantsSection(),
@@ -676,6 +677,116 @@ class _HomeScreenState extends State<HomeScreen> {
     if (hour < 17) return 'Afternoon';
     return 'Evening';
   }
+
+  Widget _buildOffersSection() {
+    final offers = [
+      {
+        'title': '50% OFF',
+        'subtitle': 'Up to ₹100 on orders above ₹199',
+        'color': Colors.orange,
+        'icon': Icons.local_offer,
+      },
+      {
+        'title': 'FREE DELIVERY',
+        'subtitle': 'On orders above ₹299',
+        'color': Colors.green,
+        'icon': Icons.delivery_dining,
+      },
+      {
+        'title': '30% OFF',
+        'subtitle': 'On your first order',
+        'color': Colors.purple,
+        'icon': Icons.star,
+      },
+      {
+        'title': 'FLAT ₹75 OFF',
+        'subtitle': 'On orders above ₹499',
+        'color': Colors.red,
+        'icon': Icons.discount,
+      },
+      {
+        'title': 'BUY 1 GET 1',
+        'subtitle': 'On selected items',
+        'color': Colors.blue,
+        'icon': Icons.card_giftcard,
+      },
+      {
+        'title': 'CASHBACK',
+        'subtitle': 'Up to ₹200 cashback',
+        'color': Colors.teal,
+        'icon': Icons.account_balance_wallet,
+      },
+    ];
+
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 120,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: offers.length,
+          itemBuilder: (context, index) {
+            final offer = offers[index];
+            return Container(
+              width: 280,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    (offer['color'] as Color).withOpacity(0.8),
+                    (offer['color'] as Color).withOpacity(0.6),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      offer['icon'] as IconData,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            offer['title'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            offer['subtitle'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 }
 
 class _HeaderIconButton extends StatelessWidget {
@@ -702,4 +813,111 @@ class _HeaderIconButton extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildOffersSection() {
+    final offers = [
+      {
+        'title': '50% OFF',
+        'subtitle': 'Up to ₹100 on orders above ₹199',
+        'color': Colors.orange,
+        'icon': Icons.local_offer,
+      },
+      {
+        'title': 'FREE DELIVERY',
+        'subtitle': 'On orders above ₹299',
+        'color': Colors.green,
+        'icon': Icons.delivery_dining,
+      },
+      {
+        'title': '30% OFF',
+        'subtitle': 'On your first order',
+        'color': Colors.purple,
+        'icon': Icons.star,
+      },
+      {
+        'title': 'FLAT ₹75 OFF',
+        'subtitle': 'On orders above ₹499',
+        'color': Colors.red,
+        'icon': Icons.discount,
+      },
+      {
+        'title': 'BUY 1 GET 1',
+        'subtitle': 'On selected items',
+        'color': Colors.blue,
+        'icon': Icons.card_giftcard,
+      },
+      {
+        'title': 'CASHBACK',
+        'subtitle': 'Up to ₹200 cashback',
+        'color': Colors.teal,
+        'icon': Icons.account_balance_wallet,
+      },
+    ];
+
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 120,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: offers.length,
+          itemBuilder: (context, index) {
+            final offer = offers[index];
+            return Container(
+              width: 280,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    (offer['color'] as Color).withOpacity(0.8),
+                    (offer['color'] as Color),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      offer['icon'] as IconData,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            offer['title'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            offer['subtitle'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 }

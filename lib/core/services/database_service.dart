@@ -334,8 +334,12 @@ class DatabaseService {
         
         return restaurants;
       }
+    } catch (e) {
+      print('Restaurants table fetch failed, trying food_items fallback: $e');
+    }
 
-      // If the canonical tables are empty, try fallback from food_items
+    try {
+      // If the canonical tables are empty or fail, try fallback from food_items
       final fallbackRows = await _getRestaurantsFromFoodItems();
       if (fallbackRows.isNotEmpty) {
         final restaurants = fallbackRows.map((json) => Restaurant.fromJson(json)).toList();
@@ -345,10 +349,10 @@ class DatabaseService {
         return restaurants;
       }
     } catch (e) {
-      print('Supabase fetch failed, trying local cache: $e');
+      print('Food items fallback failed: $e');
     }
     
-    // Fallback to local cache if Supabase fails
+    // Fallback to local cache if everything fails
     // This would require implementing a method to get all cached restaurants
     // For now, return empty list
     return [];

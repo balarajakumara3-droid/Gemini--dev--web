@@ -30,7 +30,8 @@ class SupabaseService {
       final data = await _supabase.from('restaurants').select();
       return List<Map<String, dynamic>>.from(data as List);
     } catch (e) {
-      debugPrint('Error fetching restaurants: $e');
+      debugPrint('Error fetching restaurants (table may not exist): $e');
+      // Return empty list so fallback methods can be used
       return [];
     }
   }

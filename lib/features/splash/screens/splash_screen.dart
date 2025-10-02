@@ -75,13 +75,10 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToNextScreen() {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    
+    // Always go to MainScreen - authentication will be handled per screen
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => authProvider.isAuthenticated 
-            ? const MainScreen() 
-            : const LoginScreen(),
+        builder: (context) => const MainScreen(),
       ),
     );
   }

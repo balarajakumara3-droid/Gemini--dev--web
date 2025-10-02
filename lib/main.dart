@@ -34,7 +34,11 @@ class FoodDeliveryApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => RestaurantProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) {
+          final cartProvider = CartProvider();
+          cartProvider.clearCart(); // Clear any existing cart data
+          return cartProvider;
+        }),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],

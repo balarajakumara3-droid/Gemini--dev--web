@@ -51,8 +51,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     
-    final success = await authProvider.register(
-      name: _nameController.text.trim(),
+    final success = await authProvider.signUpWithEmailAndPassword(
+      fullName: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
       phoneNumber: _phoneController.text.trim().isNotEmpty 
