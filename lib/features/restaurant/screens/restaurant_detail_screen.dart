@@ -4,7 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/restaurant.dart';
 import '../../../core/models/user.dart';
 import '../../../core/services/supabase_service.dart';
-import '../../cart/providers/cart_provider.dart';
+import '../../cart/providers/simple_cart_provider.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final Map<String, dynamic> restaurant;
@@ -56,22 +56,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         print('Menu items table query failed: $e');
       }
       
-      // If no menu items found, try food_items table using restaurant name
-      if (response.isEmpty) {
-        try {
-          final restaurantName = widget.restaurant['name'];
-          if (restaurantName != null) {
-            response = await client
-                .from('food_items')
-                .select('id, item_name, item_description, price, image_url')
-                .eq('restaurant_name', restaurantName);
-            
-            print('Food items query result: ${response.length} items found for $restaurantName');
-          }
-        } catch (e) {
-          print('Food items table query failed: $e');
-        }
-      }
+      // No legacy fallback
       
       // Convert response to standardized format
       final menuItems = response.map((item) {
@@ -628,7 +613,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   }
 
   Widget _buildCartButton() {
-    return Consumer<CartProvider>(
+    return Consumer<SimpleCartProvider>(
       builder: (context, cartProvider, child) {
         if (cartProvider.itemCount == 0) {
           return const SizedBox.shrink();
@@ -664,58 +649,17 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   }
 
   void _addToCart(Map<String, dynamic> item) {
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final cartProvider = Provider.of<SimpleCartProvider>(context, listen: false);
     
     try {
-      // Create dummy Food and Restaurant objects from the item data
-      final food = Food(
-        id: item['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        name: item['name'] ?? 'Unknown Item',
-        description: item['description'] ?? '',
-        imageUrl: item['image'] ?? '',
-        price: (item['price'] ?? 0.0).toDouble(),
-        category: item['category'] ?? 'Main Course',
-        isVegetarian: item['isVeg'] ?? false,
-        rating: (item['rating'] ?? 0.0).toDouble(),
-        reviewCount: 0,
-        tags: [],
-        addons: [],
-        isAvailable: true,
-        preparationTime: item['preparationTime'],
-      );
+      // Add item to cart using simple method
+      cartProvider.addItem(item);
       
-      final restaurant = Restaurant(
-        id: widget.restaurant['id'] ?? 'sample_restaurant',
-        name: widget.restaurant['name'] ?? 'Sample Restaurant',
-        description: 'Restaurant description',
-        imageUrl: widget.restaurant['image'] ?? '',
-        cuisines: [widget.restaurant['cuisine'] ?? 'Various'],
-        rating: (widget.restaurant['rating'] ?? 4.0).toDouble(),
-        reviewCount: 100,
-        deliveryTime: widget.restaurant['deliveryTime'] ?? '30-40 min',
-        deliveryFee: (widget.restaurant['deliveryFee'] ?? 0.0).toDouble(),
-        minimumOrder: 0.0,
-        isOpen: widget.restaurant['isOpen'] ?? true,
-        address: Address(
-          id: 'sample_address',
-          title: 'Restaurant Location',
-          addressLine1: '123 Sample Street',
-          city: 'Sample City',
-          state: 'Sample State',
-          pincode: '12345',
-          country: 'Sample Country',
-          latitude: 0.0,
-          longitude: 0.0,
-        ),
-      );
-      
-      // Add item to cart
-      cartProvider.addItem(food, restaurant);
-      
+      String itemName = item['dish_name'] ?? item['name'] ?? 'Item';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item['name']} added to cart!'),
-          backgroundColor: AppTheme.successColor,
+          content: Text('$itemName added to cart!'),
+          backgroundColor: Colors.green,
           action: SnackBarAction(
             label: 'View Cart',
             textColor: Colors.white,

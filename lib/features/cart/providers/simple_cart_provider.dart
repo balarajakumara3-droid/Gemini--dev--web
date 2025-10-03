@@ -28,6 +28,11 @@ class SimpleCartProvider extends ChangeNotifier {
     String imageUrl = _getValueFromRow(foodItem, ['image_url', 'image']) ?? '';
     double price = _parsePrice(_getValueFromRow(foodItem, ['price', 'cost']) ?? '12.99');
 
+    if (kDebugMode) {
+      print('Adding item to cart: $name, Price: $price, ID: $itemId');
+      print('Cart items before: ${_cartItems.length}');
+    }
+
     if (_cartItems.containsKey(itemId)) {
       _cartItems[itemId]!['quantity'] += 1;
     } else {
@@ -40,6 +45,12 @@ class SimpleCartProvider extends ChangeNotifier {
         'original_data': foodItem,
       };
     }
+
+    if (kDebugMode) {
+      print('Cart items after: ${_cartItems.length}');
+      print('Total item count: $itemCount');
+    }
+
     notifyListeners();
   }
 

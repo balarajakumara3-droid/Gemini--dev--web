@@ -335,91 +335,13 @@ class DatabaseService {
         return restaurants;
       }
     } catch (e) {
-      print('Restaurants table fetch failed, trying food_items fallback: $e');
-    }
-
-    try {
-      // If the canonical tables are empty or fail, try fallback from food_items
-      final fallbackRows = await _getRestaurantsFromFoodItems();
-      if (fallbackRows.isNotEmpty) {
-        final restaurants = fallbackRows.map((json) => Restaurant.fromJson(json)).toList();
-        for (final restaurant in restaurants) {
-          await cacheRestaurant(restaurant);
-        }
-        return restaurants;
-      }
-    } catch (e) {
-      print('Food items fallback failed: $e');
+      print('Restaurants table fetch failed: $e');
     }
     
     // Fallback to local cache if everything fails
     // This would require implementing a method to get all cached restaurants
     // For now, return empty list
     return [];
-  }
-
-  /// Derive restaurants from `food_items` (dev/demo fallback)
-  Future<List<Map<String, dynamic>>> _getRestaurantsFromFoodItems() async {
-    try {
-      final rows = await supabase
-          .from('food_items')
-          .select('restaurant_name, restaurant_address, restaurant_rating, image_url')
-          .limit(1000);
-
-      if (rows.isEmpty) return [];
-
-      final Map<String, Map<String, dynamic>> nameToRestaurant = {};
-      for (final row in rows) {
-        final String name = (row['restaurant_name'] ?? '').toString();
-        if (name.isEmpty) continue;
-        nameToRestaurant.putIfAbsent(name, () {
-          final String imageUrl = (row['image_url'] as String?)?.trim().isNotEmpty == true
-              ? row['image_url'] as String
-              : '';
-          final String addressText = (row['restaurant_address'] ?? '').toString();
-          return {
-            'id': name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-') + '-fi',
-            'name': name,
-            'description': '',
-            'image_url': imageUrl,
-            'cuisines': <String>[],
-            'cuisine_type': '',
-            'rating': (row['restaurant_rating'] is num)
-                ? (row['restaurant_rating'] as num).toDouble()
-                : 0.0,
-            'review_count': 0,
-            'delivery_time': '30-40',
-            'delivery_fee': 0.0,
-            'minimum_order': 0.0,
-            'is_open': true,
-            'is_vegetarian': false,
-            'is_pure_veg': false,
-            'address': {
-              'id': 'addr_${name}',
-              'user_id': '',
-              'name': 'Address',
-              'address_line1': addressText,
-              'address_line2': '',
-              'city': addressText,
-              'state': '',
-              'pincode': '',
-              'country': '',
-              'latitude': null,
-              'longitude': null,
-              'is_default': false,
-            },
-            'offers': <String>[],
-            'menu': <Map<String, dynamic>>[],
-            'distance': 0.0,
-          };
-        });
-      }
-
-      return nameToRestaurant.values.toList();
-    } catch (e) {
-      print('Fallback from food_items failed: $e');
-      return [];
-    }
   }
 
   // Restaurant cache methods

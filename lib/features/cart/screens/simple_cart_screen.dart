@@ -39,6 +39,10 @@ class _SimpleCartScreenState extends State<SimpleCartScreen> {
       ),
       body: Consumer<SimpleCartProvider>(
         builder: (context, cartProvider, child) {
+          // Debug print
+          print('Cart screen: isEmpty=${cartProvider.isEmpty}, itemCount=${cartProvider.itemCount}');
+          print('Cart items: ${cartProvider.cartItems.length}');
+          
           if (cartProvider.isEmpty) {
             return _buildEmptyCart();
           }

@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  supabase_flutter: ^2.0.0 # Use the latest version
+  supabase_flutter: ^1.6.0
   google_sign_in: ^6.2.1
   
   # State Management
@@ -67,5 +67,4 @@ flutter:
     - assets/images/food/offers/
     - assets/icons/
     - assets/data/
-    - assets/data/food_data.json
           

@@ -16,6 +16,7 @@ import '../widgets/search_bar.dart';
 import '../widgets/food_grid.dart';
 import '../../search/screens/search_results_screen.dart';
 import '../../cart/providers/simple_cart_provider.dart';
+import '../../../core/routes/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -96,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+      // Debug FAB removed
     );
   }
 
@@ -163,46 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // TODO: Navigate to favorites screen when available
                 },
               ),
-              const SizedBox(width: 8),
-              Consumer<SimpleCartProvider>(
-                builder: (context, cartProvider, child) {
-                  return Stack(
-                    children: [
-                      _HeaderIconButton(
-                        icon: Icons.shopping_cart_outlined,
-                        onTap: () {
-                          Navigator.pushNamed(context, '/cart');
-                        },
-                      ),
-                      if (cartProvider.itemCount > 0)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 20,
-                              minHeight: 20,
-                            ),
-                            child: Text(
-                              '${cartProvider.itemCount}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
+              // Cart icon removed - now only available in bottom navigation
               const SizedBox(width: 8),
               _HeaderIconButton(
                 icon: Icons.person_outline,

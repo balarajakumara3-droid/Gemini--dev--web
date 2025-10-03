@@ -206,29 +206,7 @@ class RestaurantProvider extends ChangeNotifier {
         );
       }).toList();
 
-      // If nothing from canonical table, try deriving from food_items by restaurant name
-      if (items.isEmpty && _selectedRestaurant != null) {
-        final String name = _selectedRestaurant!.name;
-        try {
-          final fallback = await _databaseService.supabase
-              .from('food_items')
-              .select('item_name, item_description, price, image_url')
-              .eq('restaurant_name', name);
-          final fiItems = (fallback as List<dynamic>).map((row) {
-            return Food(
-              id: row['item_name'] ?? '',
-              name: row['item_name'] ?? '',
-              description: row['item_description'] ?? '',
-              imageUrl: (row['image_url'] as String?)?.trim().isNotEmpty == true
-                  ? row['image_url'] as String
-                  : '',
-              price: (row['price'] is num) ? (row['price'] as num).toDouble() : 0.0,
-              category: 'Menu',
-            );
-          }).toList();
-          items.addAll(fiItems);
-        } catch (_) {}
-      }
+      // No fallback to removed legacy tables
 
       _menu = [
         FoodCategory(

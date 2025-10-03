@@ -1,7 +1,6 @@
 import '../../features/home/screens/main_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
-import '../../features/cart/screens/cart_screen.dart';
 import '../../features/cart/screens/simple_cart_screen.dart';
 import '../../features/orders/screens/order_history_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
@@ -13,6 +12,9 @@ import '../../features/demo/screens/excel_food_display.dart';
 import '../../features/demo/screens/excel_data_analyzer.dart';
 // import '../../features/demo/screens/csv_food_display.dart'; // Removed CSV support
 import '../../features/food/screens/food_detail_screen.dart';
+import '../../features/products/screens/products_screen.dart';
+import '../../features/debug/screens/debug_products_screen.dart';
+import '../../features/debug/screens/add_sample_data_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -33,6 +35,9 @@ class AppRoutes {
   static const String excelDataAnalyzer = '/excel-data-analyzer';
   static const String csvFoodDisplay = '/csv-food-display';
   static const String foodDetail = '/food-detail';
+  static const String products = '/products';
+  static const String debugProducts = '/debug-products';
+  static const String addSampleData = '/add-sample-data';
 
   static final routes = {
     login: (context) => const LoginScreen(),
@@ -48,6 +53,9 @@ class AppRoutes {
     excelFoodDisplay: (context) => const ExcelFoodDisplay(),
     excelDataAnalyzer: (context) => const ExcelDataAnalyzer(),
     // csvFoodDisplay: (context) => const CsvFoodDisplay(), // Removed CSV support
+    products: (context) => const ProductsScreen(),
+    debugProducts: (context) => const DebugProductsScreen(),
+    addSampleData: (context) => const AddSampleDataScreen(),
   };
 
   static const List<String> publicRoutes = [

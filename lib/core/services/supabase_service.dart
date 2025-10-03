@@ -10,7 +10,7 @@ class SupabaseService {
   Future<bool> signInWithGoogle() async {
     try {
       await _supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
+        Provider.google,
         redirectTo: 'com.example.food_delivery_app://login-callback',
       );
       return _supabase.auth.currentUser != null;
@@ -143,4 +143,52 @@ class SupabaseService {
   }
 
   // Removed demo data seeding method
+
+  /// Generic method to get data from any table
+  Future<List<Map<String, dynamic>>> getTableData(String tableName) async {
+    try {
+      final data = await _supabase
+          .from(tableName)
+          .select()
+          .limit(20);
+      
+      return List<Map<String, dynamic>>.from(data as List);
+    } catch (e) {
+      debugPrint('Error fetching data from table $tableName: $e');
+      return [];
+    }
+  }
+
+  /// Generic method to get data from any table with custom limit
+  Future<List<Map<String, dynamic>>> getTableDataWithLimit(String tableName, int limit) async {
+    try {
+      final data = await _supabase
+          .from(tableName)
+          .select()
+          .limit(limit);
+      
+      return List<Map<String, dynamic>>.from(data as List);
+    } catch (e) {
+      debugPrint('Error fetching data from table $tableName: $e');
+      return [];
+    }
+  }
+
+  /// Generic method to search data in any table
+  Future<List<Map<String, dynamic>>> searchTableData(String tableName, String searchQuery, List<String> searchColumns) async {
+    try {
+      String orCondition = searchColumns.map((col) => '$col.ilike.%$searchQuery%').join(',');
+      
+      final data = await _supabase
+          .from(tableName)
+          .select()
+          .or(orCondition)
+          .limit(50);
+      
+      return List<Map<String, dynamic>>.from(data as List);
+    } catch (e) {
+      debugPrint('Error searching data in table $tableName: $e');
+      return [];
+    }
+  }
 }

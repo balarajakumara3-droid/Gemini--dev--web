@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../cart/providers/cart_provider.dart';
+import '../../cart/providers/simple_cart_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../screens/home_screen.dart';
 import '../../search/screens/search_screen.dart';
-import '../../cart/screens/cart_screen.dart';
+import '../../cart/screens/simple_cart_screen.dart';
 import '../../orders/screens/order_history_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 
@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const SearchScreen(),
-    const CartScreen(),
+    const SimpleCartScreen(),
     const OrderHistoryScreen(),
     const ProfileScreen(),
   ];
@@ -175,7 +175,7 @@ class _MainScreenState extends State<MainScreen> {
     return Positioned(
       right: 0,
       top: 0,
-      child: Consumer2<CartProvider, OrderProvider>(
+      child: Consumer2<SimpleCartProvider, OrderProvider>(
         builder: (context, cartProvider, orderProvider, child) {
           int? badgeCount;
           

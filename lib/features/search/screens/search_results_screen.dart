@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/services/json_food_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../food/screens/food_detail_screen.dart';
 
 class SearchResultsScreen extends StatefulWidget {
@@ -17,7 +17,6 @@ class SearchResultsScreen extends StatefulWidget {
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
   late TextEditingController _searchController;
-  final JsonFoodService _foodService = JsonFoodService();
   List<Map<String, dynamic>> _searchResults = [];
   List<Map<String, dynamic>> _allFoodItems = [];
   bool _isLoading = false;
@@ -43,8 +42,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     });
 
     try {
-      await _foodService.initialize();
-      _allFoodItems = _foodService.getAllFoodItems();
+      // Load from products with a reasonable cap for search screen
+      final supabase = Supabase.instance.client;
+      final response = await supabase.from('products').select().limit(200);
+      _allFoodItems = List<Map<String, dynamic>>.from(response as List);
       _performSearch(_currentQuery);
     } catch (e) {
       print('Error loading food items: $e');
@@ -63,7 +64,19 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       return;
     }
 
-    final results = _foodService.searchFoodItems(query);
+    final lowercaseQuery = query.toLowerCase();
+    final results = _allFoodItems.where((item) {
+      final name = item['name']?.toString() ?? '';
+      final category = item['category']?.toString() ?? '';
+      final description = item['description']?.toString() ?? '';
+      final ingredients = item['ingredients']?.toString() ?? '';
+      
+      return name.toLowerCase().contains(lowercaseQuery) ||
+             category.toLowerCase().contains(lowercaseQuery) ||
+             description.toLowerCase().contains(lowercaseQuery) ||
+             ingredients.toLowerCase().contains(lowercaseQuery);
+    }).toList();
+    
     setState(() {
       _searchResults = results.take(50).toList();
       _currentQuery = query;
@@ -168,11 +181,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   Widget _buildSearchResultCard(Map<String, dynamic> item) {
-    String name = _getValueFromRow(item, ['dish_name', 'name', 'title']) ?? 'Unknown Item';
-    String foodType = _getValueFromRow(item, ['food_type', 'category']) ?? '';
-    String price = _getValueFromRow(item, ['price', 'cost']) ?? '12.99';
-    String imageUrl = _getValueFromRow(item, ['image_url', 'image']) ?? '';
-    String ingredients = _getValueFromRow(item, ['ingredients']) ?? '';
+    String name = item['name']?.toString() ?? 'Unknown Item';
+    String foodType = item['category']?.toString() ?? '';
+    String price = item['price']?.toString() ?? '12.99';
+    String imageUrl = item['image_url']?.toString() ?? '';
+    String ingredients = item['ingredients']?.toString() ?? '';
 
     return GestureDetector(
       onTap: () {
@@ -381,22 +394,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     );
   }
 
-  String? _getValueFromRow(Map<String, dynamic> row, List<String> possibleKeys) {
-    for (String key in possibleKeys) {
-      if (row.containsKey(key) && row[key] != null && row[key].toString().isNotEmpty) {
-        return row[key].toString();
-      }
-      
-      for (String rowKey in row.keys) {
-        if (rowKey.toLowerCase() == key.toLowerCase() && 
-            row[rowKey] != null && 
-            row[rowKey].toString().isNotEmpty) {
-          return row[rowKey].toString();
-        }
-      }
-    }
-    return null;
-  }
 
   bool _isValidImageUrl(String url) {
     return url.startsWith('http') || 
