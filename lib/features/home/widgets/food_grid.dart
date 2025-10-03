@@ -32,13 +32,41 @@ class _FoodGridState extends State<FoodGrid> {
   final Map<String, int> _categoryOffset = {};
   final Map<String, bool> _categoryHasMore = {};
   bool _isCategoryLoading = false; // for shimmer/skeletons during switch
-  static const int _filteredPageSize = 120; // larger initial loads for filtered views
+  static const int _filteredPageSize = 60; // smaller first-page for snappier loads
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
     _loadFoodData(reset: true);
+    // Prefetch popular categories shortly after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _prefetchHotCategories();
+    });
+  }
+
+  Future<void> _prefetchHotCategories() async {
+    const hot = ['Beverages', 'Desserts', 'Snacks'];
+    for (final c in hot) {
+      if (_cachedByCategory.containsKey(c)) continue;
+      _cachedByCategory[c] = [];
+      _categoryOffset[c] = 0;
+      _categoryHasMore[c] = true;
+      try {
+        final String orFilter = _buildOrFilterForCategory(c);
+        final resp = await supabase
+            .from('products')
+            .select()
+            .or(orFilter)
+            .range(0, (_filteredPageSize ~/ 2) - 1); // tiny warm cache
+        final fetched = List<Map<String, dynamic>>.from(resp as List);
+        _cachedByCategory[c]!.addAll(fetched);
+        _categoryOffset[c] = fetched.length;
+        _categoryHasMore[c] = fetched.length >= (_filteredPageSize ~/ 2);
+      } catch (_) {
+        // ignore prefetch errors
+      }
+    }
   }
 
   Future<void> _loadFoodData({bool reset = false}) async {
@@ -113,25 +141,25 @@ class _FoodGridState extends State<FoodGrid> {
       final start = _categoryOffset[category] ?? 0;
       final end = start + _filteredPageSize - 1;
 
-      // 1) Try server-side category match
-      final responseEq = await supabase
+      // Build an OR filter that matches explicit category OR name-based keywords
+      final String orFilter = _buildOrFilterForCategory(category);
+
+      final response = await supabase
           .from('products')
           .select()
-          .eq('category', category)
+          .or(orFilter)
           .range(start, end);
 
-      List<Map<String, dynamic>> fetched = List<Map<String, dynamic>>.from(responseEq as List);
+      List<Map<String, dynamic>> fetched = List<Map<String, dynamic>>.from(response as List);
 
-      // 2) Fallback: if nothing returned and we're at the first page, load a wider
-      //    window without filters and infer category client-side by name keywords.
+      // Fallback: if still empty on first page, fetch a broader window and filter locally
       if (fetched.isEmpty && start == 0) {
         final fallbackResp = await supabase
             .from('products')
             .select()
-            .range(0, (_filteredPageSize * 2) - 1); // fetch extra to filter locally
+            .range(0, (_filteredPageSize * 2) - 1);
         final all = List<Map<String, dynamic>>.from(fallbackResp as List);
-        final filtered = all.where((e) => _extractCategory(e) == category).take(_filteredPageSize).toList();
-        fetched = filtered;
+        fetched = all.where((e) => _extractCategory(e) == category).take(_filteredPageSize).toList();
       }
 
       _cachedByCategory[category]!.addAll(fetched);
