@@ -112,10 +112,14 @@ class _FoodGridState extends State<FoodGrid> {
     try {
       final start = _categoryOffset[category] ?? 0;
       final end = start + _filteredPageSize - 1;
+
+      // Build an OR filter that matches explicit category OR name-based keywords
+      final String orFilter = _buildOrFilterForCategory(category);
+
       final response = await supabase
           .from('products')
           .select()
-          .eq('category', category)
+          .or(orFilter)
           .range(start, end);
 
       final fetched = List<Map<String, dynamic>>.from(response as List);
@@ -158,6 +162,39 @@ class _FoodGridState extends State<FoodGrid> {
         _isLoadingMore = false;
       });
     }
+  }
+
+  String _buildOrFilterForCategory(String category) {
+    // Maps categories to indicative keywords used in _inferCategoryFromName
+    final Map<String, List<String>> categoryToKeywords = {
+      'Raw Vegetables And Fruits': ['tomato','banana','spinach','cabbage','carrot','apple'],
+      'Snacks': ['chips','samosa','pakoda','fries','nacho','popcorn'],
+      'Desserts': ['cake','ice%20cream','brownie','pastry','donut','gulab%20jamun'],
+      'Beverages': ['juice','coffee','tea','soda','shake','lassi'],
+      'Restaurant Food': [],
+    };
+
+    final List<String> conditions = [];
+    // Always include exact category match
+    conditions.add('category.eq.${_escapeComma(category)}');
+
+    final keywords = categoryToKeywords[category] ?? [];
+    if (keywords.isNotEmpty) {
+      const nameCols = ['product_name','name','dish_name','item_name'];
+      for (final kw in keywords) {
+        for (final col in nameCols) {
+          conditions.add('$col.ilike.%$kw%');
+        }
+      }
+    }
+
+    // Join with commas for OR
+    return conditions.join(',');
+  }
+
+  String _escapeComma(String input) {
+    // Postgrest OR separator is comma; protect values containing commas
+    return input.replaceAll(',', '\\,');
   }
 
   Future<void> _precacheFirstImages(List<Map<String, dynamic>> items) async {
