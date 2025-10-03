@@ -27,6 +27,12 @@ class _FoodGridState extends State<FoodGrid> {
   String? _error;
   final ScrollController _scrollController = ScrollController();
   bool _enableImages = false; // Defer image loading until threshold reached
+  // Category-focused performance additions
+  final Map<String, List<Map<String, dynamic>>> _cachedByCategory = {};
+  final Map<String, int> _categoryOffset = {};
+  final Map<String, bool> _categoryHasMore = {};
+  bool _isCategoryLoading = false; // for shimmer/skeletons during switch
+  static const int _filteredPageSize = 80; // faster initial loads for filtered views
 
   @override
   void initState() {
@@ -88,6 +94,62 @@ class _FoodGridState extends State<FoodGrid> {
     }
   }
 
+  Future<void> _loadCategoryData(String category, {bool reset = false}) async {
+    if (category == 'All') return;
+    if (reset || !_cachedByCategory.containsKey(category)) {
+      _cachedByCategory[category] = [];
+      _categoryOffset[category] = 0;
+      _categoryHasMore[category] = true;
+    }
+
+    if (_isCategoryLoading || _categoryHasMore[category] == false) return;
+
+    setState(() {
+      _isCategoryLoading = true;
+      _error = null;
+    });
+
+    try {
+      final start = _categoryOffset[category] ?? 0;
+      final end = start + _filteredPageSize - 1;
+      final response = await supabase
+          .from('products')
+          .select()
+          .eq('category', category)
+          .range(start, end);
+
+      final fetched = List<Map<String, dynamic>>.from(response as List);
+      _cachedByCategory[category]!.addAll(fetched);
+      _categoryOffset[category] = start + fetched.length;
+      _categoryHasMore[category] = fetched.length == _filteredPageSize;
+
+      // Precache first few images for snappier feel
+      _precacheFirstImages(_cachedByCategory[category]!);
+
+      setState(() {
+        _isCategoryLoading = false;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isCategoryLoading = false;
+        _isLoadingMore = false;
+      });
+    }
+  }
+
+  Future<void> _precacheFirstImages(List<Map<String, dynamic>> items) async {
+    // Precache a handful of images in the current context
+    final int limit = items.length < 8 ? items.length : 8;
+    for (int i = 0; i < limit; i++) {
+      final url = _getImageUrl(items[i]);
+      if (url.isEmpty || !_isValidImageUrl(url)) continue;
+      // ignore: use_build_context_synchronously
+      precacheImage(CachedNetworkImageProvider(url), context);
+    }
+  }
+
   Future<void> _loadCategories() async {
     try {
       final response = await supabase
@@ -128,12 +190,21 @@ class _FoodGridState extends State<FoodGrid> {
   }
 
   void _maybeLoadMore(ScrollMetrics metrics) {
-    if (_isLoading || _isLoadingMore || !_hasMore) return;
-    if (metrics.pixels >= metrics.maxScrollExtent - 300) {
-      setState(() {
-        _isLoadingMore = true;
-      });
-      _loadFoodData();
+    if (metrics.pixels < metrics.maxScrollExtent - 300) return;
+    if (_isLoadingMore) return;
+    setState(() {
+      _isLoadingMore = true;
+    });
+    if (_selectedCategory != 'All') {
+      _loadCategoryData(_selectedCategory);
+    } else {
+      if (_hasMore && !_isLoading) {
+        _loadFoodData();
+      } else {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 
@@ -264,7 +335,14 @@ class _FoodGridState extends State<FoodGrid> {
                                 _selectedCategory = category;
                                 // Ensure images load immediately even on 'All'
                                 _enableImages = true;
+                                // Kick off category-specific fetch if needed
+                                if (category != 'All' && !_cachedByCategory.containsKey(category)) {
+                                  _isCategoryLoading = true;
+                                }
                               });
+                              if (category != 'All') {
+                                _loadCategoryData(category, reset: !_cachedByCategory.containsKey(category));
+                              }
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -321,8 +399,13 @@ class _FoodGridState extends State<FoodGrid> {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
-              itemCount: _applyFiltersList().length,
+              itemCount: _isCategoryLoading && _selectedCategory != 'All' 
+                  ? 8 
+                  : _applyFiltersList().length,
               itemBuilder: (context, index) {
+                if (_isCategoryLoading && _selectedCategory != 'All') {
+                  return _buildSkeletonCard();
+                }
                 final list = _applyFiltersList();
                 return _buildFoodCard(list[index]);
               },
@@ -620,7 +703,9 @@ class _FoodGridState extends State<FoodGrid> {
   }
 
   List<Map<String, dynamic>> _applyFiltersList() {
-    Iterable<Map<String, dynamic>> list = _foodItems;
+    Iterable<Map<String, dynamic>> list = _selectedCategory != 'All'
+        ? (_cachedByCategory[_selectedCategory] ?? const [])
+        : _foodItems;
     if (_selectedCategory != 'All') {
       list = list.where((e) => _extractCategory(e) == _selectedCategory);
     }
