@@ -287,12 +287,14 @@ class _FoodGridState extends State<FoodGrid> {
       cats.addAll(inferredBuckets);
 
       final list = cats.toList()..sort();
+      if (!mounted) return;
       setState(() {
         _categories = ['All', ...list];
       });
     } catch (_) {
       // If category fetch fails, keep existing list or default to ['All']
       if (_categories.isEmpty) {
+        if (!mounted) return;
         setState(() {
           _categories = ['All'];
         });
@@ -328,16 +330,6 @@ class _FoodGridState extends State<FoodGrid> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      );
-    }
 
     if (_error != null) {
       return SliverToBoxAdapter(
@@ -372,7 +364,7 @@ class _FoodGridState extends State<FoodGrid> {
       );
     }
 
-    if (_foodItems.isEmpty) {
+    if (_foodItems.isEmpty && !_isLoading) {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
@@ -432,7 +424,7 @@ class _FoodGridState extends State<FoodGrid> {
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 48,
-                  child: _categories.isNotEmpty 
+                  child: (_categories.isNotEmpty)
                     ? ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: _categories.length,
@@ -474,9 +466,7 @@ class _FoodGridState extends State<FoodGrid> {
                           );
                         },
                       )
-                    : const Center(
-                        child: Text('Loading categories...'),
-                      ),
+                    : const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
                 ),
               ],
             ),
