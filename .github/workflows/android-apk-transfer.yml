@@ -24,42 +24,13 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Accept Android licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install Android build-tools
-        run: sdkmanager "build-tools;34.0.0"
-
-      - name: Build release APK (unsigned)
-        run: flutter build apk --release
-
-      - name: Generate debug keystore (for signing)
-        run: |
-          keytool -genkey -v -keystore debug.keystore \
-            -storepass android -keypass android \
-            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
-
-      - name: Align and sign APK
-        env:
-          BUILD_TOOLS: ${{ env.ANDROID_HOME }}/build-tools/34.0.0
-        run: |
-          ls -la build/app/outputs/flutter-apk
-          cp build/app/outputs/flutter-apk/app-release.apk app-release-unsigned.apk
-          "$BUILD_TOOLS"/zipalign -v -p 4 app-release-unsigned.apk app-release-aligned.apk
-          "$BUILD_TOOLS"/apksigner sign \
-            --ks debug.keystore \
-            --ks-key-alias androiddebugkey \
-            --ks-pass pass:android \
-            --key-pass pass:android \
-            --out app-release-signed.apk \
-            app-release-aligned.apk
-          "$BUILD_TOOLS"/apksigner verify app-release-signed.apk
+      - name: Build debug APK
+        run: flutter build apk --debug
 
       - name: Upload to transfer.sh
         id: upload
         run: |
-          curl --upload-file app-release-signed.apk https://transfer.sh/app-release.apk > url.txt
+          curl --upload-file build/app/outputs/flutter-apk/app-debug.apk https://transfer.sh/app-debug.apk > url.txt
           echo "url=$(cat url.txt)" >> $GITHUB_OUTPUT
 
       - name: Echo download URL
