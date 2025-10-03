@@ -113,16 +113,27 @@ class _FoodGridState extends State<FoodGrid> {
       final start = _categoryOffset[category] ?? 0;
       final end = start + _filteredPageSize - 1;
 
-      // Build an OR filter that matches explicit category OR name-based keywords
-      final String orFilter = _buildOrFilterForCategory(category);
-
-      final response = await supabase
+      // 1) Try server-side category match
+      final responseEq = await supabase
           .from('products')
           .select()
-          .or(orFilter)
+          .eq('category', category)
           .range(start, end);
 
-      final fetched = List<Map<String, dynamic>>.from(response as List);
+      List<Map<String, dynamic>> fetched = List<Map<String, dynamic>>.from(responseEq as List);
+
+      // 2) Fallback: if nothing returned and we're at the first page, load a wider
+      //    window without filters and infer category client-side by name keywords.
+      if (fetched.isEmpty && start == 0) {
+        final fallbackResp = await supabase
+            .from('products')
+            .select()
+            .range(0, (_filteredPageSize * 2) - 1); // fetch extra to filter locally
+        final all = List<Map<String, dynamic>>.from(fallbackResp as List);
+        final filtered = all.where((e) => _extractCategory(e) == category).take(_filteredPageSize).toList();
+        fetched = filtered;
+      }
+
       _cachedByCategory[category]!.addAll(fetched);
       _categoryOffset[category] = start + fetched.length;
       _categoryHasMore[category] = fetched.length == _filteredPageSize;
