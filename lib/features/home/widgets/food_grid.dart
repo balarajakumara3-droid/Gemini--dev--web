@@ -410,7 +410,11 @@ class _FoodGridState extends State<FoodGrid> {
           // Food grid
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.builder(
+            child: Builder(builder: (context) {
+              final visibleList = _isCategoryLoading && _selectedCategory != 'All'
+                  ? const <Map<String, dynamic>>[]
+                  : _applyFiltersList();
+              return GridView.builder(
               shrinkWrap: true,
               controller: _scrollController,
               physics: const NeverScrollableScrollPhysics(),
@@ -422,15 +426,15 @@ class _FoodGridState extends State<FoodGrid> {
               ),
               itemCount: _isCategoryLoading && _selectedCategory != 'All' 
                   ? 8 
-                  : _applyFiltersList().length,
+                  : visibleList.length,
               itemBuilder: (context, index) {
                 if (_isCategoryLoading && _selectedCategory != 'All') {
                   return _buildSkeletonCard();
                 }
-                final list = _applyFiltersList();
-                return _buildFoodCard(list[index]);
+                return _buildFoodCard(visibleList[index]);
               },
-            ),
+              );
+            }),
           ),
           if (_isLoadingMore)
             const Padding(
@@ -546,7 +550,7 @@ class _FoodGridState extends State<FoodGrid> {
                           ? CachedNetworkImage(
                               imageUrl: imageUrl,
                               fit: BoxFit.cover,
-                              memCacheWidth: 400,
+                              memCacheWidth: 300,
                               fadeInDuration: const Duration(milliseconds: 80),
                               fadeOutDuration: const Duration(milliseconds: 80),
                               placeholder: (context, url) => Container(
