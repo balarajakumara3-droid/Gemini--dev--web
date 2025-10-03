@@ -32,7 +32,7 @@ class _FoodGridState extends State<FoodGrid> {
   final Map<String, int> _categoryOffset = {};
   final Map<String, bool> _categoryHasMore = {};
   bool _isCategoryLoading = false; // for shimmer/skeletons during switch
-  static const int _filteredPageSize = 80; // faster initial loads for filtered views
+  static const int _filteredPageSize = 120; // larger initial loads for filtered views
 
   @override
   void initState() {
@@ -125,6 +125,27 @@ class _FoodGridState extends State<FoodGrid> {
 
       // Precache first few images for snappier feel
       _precacheFirstImages(_cachedByCategory[category]!);
+
+      // Prefetch next page opportunistically
+      if (mounted && fetched.length == _filteredPageSize) {
+        final nextStart = _categoryOffset[category]!;
+        final nextEnd = nextStart + _filteredPageSize - 1;
+        // Fire-and-forget; avoid blocking UI
+        supabase
+            .from('products')
+            .select()
+            .eq('category', category)
+            .range(nextStart, nextEnd)
+            .then((next) {
+          final nextFetched = List<Map<String, dynamic>>.from(next as List);
+          _cachedByCategory[category]!.addAll(nextFetched);
+          _categoryOffset[category] = nextStart + nextFetched.length;
+          _categoryHasMore[category] = nextFetched.length == _filteredPageSize;
+          // Precache some of the next images
+          _precacheFirstImages(nextFetched);
+          if (mounted) setState(() {});
+        }).catchError((_) {});
+      }
 
       setState(() {
         _isCategoryLoading = false;
@@ -526,8 +547,8 @@ class _FoodGridState extends State<FoodGrid> {
                               imageUrl: imageUrl,
                               fit: BoxFit.cover,
                               memCacheWidth: 400,
-                              fadeInDuration: const Duration(milliseconds: 100),
-                              fadeOutDuration: const Duration(milliseconds: 100),
+                              fadeInDuration: const Duration(milliseconds: 80),
+                              fadeOutDuration: const Duration(milliseconds: 80),
                               placeholder: (context, url) => Container(
                                 color: Colors.grey[300],
                               ),
