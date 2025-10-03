@@ -143,14 +143,28 @@ class _FoodGridState extends State<FoodGrid> {
 
       // Build an OR filter that matches explicit category OR name-based keywords
       final String orFilter = _buildOrFilterForCategory(category);
-
-      final response = await supabase
-          .from('products')
-          .select()
-          .or(orFilter)
-          .range(start, end);
-
-      List<Map<String, dynamic>> fetched = List<Map<String, dynamic>>.from(response as List);
+      List<Map<String, dynamic>> fetched = [];
+      try {
+        final response = await supabase
+            .from('products')
+            .select()
+            .or(orFilter)
+            .range(start, end);
+        fetched = List<Map<String, dynamic>>.from(response as List);
+      } catch (_) {
+        // Retry with safe columns only if server rejects unknown columns
+        try {
+          final safeFilter = _buildOrFilterForCategory(category);
+          final response2 = await supabase
+              .from('products')
+              .select()
+              .or(safeFilter)
+              .range(start, end);
+          fetched = List<Map<String, dynamic>>.from(response2 as List);
+        } catch (_) {
+          fetched = [];
+        }
+      }
 
       // Fallback: if still empty on first page, fetch a broader window and filter locally
       if (fetched.isEmpty && start == 0) {
@@ -219,7 +233,7 @@ class _FoodGridState extends State<FoodGrid> {
 
     final keywords = categoryToKeywords[category] ?? [];
     if (keywords.isNotEmpty) {
-      const nameCols = ['product_name','name','dish_name','item_name'];
+      const nameCols = ['product_name','dish_name'];
       for (final kw in keywords) {
         for (final col in nameCols) {
           conditions.add('$col.ilike.%$kw%');
