@@ -19,13 +19,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _otpController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  bool _isOtpMode = false;
+  bool _otpSent = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _phoneController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -104,6 +110,80 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _sendOtp() async {
+    if (_phoneController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your phone number'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.sendOtp(_phoneController.text.trim());
+    
+    if (success && mounted) {
+      setState(() {
+        _otpSent = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('OTP sent successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else if (mounted) {
+      final errorMessage = authProvider.errorMessage ?? 'Failed to send OTP';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    if (_otpController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter the OTP'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
+    try {
+      await authProvider.verifyOtp(_phoneController.text.trim(), _otpController.text.trim());
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('OTP verification failed: ${e.toString()}'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,6 +199,11 @@ class _LoginScreenState extends State<LoginScreen> {
               _buildHeader(),
               
               const SizedBox(height: 48),
+              
+              // Authentication Mode Toggle
+              _buildAuthModeToggle(),
+              
+              const SizedBox(height: 24),
               
               // Login Form
               _buildLoginForm(),
@@ -189,77 +274,199 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildAuthModeToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isOtpMode = false;
+                  _otpSent = false;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _isOtpMode ? Colors.transparent : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: _isOtpMode ? null : [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  'Email',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: _isOtpMode ? FontWeight.normal : FontWeight.w600,
+                    color: _isOtpMode ? Colors.grey[600] : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isOtpMode = true;
+                  _otpSent = false;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _isOtpMode ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: _isOtpMode ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ] : null,
+                ),
+                child: Text(
+                  'Phone OTP',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: _isOtpMode ? FontWeight.w600 : FontWeight.normal,
+                    color: _isOtpMode ? Colors.black : Colors.grey[600],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLoginForm() {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          // Email Field
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: AppStrings.email,
-              prefixIcon: Icon(Icons.email_outlined),
+          if (!_isOtpMode) ...[
+            // Email Field
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: AppStrings.email,
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                }
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                  return 'Please enter a valid email';
+                }
+                return null;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Password Field
-          TextFormField(
-            controller: _passwordController,
-            obscureText: !_isPasswordVisible,
-            decoration: InputDecoration(
-              labelText: AppStrings.password,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+            
+            const SizedBox(height: 16),
+            
+            // Password Field
+            TextFormField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible,
+              decoration: InputDecoration(
+                labelText: AppStrings.password,
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
+                }
+                if (value.length < 6) {
+                  return 'Password must be at least 6 characters';
+                }
+                return null;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Remember Me
-          Row(
-            children: [
-              Checkbox(
-                value: _rememberMe,
-                onChanged: (value) {
-                  setState(() {
-                    _rememberMe = value ?? false;
-                  });
+            
+            const SizedBox(height: 16),
+            
+            // Remember Me
+            Row(
+              children: [
+                Checkbox(
+                  value: _rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      _rememberMe = value ?? false;
+                    });
+                  },
+                ),
+                const Text('Remember me'),
+              ],
+            ),
+          ] else ...[
+            // Phone Number Field
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                hintText: '+919876543210',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your phone number';
+                }
+                if (value.length < 10) {
+                  return 'Please enter a valid phone number';
+                }
+                return null;
+              },
+            ),
+            
+            if (_otpSent) ...[
+              const SizedBox(height: 16),
+              
+              // OTP Field
+              TextFormField(
+                controller: _otpController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Enter OTP',
+                  prefixIcon: Icon(Icons.security_outlined),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the OTP';
+                  }
+                  if (value.length < 4) {
+                    return 'Please enter a valid OTP';
+                  }
+                  return null;
                 },
               ),
-              const Text('Remember me'),
             ],
-          ),
+          ],
         ],
       ),
     );
@@ -268,25 +475,76 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildLoginButton() {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        return SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: authProvider.isLoading ? null : _login,
-            child: authProvider.isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Text(
-                    AppStrings.login,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-          ),
+        return Column(
+          children: [
+            if (_isOtpMode && !_otpSent) ...[
+              // Send OTP Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : _sendOtp,
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Send OTP',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                ),
+              ),
+            ] else if (_isOtpMode && _otpSent) ...[
+              // Verify OTP Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : _verifyOtp,
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Verify OTP',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                ),
+              ),
+            ] else ...[
+              // Regular Login Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : _login,
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          AppStrings.login,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                ),
+              ),
+            ],
+          ],
         );
       },
     );

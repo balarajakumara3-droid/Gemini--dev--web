@@ -10,7 +10,7 @@ class SupabaseService {
   Future<bool> signInWithGoogle() async {
     try {
       await _supabase.auth.signInWithOAuth(
-        Provider.google,
+        OAuthProvider.google,
         redirectTo: 'com.example.food_delivery_app://login-callback',
       );
       return _supabase.auth.currentUser != null;

@@ -33,11 +33,11 @@ class _DebugProductsScreenState extends State<DebugProductsScreen> {
       // We'll avoid selecting specific columns for count and avoid ordering
       // by columns that may not exist in the user's table.
 
-      final countResponse = await _supabase
+      final countList = await _supabase
           .from('products')
-          .select('*', const FetchOptions(count: CountOption.exact));
+          .select('id');
 
-      final count = countResponse.count ?? 0;
+      final count = (countList as List).length;
 
       // Fetch a few rows without relying on created_at
       final response = await _supabase

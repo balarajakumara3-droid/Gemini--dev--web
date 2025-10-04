@@ -8,6 +8,88 @@ class ProductService {
 
   final SupabaseClient _supabase = Supabase.instance.client;
 
+  /// Simple fetch products method
+  Future<List<Map<String, dynamic>>> fetchProducts() async {
+    try {
+      final response = await _supabase.from('products').select();
+      return List<Map<String, dynamic>>.from(response as List);
+    } catch (e) {
+      print('Error fetching products: $e');
+      return [];
+    }
+  }
+
+  /// Add Swiggy-style fields to product data
+  Map<String, dynamic> _addSwiggyFields(Map<String, dynamic> product) {
+    // Add default values for Swiggy-style display
+    product['discount_percent'] = product['discount_percent'] ?? 0.0;
+    product['original_price'] = product['original_price'] ?? product['price'];
+    product['food_type'] = product['food_type'] ?? 'Restaurant';
+    product['delivery_time'] = product['delivery_time'] ?? (20 + (product['id']?.hashCode ?? 0) % 20);
+    product['is_veg'] = product['is_veg'] ?? true;
+    product['is_popular'] = product['is_popular'] ?? false;
+    
+    // Generate some sample offers for demo
+    if (product['discount_percent'] == 0.0) {
+      final random = (product['id']?.hashCode ?? 0) % 100;
+      if (random < 30) { // 30% chance of having an offer
+        product['discount_percent'] = [10, 15, 20, 25, 30][random % 5].toDouble();
+        final originalPrice = (product['price'] as num).toDouble();
+        product['original_price'] = originalPrice;
+        product['price'] = originalPrice * (1 - product['discount_percent'] / 100);
+      }
+    }
+    
+    // Set food type based on category
+    final category = product['category']?.toString().toLowerCase() ?? '';
+    if (category.contains('home') || category.contains('homemade')) {
+      product['food_type'] = 'Home Food';
+    } else if (category.contains('street') || category.contains('local')) {
+      product['food_type'] = 'Street Food';
+    } else {
+      product['food_type'] = 'Restaurant';
+    }
+    
+    // Set popularity based on rating
+    final rating = (product['rating'] ?? 0.0).toDouble();
+    product['is_popular'] = rating >= 4.5;
+    
+    return product;
+  }
+
+  /// Fetch products by category
+  Future<List<Map<String, dynamic>>> fetchProductsByCategory(String categoryName) async {
+    try {
+      final response = await _supabase
+          .from('products')
+          .select()
+          .eq('category', categoryName);
+      final products = List<Map<String, dynamic>>.from(response as List);
+      return products.map((product) => _addSwiggyFields(product)).toList();
+    } catch (e) {
+      print('Error fetching products by category: $e');
+      return [];
+    }
+  }
+
+  /// Fetch products with offers (discount > 0)
+  Future<List<Map<String, dynamic>>> fetchProductsWithOffers() async {
+    try {
+      final response = await _supabase
+          .from('products')
+          .select();
+      final products = List<Map<String, dynamic>>.from(response as List);
+      final productsWithSwiggyFields = products.map((product) => _addSwiggyFields(product)).toList();
+      
+      // Filter only products with offers
+      return productsWithSwiggyFields.where((product) => 
+        (product['discount_percent'] ?? 0.0) > 0).toList();
+    } catch (e) {
+      print('Error fetching products with offers: $e');
+      return [];
+    }
+  }
+
   /// Get all products
   Future<List<Map<String, dynamic>>> getAllProducts() async {
     try {
@@ -24,8 +106,6 @@ class ProductService {
       List<dynamic> rawData;
       if (response is List) {
         rawData = response;
-      } else if (response is PostgrestResponse) {
-        rawData = response.data as List;
       } else {
         debugPrint('Unexpected response type: ${response.runtimeType}');
         return [];
@@ -75,8 +155,6 @@ class ProductService {
       List<dynamic> rawData;
       if (response is List) {
         rawData = response;
-      } else if (response is PostgrestResponse) {
-        rawData = response.data as List;
       } else {
         debugPrint('Unexpected response type: ${response.runtimeType}');
         return [];
@@ -122,8 +200,6 @@ class ProductService {
       List<dynamic> rawData;
       if (response is List) {
         rawData = response;
-      } else if (response is PostgrestResponse) {
-        rawData = response.data as List;
       } else {
         debugPrint('Unexpected response type: ${response.runtimeType}');
         return [];
@@ -168,8 +244,6 @@ class ProductService {
       List<dynamic> rawData;
       if (response is List) {
         rawData = response;
-      } else if (response is PostgrestResponse) {
-        rawData = response.data as List;
       } else {
         debugPrint('Unexpected response type: ${response.runtimeType}');
         return [];
@@ -202,21 +276,7 @@ class ProductService {
           .single();
       
       if (response is Map<String, dynamic>) {
-        return {
-          'id': response['id']?.toString() ?? '',
-          'name': response['name'] ?? 'Unknown Item',
-          'description': response['description'] ?? '',
-          'price': (response['price'] is num) ? (response['price'] as num).toDouble() : 0.0,
-          'image_url': response['image_url'],
-          'category': response['category'],
-          'is_available': response['is_available'] ?? true,
-          'rating': (response['rating'] is num) ? (response['rating'] as num).toDouble() : 0.0,
-          'preparation_time': response['preparation_time'] ?? 0,
-          'calories': response['calories'] ?? 0,
-          'created_at': response['created_at'],
-        };
-      } else if (response is PostgrestResponse) {
-        final data = response.data as Map<String, dynamic>;
+        final data = response;
         return {
           'id': data['id']?.toString() ?? '',
           'name': data['name'] ?? 'Unknown Item',
@@ -302,41 +362,33 @@ class ProductService {
   /// Debug function to check the connection and data
   Future<void> debugConnection() async {
     try {
-      debugPrint('Testing Supabase connection...');
+      print('🔍 Testing Supabase connection...');
       
       // Check if we can get a count
-      final countResponse = await _supabase
+      final countList = await _supabase
           .from('products')
-          .select('*', const FetchOptions(count: CountOption.exact));
+          .select('id');
+      final int count = (countList is List) ? countList.length : 0;
       
-      int count = 0;
-      if (countResponse is PostgrestResponse) {
-        count = countResponse.count ?? 0;
-      } else if (countResponse is List) {
-        count = countResponse.length;
-      }
-      
-      debugPrint('Total products in database: $count');
+      print('📊 Total products in database: $count');
       
       // Try to fetch a few products
       final response = await _supabase
           .from('products')
           .select('*')
-          .limit(5)
-          .order('name');
+          .limit(5);
       
-      debugPrint('Fetched response type: ${response.runtimeType}');
-      int responseLength = 0;
-      if (response is List) {
-        responseLength = response.length;
-      } else if (response is PostgrestResponse) {
-        responseLength = response.data.length;
+      print('📊 Fetched response type: ${response.runtimeType}');
+      int responseLength = response is List ? response.length : 0;
+      
+      print('📦 Fetched $responseLength products');
+      
+      if (response is List && response.isNotEmpty) {
+        print('📦 First product: ${response.first}');
       }
-      
-      debugPrint('Fetched $responseLength products');
     } catch (e, stackTrace) {
-      debugPrint('Error in debugConnection: $e');
-      debugPrint('Stack trace: $stackTrace');
+      print('❌ Error in debugConnection: $e');
+      print('❌ Stack trace: $stackTrace');
     }
   }
 }

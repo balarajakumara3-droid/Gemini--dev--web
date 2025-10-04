@@ -591,6 +591,14 @@ class _FoodGridState extends State<FoodGrid> {
     String imageUrl = _getImageUrl(item);
     String category = _extractCategory(item);
     double rating = (item['rating'] ?? 0.0).toDouble();
+    
+    // Swiggy-style data
+    double discountPercent = (item['discount_percent'] ?? 0.0).toDouble();
+    String foodType = item['food_type'] ?? 'Restaurant'; // Home Food, Restaurant, etc.
+    int deliveryTime = item['delivery_time'] ?? 25; // in minutes
+    String originalPrice = item['original_price']?.toString() ?? price;
+    bool isVeg = item['is_veg'] ?? true;
+    bool isPopular = item['is_popular'] ?? false;
 
     return GestureDetector(
       onTap: () {
@@ -650,25 +658,80 @@ class _FoodGridState extends State<FoodGrid> {
                               ),
                             ),
                     ),
+                    // Top left - Food type indicator
                     Positioned(
                       left: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: foodType == 'Home Food' ? Colors.green : Colors.orange,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          foodType,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                    
+                    // Top right - Popular badge
+                    if (isPopular)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Text(
+                            'POPULAR',
+                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    
+                    // Bottom left - Offer/Discount
+                    if (discountPercent > 0)
+                      Positioned(
+                        left: 8,
+                        bottom: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.local_offer, size: 10, color: Colors.white),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${discountPercent.toInt()}% OFF',
+                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    
+                    // Bottom right - Veg/Non-veg indicator
+                    Positioned(
+                      right: 8,
                       bottom: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.local_offer, size: 12, color: Colors.white),
-                            const SizedBox(width: 4),
-                            Text(
-                              category.isEmpty ? 'General' : category,
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                        child: Icon(
+                          isVeg ? Icons.circle : Icons.change_history,
+                          size: 12,
+                          color: isVeg ? Colors.green : Colors.red,
                         ),
                       ),
                     ),
@@ -677,9 +740,8 @@ class _FoodGridState extends State<FoodGrid> {
               ),
             ),
             
-            // Content section - Fixed height
-            SizedBox(
-              height: 56,
+            // Content section - Flexible height
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -697,9 +759,8 @@ class _FoodGridState extends State<FoodGrid> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     
-                    // Price and rating
+                    // Price section with discount
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '₹${_parsePrice(price).toStringAsFixed(0)}',
@@ -709,14 +770,43 @@ class _FoodGridState extends State<FoodGrid> {
                             fontSize: 11,
                           ),
                         ),
+                        if (discountPercent > 0) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            '₹${_parsePrice(originalPrice).toStringAsFixed(0)}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 9,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    
+                    // Rating and delivery time
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.star, color: Colors.orange, size: 10),
-                            const SizedBox(width: 1),
+                            const SizedBox(width: 2),
                             Text(
                               rating > 0 ? rating.toStringAsFixed(1) : '4.2', 
                               style: TextStyle(fontSize: 9, color: Colors.grey[600])
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.access_time, color: Colors.grey[600], size: 8),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${deliveryTime} min',
+                              style: TextStyle(fontSize: 8, color: Colors.grey[600])
                             ),
                           ],
                         ),
@@ -859,6 +949,35 @@ class _FoodGridState extends State<FoodGrid> {
     if (priceStr.isEmpty) return 12.99;
     String cleanPrice = priceStr.replaceAll(RegExp(r'[^\d.]'), '');
     return double.tryParse(cleanPrice) ?? 12.99;
+  }
+
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return '';
+    try {
+      DateTime dateTime;
+      if (timestamp is String) {
+        dateTime = DateTime.parse(timestamp);
+      } else if (timestamp is DateTime) {
+        dateTime = timestamp;
+      } else {
+        return '';
+      }
+      
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+      
+      if (difference.inDays > 0) {
+        return '${difference.inDays}d ago';
+      } else if (difference.inHours > 0) {
+        return '${difference.inHours}h ago';
+      } else if (difference.inMinutes > 0) {
+        return '${difference.inMinutes}m ago';
+      } else {
+        return 'Just now';
+      }
+    } catch (e) {
+      return '';
+    }
   }
 
   String _getImageUrl(Map<String, dynamic> item) {

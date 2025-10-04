@@ -214,6 +214,95 @@ class AuthProvider extends ChangeNotifier {
     await signOut();
   }
 
+  // Send OTP to phone number
+  Future<bool> sendOtp(String phoneNumber) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      // Format phone number to ensure it has country code
+      String formattedPhone = phoneNumber;
+      if (!phoneNumber.startsWith('+')) {
+        // Assume Indian number if no country code
+        formattedPhone = '+91$phoneNumber';
+      }
+
+      // Try to send OTP for existing users only
+      await _supabase.auth.signInWithOtp(
+        phone: formattedPhone,
+        shouldCreateUser: false, // Don't create user automatically
+      );
+      
+      print('OTP sent successfully to $formattedPhone!');
+      return true;
+    } catch (e) {
+      print('OTP send error: $e');
+      
+      // Handle specific error cases
+      if (e.toString().contains('otp_disabled') || e.toString().contains('Signups not allowed')) {
+        _setError('OTP authentication is not enabled. Please use email login or contact support.');
+      } else if (e.toString().contains('User not found')) {
+        _setError('Phone number not registered. Please register first or use email login.');
+      } else {
+        _setError('Failed to send OTP: ${e.toString()}');
+      }
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Verify OTP and sign in
+  Future<void> verifyOtp(String phoneNumber, String otp) async {
+    try {
+      // Format phone number to ensure it has country code
+      String formattedPhone = phoneNumber;
+      if (!phoneNumber.startsWith('+')) {
+        // Assume Indian number if no country code
+        formattedPhone = '+91$phoneNumber';
+      }
+
+      final response = await _supabase.auth.verifyOTP(
+        phone: formattedPhone,
+        token: otp,
+        type: supa.OtpType.sms,
+      );
+
+      if (response.user != null) {
+        print('Login successful for ${response.user!.phone}');
+        
+        // Create user object and save to SharedPreferences
+        _user = User(
+          id: response.user!.id,
+          email: response.user!.email ?? '',
+          name: response.user!.userMetadata?['full_name'] ?? '',
+          phoneNumber: response.user!.phone ?? formattedPhone,
+          profileImage: response.user!.userMetadata?['avatar_url'] ?? '',
+          addresses: [],
+          createdAt: response.user!.createdAt != null 
+              ? DateTime.parse(response.user!.createdAt!) 
+              : DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        // Save to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_id', _user!.id);
+        await prefs.setString('user_email', _user!.email);
+        await prefs.setString('user_name', _user!.name);
+        if (_user!.phoneNumber != null) {
+          await prefs.setString('user_phone', _user!.phoneNumber!);
+        }
+
+        _state = AuthState.authenticated;
+        notifyListeners();
+      }
+    } catch (e) {
+      print('OTP verification error: $e');
+      _setError('OTP verification failed: ${e.toString()}');
+    }
+  }
+
   // Placeholder methods for compatibility
   Future<bool> loginWithGoogle() async {
     _setError('Google login not implemented');
