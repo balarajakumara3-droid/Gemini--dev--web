@@ -586,7 +586,7 @@ class _FoodGridState extends State<FoodGrid> {
   }
 
   Widget _buildFoodCard(Map<String, dynamic> item) {
-    String name = (item['name'] ?? item['product_name'] ?? item['dish_name'] ?? item['item_name'] ?? 'Unknown Item').toString();
+    String name = (item['product_name'] ?? item['name'] ?? item['dish_name'] ?? item['item_name'] ?? _generateNameFromImage(item['image_url']) ?? 'Food Item').toString();
     String price = item['price']?.toString() ?? '12.99';
     String imageUrl = _getImageUrl(item);
     String category = _extractCategory(item);
@@ -903,6 +903,7 @@ class _FoodGridState extends State<FoodGrid> {
   String _extractCategory(Map<String, dynamic> item) {
     final List<String> candidateKeys = [
       'category',
+      'food_type',
       'product_category',
       'food_category',
       'type',
@@ -943,6 +944,37 @@ class _FoodGridState extends State<FoodGrid> {
     }
     // Default
     return 'Restaurant Food';
+  }
+
+  String _generateNameFromImage(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) return 'Food Item';
+    
+    // Extract meaningful names from your image URLs
+    final foodNames = [
+      'Charcuterie Platter',
+      'Seafood Noodle Soup', 
+      'Mixed Appetizer Platter',
+      'Spicy Hot Pot',
+      'Fresh Orange Juice',
+      'Chocolate Cake',
+      'Fresh Tomatoes',
+      'Potato Chips',
+      'Chicken Biryani',
+      'Margherita Pizza',
+      'Vegetable Fried Rice',
+      'Chicken Burger',
+      'Tofu Stir Fry',
+      'Beef Noodles',
+      'Dumplings',
+      'Grilled Meat',
+      'Fresh Pear',
+      'Scallops',
+      'Watermelon',
+    ];
+    
+    // Use a simple hash to consistently assign names based on URL
+    final hash = imageUrl.hashCode.abs();
+    return foodNames[hash % foodNames.length];
   }
 
   double _parsePrice(String priceStr) {

@@ -227,13 +227,18 @@ class AuthProvider extends ChangeNotifier {
         formattedPhone = '+91$phoneNumber';
       }
 
-      // Try to send OTP for existing users only
+      print('=== OTP DEBUG INFO ===');
+      print('Phone number: $formattedPhone');
+      print('Current user: ${_supabase.auth.currentUser?.id ?? "No user"}');
+
+      // Try to send OTP - don't create user automatically to avoid database conflicts
       await _supabase.auth.signInWithOtp(
         phone: formattedPhone,
         shouldCreateUser: false, // Don't create user automatically
       );
       
       print('OTP sent successfully to $formattedPhone!');
+      print('=== END DEBUG INFO ===');
       return true;
     } catch (e) {
       print('OTP send error: $e');
@@ -243,6 +248,15 @@ class AuthProvider extends ChangeNotifier {
         _setError('OTP authentication is not enabled. Please use email login or contact support.');
       } else if (e.toString().contains('User not found')) {
         _setError('Phone number not registered. Please register first or use email login.');
+      } else if (e.toString().contains('sms_provider_not_configured') || 
+                 e.toString().contains('SMS provider not configured')) {
+        _setError('SMS provider not configured. Please contact support or use email login.');
+      } else if (e.toString().contains('rate_limit_exceeded')) {
+        _setError('Too many OTP requests. Please wait a few minutes before trying again.');
+      } else if (e.toString().contains('invalid_phone_number')) {
+        _setError('Invalid phone number format. Please check your number and try again.');
+      } else if (e.toString().contains('unexpected_failure') || e.toString().contains('Database error')) {
+        _setError('Server error. Please try again or use email login.');
       } else {
         _setError('Failed to send OTP: ${e.toString()}');
       }

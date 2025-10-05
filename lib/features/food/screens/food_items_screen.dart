@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import '../../cart/providers/simple_cart_provider.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -219,6 +221,40 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
+  void _addToCart(Map<String, dynamic> item) {
+    final cartProvider = Provider.of<SimpleCartProvider>(context, listen: false);
+    
+    try {
+      // Add item to cart
+      cartProvider.addItem(item);
+      
+      String itemName = item['product_name'] ?? 'Item';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$itemName added to cart!'),
+          backgroundColor: Colors.green,
+          action: SnackBarAction(
+            label: 'View Cart',
+            textColor: Colors.white,
+            onPressed: () {
+              Navigator.of(context).pushNamed('/cart');
+            },
+          ),
+        ),
+      );
+      
+      // Close the modal
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding ${item['product_name']} to cart: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void _showItemDetails(Map<String, dynamic> item) {
     showModalBottomSheet(
       context: context,
@@ -340,13 +376,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      // TODO: Add to cart functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Added to cart!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
+                      _addToCart(item);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,

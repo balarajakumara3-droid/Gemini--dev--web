@@ -13,6 +13,7 @@ import 'features/orders/providers/order_provider.dart';
 import 'features/products/providers/product_provider.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'features/home/screens/home_screen.dart';
+import 'features/home/screens/main_screen.dart';
 import 'core/services/supabase_service.dart';
 import 'core/services/product_service.dart';
 import 'package:flutter/foundation.dart';
@@ -51,7 +52,7 @@ class FoodDeliveryApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const HomeScreen(),
+        home: const MainScreen(),
         routes: AppRoutes.routes,
         debugShowCheckedModeBanner: false,
       ),
