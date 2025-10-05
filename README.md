@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# Scaffold
-=======
 # Flutter Food Delivery App - Swiggy Clone
 
 A comprehensive **Swiggy-inspired food delivery application** built with Flutter for both iOS and Android platforms. This app provides a complete food ordering experience with modern UI/UX, robust architecture, and scalable features.
@@ -265,4 +262,3 @@ For support and queries:
 ---
 
 **Built with ❤️ using Flutter**
->>>>>>> 8c2bb35 (i added all the codes)
