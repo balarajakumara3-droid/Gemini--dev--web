@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import '../../providers/onboarding_provider.dart';
 
 class PropertyTypesScreen extends StatefulWidget {
   const PropertyTypesScreen({super.key});
@@ -11,382 +8,373 @@ class PropertyTypesScreen extends StatefulWidget {
 }
 
 class _PropertyTypesScreenState extends State<PropertyTypesScreen> {
-  List<String> _selectedPropertyTypes = [];
-  final List<PropertyType> _propertyTypes = [
-    PropertyType(
-      name: 'House',
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Apartment',
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Villa',
-      image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Condo',
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Townhouse',
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Penthouse',
-      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Studio',
-      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Loft',
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Duplex',
-      image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Bungalow',
-      image: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Mansion',
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
-    PropertyType(
-      name: 'Cottage',
-      image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=300&h=300&fit=crop',
-      isSelected: false,
-    ),
+  final List<Map<String, dynamic>> _propertyTypes = [
+    {
+      'id': 'apartment',
+      'name': 'Apartment',
+      'image': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop',
+      'selected': true,
+    },
+    {
+      'id': 'villa',
+      'name': 'Villa',
+      'image': 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=200&fit=crop',
+      'selected': true,
+    },
+    {
+      'id': 'house',
+      'name': 'House',
+      'image': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop',
+      'selected': true,
+    },
+    {
+      'id': 'cottage',
+      'name': 'Cottage',
+      'image': 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=200&fit=crop',
+      'selected': true,
+    },
   ];
-
-  void _toggleSelection(int index) {
-    setState(() {
-      _propertyTypes[index].isSelected = !_propertyTypes[index].isSelected;
-      
-      // Update selected property types list
-      if (_propertyTypes[index].isSelected) {
-        _selectedPropertyTypes.add(_propertyTypes[index].name);
-      } else {
-        _selectedPropertyTypes.remove(_propertyTypes[index].name);
-      }
-    });
-  }
-
-  int get _selectedCount => _propertyTypes.where((type) => type.isSelected).length;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Account Setup / Preferable',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+      backgroundColor: const Color(0xFFF5F7F9),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 30),
+              _buildTitle(),
+              const SizedBox(height: 30),
+              _buildPropertyTypesGrid(),
+              const Spacer(),
+              _buildNextButton(),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => context.go('/home'),
-            child: const Text(
-              'Skip',
-              style: TextStyle(
-                color: Color(0xFF2E7D32),
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Header Section
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Select your preferable',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const Text(
-                  'real estate type',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'You can edit this later on your account setting.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Property Types Grid
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1.0,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: _propertyTypes.length,
-                itemBuilder: (context, index) {
-                  final propertyType = _propertyTypes[index];
-                  return GestureDetector(
-                    onTap: () => _toggleSelection(index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: propertyType.isSelected
-                              ? const Color(0xFF2E7D32)
-                              : Colors.grey[300]!,
-                          width: propertyType.isSelected ? 2 : 1,
-                        ),
-                        boxShadow: propertyType.isSelected
-                            ? [
-                                BoxShadow(
-                                  color: const Color(0xFF2E7D32).withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Stack(
-                          children: [
-                            // Property Image
-                            Positioned.fill(
-                              child: Image.network(
-                                propertyType.image,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: const Icon(
-                                      Icons.home,
-                                      color: Colors.grey,
-                                      size: 32,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-
-                            // Overlay
-                            if (propertyType.isSelected)
-                              Container(
-                                color: const Color(0xFF2E7D32).withOpacity(0.3),
-                              ),
-
-                            // Selection Indicator
-                            if (propertyType.isSelected)
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF2E7D32),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-
-                            // Property Name
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.7),
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
-                                  ),
-                                ),
-                                child: Text(
-                                  propertyType.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Show More Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Handle show more functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('More property types coming soon!'),
-                      backgroundColor: Color(0xFF2E7D32),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Show More',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Continue Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _selectedPropertyTypes.isNotEmpty
-                    ? () {
-                        // Save property types to onboarding provider
-                        final onboardingProvider = Provider.of<OnboardingProvider>(context, listen: false);
-                        onboardingProvider.setPropertyTypes(_selectedPropertyTypes);
-                        onboardingProvider.nextStep();
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Progress Indicator
-          Container(
-            height: 4,
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(2),
-            ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: 0.5,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2E7D32),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-        ],
       ),
     );
   }
-}
 
-class PropertyType {
-  final String name;
-  final String image;
-  bool isSelected;
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            width: 45,
+            height: 45,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.arrow_back, color: Colors.black87, size: 20),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => Navigator.pushReplacementNamed(context, '/home'),
+          child: const Text(
+            'Skip',
+            style: TextStyle(
+              color: Color(0xFF234F68),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-  PropertyType({
-    required this.name,
-    required this.image,
-    required this.isSelected,
-  });
+  Widget _buildTitle() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: 'Select your preferable ',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              TextSpan(
+                text: 'real estate type',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF234F68),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'You can edit this later on your account setting',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPropertyTypesGrid() {
+    return Expanded(
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1.2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: _propertyTypes.length,
+        itemBuilder: (context, index) {
+          final propertyType = _propertyTypes[index];
+          final isSelected = propertyType['selected'] as bool;
+          
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                propertyType['selected'] = !isSelected;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? const Color(0xFF7BC142) : Colors.grey[300]!,
+                  width: isSelected ? 2 : 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  // Property Image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      propertyType['image'] as String,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  // Dark overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.7),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Property name at bottom
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Text(
+                      propertyType['name'] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  // Selection checkmark
+                  if (isSelected)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF7BC142),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildNextButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: () => _showSuccessScreen(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF7BC142),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+        ),
+        child: const Text(
+          'Next',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessScreen() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _buildSuccessDialog(),
+    );
+  }
+
+  Widget _buildSuccessDialog() {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Success Icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFF7BC142),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7BC142).withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Success Message
+            RichText(
+              text: const TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Account ',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'successfully',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7BC142),
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' created',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Lorem ipsum dolor sit amet, consectetur.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            // Finish Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacementNamed(context, '/home');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7BC142),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Finish',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
