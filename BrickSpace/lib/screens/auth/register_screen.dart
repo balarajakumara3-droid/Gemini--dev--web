@@ -34,7 +34,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
+    print('RegisterScreen: _handleRegister called');
+    print('RegisterScreen: Form valid: ${_formKey.currentState!.validate()}');
+    print('RegisterScreen: Agree to terms: $_agreeToTerms');
+    
     if (_formKey.currentState!.validate() && _agreeToTerms) {
+      print('RegisterScreen: Starting registration process');
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       
       final success = await authProvider.signUp(
@@ -44,9 +49,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _phoneController.text.trim(),
       );
 
+      print('RegisterScreen: Registration success: $success');
+      print('RegisterScreen: AuthProvider error: ${authProvider.error}');
+
       if (success && mounted) {
-        context.push('/auth/otp?email=${_emailController.text.trim()}');
+        print('RegisterScreen: Navigating to home screen');
+        context.go('/home');
       } else if (mounted) {
+        print('RegisterScreen: Showing error snackbar');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.error ?? 'Registration failed'),
@@ -55,11 +65,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } else if (!_agreeToTerms) {
+      print('RegisterScreen: User has not agreed to terms');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please agree to the terms and conditions'),
         ),
       );
+    } else {
+      print('RegisterScreen: Form validation failed');
     }
   }
 

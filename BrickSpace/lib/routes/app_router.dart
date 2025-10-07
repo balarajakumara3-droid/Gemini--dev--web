@@ -13,6 +13,7 @@ import '../screens/properties/property_list_screen.dart';
 import '../screens/properties/property_detail_screen.dart';
 import '../screens/properties/search_screen.dart';
 import '../screens/properties/filters_screen.dart';
+import '../screens/onboarding/location_setup_screen.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/favorites/favorites_screen.dart';
 import '../screens/profile/profile_screen.dart';
@@ -41,36 +42,43 @@ import '../screens/chat/chat_history_screen.dart';
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
-    redirect: (context, state) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final isAuthenticated = authProvider.isAuthenticated;
-      final isOnAuthScreen = state.uri.toString().startsWith('/auth');
-      final isOnOnboardingScreen = state.uri.toString().startsWith('/onboarding');
-      final isOnSplashScreen = state.uri.toString() == '/splash';
+            redirect: (context, state) {
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final isAuthenticated = authProvider.isAuthenticated;
+              final isOnAuthScreen = state.uri.toString().startsWith('/auth');
+              final isOnOnboardingScreen = state.uri.toString().startsWith('/onboarding');
+              final isOnSplashScreen = state.uri.toString() == '/splash';
+              final isOnOTPScreen = state.uri.toString().startsWith('/auth/otp');
 
-      print('Router redirect: uri=${state.uri}, isAuthenticated=$isAuthenticated, isOnAuthScreen=$isOnAuthScreen, isOnOnboardingScreen=$isOnOnboardingScreen, isOnSplashScreen=$isOnSplashScreen');
+              print('Router redirect: uri=${state.uri}, isAuthenticated=$isAuthenticated, isOnAuthScreen=$isOnAuthScreen, isOnOnboardingScreen=$isOnOnboardingScreen, isOnSplashScreen=$isOnSplashScreen, isOnOTPScreen=$isOnOTPScreen');
 
-      // Allow splash and onboarding screens without authentication
-      if (isOnSplashScreen || isOnOnboardingScreen) {
-        print('Router redirect: Allowing splash/onboarding, returning null');
-        return null;
-      }
+              // Allow splash and onboarding screens without authentication
+              if (isOnSplashScreen || isOnOnboardingScreen) {
+                print('Router redirect: Allowing splash/onboarding, returning null');
+                return null;
+              }
 
-      // If user is not authenticated and not on auth screen, redirect to login
-      if (!isAuthenticated && !isOnAuthScreen) {
-        print('Router redirect: Not authenticated, redirecting to login');
-        return '/auth/login';
-      }
+              // Allow OTP screen even when authenticated (for email verification)
+              if (isOnOTPScreen) {
+                print('Router redirect: Allowing OTP screen, returning null');
+                return null;
+              }
 
-      // If user is authenticated and on auth screen, redirect to account setup
-      if (isAuthenticated && isOnAuthScreen) {
-        print('Router redirect: Authenticated on auth screen, redirecting to account setup');
-        return '/onboarding/location-setup';
-      }
+              // If user is not authenticated and not on auth screen, redirect to login
+              if (!isAuthenticated && !isOnAuthScreen) {
+                print('Router redirect: Not authenticated, redirecting to login');
+                return '/auth/login';
+              }
 
-      print('Router redirect: No redirect needed');
-      return null;
-    },
+              // If user is authenticated and on auth screen (but not OTP), redirect to account setup
+              if (isAuthenticated && isOnAuthScreen && !isOnOTPScreen) {
+                print('Router redirect: Authenticated on auth screen, redirecting to account setup');
+                return '/onboarding/location-setup';
+              }
+
+              print('Router redirect: No redirect needed');
+              return null;
+            },
     routes: [
       // Splash Screen
       GoRoute(
@@ -199,23 +207,7 @@ class AppRouter {
         builder: (context, state) => const onboarding.LocationSelectionScreen(),
       ),
       
-      // New Account Setup Screens
-      GoRoute(
-        path: '/onboarding/location-setup',
-        builder: (context, state) => const LocationSetupScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding/location-search',
-        builder: (context, state) => const LocationSearchScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding/location-confirmation',
-        builder: (context, state) => const LocationConfirmationScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding/property-types-selection',
-        builder: (context, state) => const PropertyTypesSelectionScreen(),
-      ),
+              // Account Setup Screens (removed - going directly to home)
 
       // Promotion Routes
       GoRoute(

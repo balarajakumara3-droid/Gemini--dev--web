@@ -1,0 +1,43 @@
+name: Android APK (Public URL)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload to transfer.sh
+        id: upload
+        run: |
+          curl --upload-file build/app/outputs/flutter-apk/app-debug.apk https://transfer.sh/app-debug.apk > url.txt
+          echo "url=$(cat url.txt)" >> $GITHUB_OUTPUT
+
+      - name: Echo download URL
+        run: echo "Download URL: ${{ steps.upload.outputs.url }}"
+
+      - name: Add URL to summary
+        run: |
+          echo "### APK Download URL" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.upload.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+

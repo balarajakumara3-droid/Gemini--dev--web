@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
         child: Column(
           children: [
@@ -118,253 +118,326 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      decoration: const BoxDecoration(
+        color: Color(0xFFE3F2FD),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Stack(
         children: [
-          // Location and Profile Row
-          Row(
-            children: [
-              // Location Selector
-              GestureDetector(
-                onTap: () async {
-                  final result = await context.push('/onboarding/location-selection');
-                  if (result != null && mounted) {
-                    // Handle location selection result
-                    setState(() {
-                      _currentLocation = result.toString();
-                    });
-                    // Update the location service
-                    LocationService.instance.setLocation(result.toString());
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Location updated to: $result'),
-                        backgroundColor: const Color(0xFF2E7D32),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      _isLoadingLocation
-                          ? const SizedBox(
-                              width: 12,
-                              height: 12,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-                              ),
-                            )
-                          : Text(
-                              _currentLocation,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: _getCurrentLocation,
-                        child: const Icon(Icons.refresh, size: 16, color: Colors.grey),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
-                    ],
-                  ),
-                ),
+          // Background organic shapes
+          Positioned(
+            top: -50,
+            left: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                color: const Color(0xFFB3E5FC).withOpacity(0.3),
+                shape: BoxShape.circle,
               ),
-              
-              const Spacer(),
-              
-              // Notifications
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          Positioned(
+            top: -30,
+            right: -30,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFF81D4FA).withOpacity(0.4),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          
+          // Main content
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 50, 20, 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Breadcrumb
+                const Text(
+                  'Home / Full',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF1976D2),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                child: Stack(
+                
+                const SizedBox(height: 20),
+                
+                // Location and Profile Row
+                Row(
                   children: [
-                    const Icon(Icons.notifications_outlined, size: 20),
-                    Positioned(
-                      right: 0,
-                      top: 0,
+                    // Location Selector
+                    GestureDetector(
+                      onTap: () async {
+                        final result = await context.push('/onboarding/location-selection');
+                        if (result != null && mounted) {
+                          setState(() {
+                            _currentLocation = result.toString();
+                          });
+                          LocationService.instance.setLocation(result.toString());
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Location updated to: $result'),
+                              backgroundColor: const Color(0xFF2E7D32),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
                       child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.location_on, size: 18, color: Colors.black),
+                            const SizedBox(width: 8),
+                            _isLoadingLocation
+                                ? const SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                                    ),
+                                  )
+                                : ConstrainedBox(
+                                    constraints: const BoxConstraints(maxWidth: 120),
+                                    child: Text(
+                                      _currentLocation,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black),
+                          ],
                         ),
                       ),
+                    ),
+                    
+                    const Spacer(),
+                    
+                    // Notifications
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF4CAF50),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.notifications_outlined, 
+                              size: 20, 
+                              color: Colors.white,
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(width: 12),
+                    
+                    // Profile Picture
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        final user = authProvider.user;
+                        return GestureDetector(
+                          onTap: () => context.push('/profile'),
+                          child: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: user?.profileImage.isNotEmpty == true
+                                ? (user!.profileImage.startsWith('http')
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(user.profileImage) as ImageProvider,
+                                      )
+                                    : CircleAvatar(
+                                        backgroundImage: FileImage(File(user.profileImage)) as ImageProvider,
+                                      ))
+                                : CircleAvatar(
+                                    backgroundColor: const Color(0xFF4CAF50),
+                                    child: const Icon(Icons.person, size: 24, color: Colors.white),
+                                  ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
-              ),
-              
-              const SizedBox(width: 12),
-              
-              // Profile Picture
-              Consumer<AuthProvider>(
-                builder: (context, authProvider, child) {
-                  final user = authProvider.user;
-                  return GestureDetector(
-                    onTap: () => context.push('/profile'),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey[300]!, width: 2),
-                      ),
-                      child: user?.profileImage.isNotEmpty == true
-                          ? (user!.profileImage.startsWith('http')
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(user.profileImage) as ImageProvider,
-                                )
-                              : CircleAvatar(
-                                  backgroundImage: FileImage(File(user.profileImage)) as ImageProvider,
-                                ))
-                          : CircleAvatar(
-                              child: const Icon(Icons.person, size: 20),
-                            ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Greeting
-          Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              final user = authProvider.user;
-              final firstName = user?.name.split(' ').first ?? 'User';
-              return Text(
-                'Hey, $firstName!',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              );
-            },
-          ),
-          const Text(
-            'Let\'s start exploring',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Test Onboarding Buttons
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => context.push('/onboarding/location'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  child: const Text('Location Setup'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => context.push('/onboarding/property-types'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  child: const Text('Property Types'),
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, color: Colors.grey),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Search House, Apartment, etc',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                const Icon(Icons.mic, color: Colors.grey),
-              ],
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Category Chips
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = _selectedCategory == category;
                 
-                return Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF2E7D32) : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? const Color(0xFF2E7D32) : Colors.grey[300]!,
-                        ),
+                const SizedBox(height: 30),
+                
+                // Greeting
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    final user = authProvider.user;
+                    final firstName = user?.name.split(' ').first ?? 'Jonathan';
+                    return Text(
+                      'Hey, $firstName!',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
-                      child: Text(
-                        category,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.grey[700],
-                          fontWeight: FontWeight.w500,
+                    );
+                  },
+                ),
+                const Text(
+                  'Let\'s start exploring',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Search Bar
+                GestureDetector(
+                  onTap: () {
+                    context.push('/search');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search, color: Colors.grey, size: 20),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Search House, Apartment, etc',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        const Icon(Icons.mic, color: Colors.grey, size: 20),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Category Chips
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      final category = _categories[index];
+                      final isSelected = _selectedCategory == category;
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected ? const Color(0xFF1E3A8A) : Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              category,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],

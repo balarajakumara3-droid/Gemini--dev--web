@@ -104,6 +104,15 @@ class Property {
   String get propertyInfo {
     return '$bedrooms bed • $bathrooms bath • ${area.toStringAsFixed(0)} $areaUnit';
   }
+
+  // Additional getters for compatibility
+  String get type => propertyType;
+  List<String> get imageUrls => images;
+  String get imageUrl => images.isNotEmpty ? images.first : '';
+  String get name => title;
+  String get size => '${area.toStringAsFixed(0)} $areaUnit';
+  double get rating => agent.rating;
+  int get reviewCount => agent.totalListings;
 }
 
 class Agent {

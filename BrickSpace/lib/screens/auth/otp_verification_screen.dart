@@ -283,7 +283,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      context.go('/onboarding/location-setup');
+                      context.go('/home');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2E7D32),

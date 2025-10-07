@@ -474,30 +474,30 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 14),
-                        const SizedBox(width: 4),
+                        const Icon(Icons.star, color: Colors.amber, size: 12),
+                        const SizedBox(width: 2),
                         Text(
                           property['rating'].toString(),
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: Colors.grey, size: 14),
-                        const SizedBox(width: 4),
+                        const Icon(Icons.location_on, color: Colors.grey, size: 12),
+                        const SizedBox(width: 2),
                         Expanded(
                           child: Text(
                             property['location'],
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 10,
                               color: Colors.grey[600],
                             ),
                             maxLines: 1,
@@ -506,11 +506,11 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       property['price'],
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF2E7D32),
                       ),

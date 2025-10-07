@@ -79,22 +79,27 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signUp(String name, String email, String password, String phone) async {
+    print('AuthProvider: signUp called with name=$name, email=$email, phone=$phone');
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
       final result = await _authService.signUp(name, email, password, phone);
+      print('AuthProvider: signUp result: $result');
       if (result['success']) {
         _user = User.fromJson(result['user']);
         await _saveUserToStorage();
+        print('AuthProvider: signUp successful, user saved');
         return true;
       } else {
         _error = result['message'];
+        print('AuthProvider: signUp failed: ${result['message']}');
         return false;
       }
     } catch (e) {
       _error = e.toString();
+      print('AuthProvider: signUp error: $e');
       return false;
     } finally {
       _isLoading = false;

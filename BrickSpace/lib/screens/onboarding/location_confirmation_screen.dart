@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationConfirmationScreen extends StatefulWidget {
   const LocationConfirmationScreen({super.key});
@@ -10,12 +9,12 @@ class LocationConfirmationScreen extends StatefulWidget {
 }
 
 class _LocationConfirmationScreenState extends State<LocationConfirmationScreen> {
-  GoogleMapController? _mapController;
-  final LatLng _center = const LatLng(-6.2088, 106.8456); // Jakarta
-  String _selectedLocation = 'West Jakarta';
+  String _selectedAddress = 'Srengseng, Kembangan, West Jakarta City, Jakarta 11630';
 
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
+  @override
+  void initState() {
+    super.initState();
+    print('LocationConfirmationScreen: initState called - SIMPLIFIED VERSION');
   }
 
   @override
@@ -30,7 +29,7 @@ class _LocationConfirmationScreenState extends State<LocationConfirmationScreen>
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Account Setup / L...',
+          'Add your location',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -38,176 +37,151 @@ class _LocationConfirmationScreenState extends State<LocationConfirmationScreen>
           ),
         ),
         centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () {
-              context.go('/home');
-            },
-            child: const Text(
-              'Skip',
-              style: TextStyle(
-                color: Color(0xFF4CAF50),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Add your location',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Add your location',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'You can edit this later on your account setting.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Map
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Stack(
-                  children: [
-                    GoogleMap(
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        // Add a small delay to ensure map is fully loaded
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          controller.animateCamera(
-                            CameraUpdate.newLatLng(_center),
-                          );
-                        });
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: _center,
-                        zoom: 13,
+              const SizedBox(height: 8),
+              const Text(
+                'Help us find properties near you',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Map Placeholder
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId('selected_location'),
-                          position: _center,
-                          icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueBlue,
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: Stack(
+                        children: [
+                          const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.map,
+                                  size: 64,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Map will be available here',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          // Pin overlay
+                          const Positioned(
+                            top: 50,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Selected Location Field
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color(0xFF4CAF50),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _selectedAddress,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
                         ),
-                      },
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: false,
-                      zoomControlsEnabled: false,
-                      mapToolbarEnabled: false,
-                      mapType: MapType.normal,
-                      compassEnabled: false,
-                      rotateGesturesEnabled: true,
-                      scrollGesturesEnabled: true,
-                      tiltGesturesEnabled: true,
-                      zoomGesturesEnabled: true,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Selected Location Field
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.location_on,
-                  color: Color(0xFF4CAF50),
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _selectedLocation,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
+              
+              const SizedBox(height: 24),
+              
+              // Next Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    print('LocationConfirmationScreen: Navigating to property types');
+                    context.go('/onboarding/property-types-selection');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Next',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.grey,
-                  size: 16,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          // Next button
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                context.push('/onboarding/property-types-selection');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4CAF50),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
               ),
-              child: const Text(
-                'Next',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            ],
           ),
-
-          const SizedBox(height: 30),
-        ],
+        ),
       ),
     );
   }
