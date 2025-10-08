@@ -105,7 +105,7 @@ class PromotionDetailScreen extends StatelessWidget {
             
             // Content
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +207,7 @@ class PromotionDetailScreen extends StatelessWidget {
                       ),
                     ),
                     
-                    const Spacer(),
+                    const SizedBox(height: 24),
                     
                     // Explore Button
                     SizedBox(

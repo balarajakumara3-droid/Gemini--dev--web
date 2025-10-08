@@ -114,6 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
           );
         },
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(context, 1),
     );
   }
 
@@ -534,6 +535,61 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context, int currentIndex) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: currentIndex,
+      selectedItemColor: const Color(0xFF4CAF50),
+      unselectedItemColor: Colors.grey,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          activeIcon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite_border),
+          activeIcon: Icon(Icons.favorite),
+          label: 'Favorites',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat_outlined),
+          activeIcon: Icon(Icons.chat),
+          label: 'Chat',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          activeIcon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            context.go('/home');
+            break;
+          case 1:
+            // Already on search
+            break;
+          case 2:
+            context.go('/favorites');
+            break;
+          case 3:
+            context.go('/chat-history');
+            break;
+          case 4:
+            context.go('/profile');
+            break;
+        }
+      },
     );
   }
 }

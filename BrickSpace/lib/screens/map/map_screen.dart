@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import '../../providers/property_provider.dart';
 import '../../providers/favorites_provider.dart';
 import '../../models/property.dart';
@@ -16,23 +19,239 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
   static const LatLng _defaultLocation = LatLng(37.7749, -122.4194); // San Francisco
+  static const CameraPosition _defaultCameraPosition = CameraPosition(
+    target: _defaultLocation,
+    zoom: 12,
+  );
   Set<Marker> _markers = {};
+  Set<Circle> _circles = {};
+  LatLng? _currentLocation;
+  bool _isLoadingLocation = false;
+  MapType _mapType = MapType.normal;
+  bool _showTraffic = false;
+  bool _showTransit = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PropertyProvider>().loadProperties();
+      _getCurrentLocation();
     });
   }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    print('Map created successfully');
+    
+    // Animate to current location if available
+    if (_currentLocation != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentLocation!, 15),
+      );
+      print('Animated to current location: $_currentLocation');
+    } else {
+      print('No current location available, using default location');
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    print('Getting current location...');
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      print('Location services enabled: $serviceEnabled');
+      
+      if (!serviceEnabled) {
+        // Location services are not enabled, show a dialog
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location services are disabled. Please enable location services to use the map.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        setState(() {
+          _isLoadingLocation = false;
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      print('Location permission status: $permission');
+      
+      if (permission == LocationPermission.denied) {
+        print('Requesting location permission...');
+        permission = await Geolocator.requestPermission();
+        print('Location permission after request: $permission');
+        
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permission denied. Using default location.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          // Use default location
+          setState(() {
+            _currentLocation = _defaultLocation;
+            _isLoadingLocation = false;
+          });
+          
+          if (_mapController != null) {
+            _mapController!.animateCamera(
+              CameraUpdate.newLatLngZoom(_defaultLocation, 12),
+            );
+          }
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location permission permanently denied. Please enable it in settings.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        // Use default location
+        setState(() {
+          _currentLocation = _defaultLocation;
+          _isLoadingLocation = false;
+        });
+        
+        if (_mapController != null) {
+          _mapController!.animateCamera(
+            CameraUpdate.newLatLngZoom(_defaultLocation, 12),
+          );
+        }
+        return;
+      }
+
+      print('Getting current position...');
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      print('Current position obtained: ${position.latitude}, ${position.longitude}');
+
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+        _isLoadingLocation = false;
+      });
+
+      if (_mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(_currentLocation!, 15),
+        );
+        print('Animated camera to current location');
+      }
+    } catch (e) {
+      print('Error getting location: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error getting location: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      // Use default location as fallback
+      setState(() {
+        _currentLocation = _defaultLocation;
+        _isLoadingLocation = false;
+      });
+      
+      if (_mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(_defaultLocation, 12),
+        );
+      }
+    }
   }
 
   void _updateMarkers(List<Property> properties) {
+    print('Updating markers with ${properties.length} properties');
     setState(() {
-      _markers = properties.map((property) {
+      _markers = <Marker>{};
+      
+      // If no properties are loaded, add some sample properties
+      List<Property> displayProperties = properties;
+      if (properties.isEmpty) {
+        print('No properties found, adding sample properties');
+        // Add sample properties for demonstration
+        displayProperties = [
+          Property(
+            id: 'sample1',
+            title: 'Luxury Apartment',
+            description: 'Beautiful luxury apartment in the heart of the city',
+            price: 2500,
+            location: 'Downtown',
+            address: '123 Main St, City Center',
+            latitude: 37.7749,
+            longitude: -122.4194,
+            images: [],
+            bedrooms: 2,
+            bathrooms: 2,
+            area: 1200,
+            areaUnit: 'sq ft',
+            propertyType: 'Apartment',
+            listingType: 'rent',
+            amenities: ['Parking', 'Gym'],
+            agent: Agent(
+              id: 'agent1',
+              name: 'John Smith',
+              email: 'john@example.com',
+              phone: '+1234567890',
+              profileImage: '',
+              company: 'Premium Realty',
+              rating: 4.5,
+              totalListings: 15,
+            ),
+            createdAt: DateTime.now(),
+          ),
+          Property(
+            id: 'sample2',
+            title: 'Modern Villa',
+            description: 'Spacious modern villa with garden',
+            price: 4500,
+            location: 'Suburbs',
+            address: '456 Oak Ave, Green Valley',
+            latitude: 37.7849,
+            longitude: -122.4094,
+            images: [],
+            bedrooms: 4,
+            bathrooms: 3,
+            area: 2500,
+            areaUnit: 'sq ft',
+            propertyType: 'Villa',
+            listingType: 'rent',
+            amenities: ['Garden', 'Pool', 'Parking'],
+            agent: Agent(
+              id: 'agent2',
+              name: 'Sarah Johnson',
+              email: 'sarah@example.com',
+              phone: '+1234567891',
+              profileImage: '',
+              company: 'Elite Properties',
+              rating: 4.8,
+              totalListings: 22,
+            ),
+            createdAt: DateTime.now(),
+          ),
+        ];
+      }
+      
+      _markers = displayProperties.map((property) {
+        print('Adding marker for property: ${property.title} at ${property.latitude}, ${property.longitude}');
         return Marker(
           markerId: MarkerId(property.id),
           position: LatLng(property.latitude, property.longitude),
@@ -40,9 +259,164 @@ class _MapScreenState extends State<MapScreen> {
             title: property.title,
             snippet: property.formattedPrice,
           ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            property.price > 3000 
+                ? BitmapDescriptor.hueRed 
+                : property.price > 1500 
+                    ? BitmapDescriptor.hueOrange 
+                    : BitmapDescriptor.hueGreen,
+          ),
+          onTap: () => _showPropertyInfo(property),
         );
       }).toSet();
+
+      // Add current location marker
+      if (_currentLocation != null) {
+        print('Adding current location marker at $_currentLocation');
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('current_location'),
+            position: _currentLocation!,
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+            infoWindow: const InfoWindow(
+              title: 'Your Location',
+              snippet: 'Current position',
+            ),
+          ),
+        );
+      }
     });
+  }
+
+  void _showPropertyInfo(Property property) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[300],
+                  ),
+                  child: property.images.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            property.images.first,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.home, color: Colors.grey);
+                            },
+                          ),
+                        )
+                      : const Icon(Icons.home, color: Colors.grey),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        property.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        property.formattedPrice,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${property.bedrooms} bed • ${property.bathrooms} bath • ${property.area.toStringAsFixed(0)} ${property.areaUnit}',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push('/properties/${property.id}');
+                    },
+                    icon: const Icon(Icons.info_outline),
+                    label: const Text('View Details'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Navigate to chat with agent
+                    },
+                    icon: const Icon(Icons.chat),
+                    label: const Text('Contact Agent'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleMapType() {
+    setState(() {
+      _mapType = _mapType == MapType.normal ? MapType.satellite : MapType.normal;
+    });
+  }
+
+  void _toggleTraffic() {
+    setState(() {
+      _showTraffic = !_showTraffic;
+    });
+  }
+
+  void _toggleTransit() {
+    setState(() {
+      _showTransit = !_showTransit;
+    });
+  }
+
+  void _centerOnCurrentLocation() {
+    if (_currentLocation != null && _mapController != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentLocation!, 15),
+      );
+    }
   }
 
   @override
@@ -51,6 +425,21 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         title: const Text('Map View'),
         actions: [
+          IconButton(
+            icon: Icon(_mapType == MapType.normal ? Icons.satellite : Icons.map),
+            onPressed: _toggleMapType,
+            tooltip: 'Toggle Map Type',
+          ),
+          IconButton(
+            icon: Icon(_showTraffic ? Icons.traffic : Icons.traffic_outlined),
+            onPressed: _toggleTraffic,
+            tooltip: 'Toggle Traffic',
+          ),
+          IconButton(
+            icon: Icon(_showTransit ? Icons.train : Icons.train_outlined),
+            onPressed: _toggleTransit,
+            tooltip: 'Toggle Transit',
+          ),
           IconButton(
             icon: const Icon(Icons.list),
             onPressed: () => Navigator.pop(context),
@@ -73,51 +462,39 @@ class _MapScreenState extends State<MapScreen> {
           return Stack(
             children: [
               // Google Maps
-              if (ApiConfig.hasValidKeys)
-                GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: const CameraPosition(
-                    target: _defaultLocation,
-                    zoom: 12,
-                  ),
-                  markers: _markers,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                )
-              else
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.grey[200],
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.red,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'API Keys Not Configured',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.red,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Please set API_KEY_ANDROID and API_KEY_IOS',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: _defaultCameraPosition,
+                markers: _markers,
+                circles: _circles,
+                mapType: _mapType,
+                trafficEnabled: _showTraffic,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false, // We'll add custom button
+                zoomControlsEnabled: true,
+                mapToolbarEnabled: true,
+                onTap: (LatLng position) {
+                  // Handle map tap
+                  print('Map tapped at: ${position.latitude}, ${position.longitude}');
+                },
+              ),
+
+              // Custom Location Button
+              Positioned(
+                bottom: 320,
+                right: 16,
+                child: FloatingActionButton.small(
+                  onPressed: _centerOnCurrentLocation,
+                  backgroundColor: Colors.white,
+                  child: _isLoadingLocation
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.my_location, color: Colors.blue),
                 ),
+              ),
 
               // Property List Overlay
               Positioned(
@@ -236,7 +613,7 @@ class _MapScreenState extends State<MapScreen> {
         child: InkWell(
           onTap: () {
             // Navigate to property detail
-            Navigator.pushNamed(context, '/properties/${property.id}');
+            context.push('/properties/${property.id}');
           },
           child: Padding(
             padding: const EdgeInsets.all(12),

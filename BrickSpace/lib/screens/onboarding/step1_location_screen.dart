@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../controllers/onboarding_controller.dart';
 import '../../models/onboarding_models.dart';
 
@@ -14,6 +16,10 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  
+  GoogleMapController? _mapController;
+  LatLng _currentPosition = const LatLng(-6.2088, 106.8456); // Jakarta default
+  bool _isLoadingLocation = false;
 
   @override
   void initState() {
@@ -33,16 +39,42 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
     ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
     
     _animationController.forward();
+    _getCurrentLocation();
   }
 
   @override
   void dispose() {
+    _mapController?.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+  
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        await Geolocator.requestPermission();
+      }
+      
+      final position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+        _isLoadingLocation = false;
+      });
+      
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLng(_currentPosition),
+      );
+    } catch (e) {
+      print('Error getting location: $e');
+      setState(() => _isLoadingLocation = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Step1LocationScreen: Building widget');
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7F9),
       body: SafeArea(
@@ -174,85 +206,72 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
               borderRadius: BorderRadius.circular(20),
               child: Stack(
                 children: [
-                  // Map Placeholder (Replace with actual Google Maps)
-                  Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
-                      ),
+                  // Google Maps
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _currentPosition,
+                      zoom: 14,
                     ),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.map,
-                            size: 60,
-                            color: Color(0xFF234F68),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Map View',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF234F68),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Google Maps will be integrated here',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Location Pin
-                  const Positioned(
-                    top: 120,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Icon(
-                        Icons.location_on,
-                        size: 40,
-                        color: Color(0xFF234F68),
-                      ),
-                    ),
-                  ),
-                  // Select on map text
-                  const Positioned(
-                    bottom: 20,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
+                    onMapCreated: (controller) {
+                      _mapController = controller;
+                    },
+                    onTap: (position) {
+                      setState(() => _currentPosition = position);
+                      // Update location in controller
+                      context.read<OnboardingController>().setLocation(
+                        LocationData(
+                          latitude: position.latitude,
+                          longitude: position.longitude,
+                          address: '${position.latitude}, ${position.longitude}',
+                          city: 'Selected Location',
+                          state: '',
+                          country: '',
+                          postalCode: '',
                         ),
-                        child: Text(
-                          'select on map',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                      );
+                    },
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    mapToolbarEnabled: false,
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('selected_location'),
+                        position: _currentPosition,
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueBlue,
+                        ),
+                      ),
+                    },
+                  ),
+                  // Loading indicator
+                  if (_isLoadingLocation)
+                    Container(
+                      color: Colors.white.withOpacity(0.8),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  // Current location button
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(30),
+                      child: InkWell(
+                        onTap: _getCurrentLocation,
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Icon(
+                            Icons.my_location,
                             color: Color(0xFF234F68),
+                            size: 24,
                           ),
                         ),
                       ),
@@ -402,6 +421,7 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
   }
 
   void _nextStep() {
+    print('Step1LocationScreen: _nextStep called');
     // Simulate location selection
     final mockLocation = LocationData(
       latitude: -6.2088,
@@ -413,11 +433,17 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
       postalCode: '11630',
     );
     
-    context.read<OnboardingController>().setLocation(mockLocation);
-    context.read<OnboardingController>().nextStep();
+    print('Step1LocationScreen: Setting mock location: ${mockLocation.fullAddress}');
+    final controller = context.read<OnboardingController>();
+    controller.setLocation(mockLocation);
+    print('Step1LocationScreen: Location set successfully');
+    print('Step1LocationScreen: Calling nextStep on controller');
+    controller.nextStep();
+    print('Step1LocationScreen: nextStep completed');
   }
 
   void _skipOnboarding() {
+    print('Step1LocationScreen: _skipOnboarding called');
     context.read<OnboardingController>().skipToEnd();
   }
 }

@@ -42,6 +42,7 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
 
   @override
   Widget build(BuildContext context) {
+    print('Step2LocationDetailScreen: Building widget');
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7F9),
       body: SafeArea(
@@ -404,10 +405,13 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
   }
 
   void _chooseLocation() {
+    print('Step2LocationDetailScreen: _chooseLocation called');
     context.read<OnboardingController>().nextStep();
+    print('Step2LocationDetailScreen: nextStep completed');
   }
 
   void _skipOnboarding() {
+    print('Step2LocationDetailScreen: _skipOnboarding called');
     context.read<OnboardingController>().skipToEnd();
   }
 }

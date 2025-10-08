@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../controllers/onboarding_controller.dart';
 import '../../models/onboarding_models.dart';
 
@@ -86,6 +88,7 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
 
   @override
   Widget build(BuildContext context) {
+    print('Step3PropertyTypesScreen: Building widget');
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7F9),
       body: SafeArea(
@@ -101,7 +104,7 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
                     children: [
                       _buildTitle(),
                       _buildPropertyTypesGrid(),
-                      const Spacer(),
+                      const SizedBox(height: 16),
                       _buildBottomSection(),
                     ],
                   ),
@@ -204,12 +207,13 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
   }
 
   Widget _buildPropertyTypesGrid() {
-    return Expanded(
+    return Flexible(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
         child: Consumer<OnboardingController>(
           builder: (context, controller, child) {
             return GridView.builder(
+              shrinkWrap: true,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 1.2,
@@ -416,9 +420,33 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
   }
 
   void _showMoreOptions() {
+    final List<PropertyType> additionalTypes = [
+      PropertyType(
+        id: 'office',
+        name: 'Office',
+        imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&h=200&fit=crop',
+      ),
+      PropertyType(
+        id: 'warehouse',
+        name: 'Warehouse',
+        imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&h=200&fit=crop',
+      ),
+      PropertyType(
+        id: 'land',
+        name: 'Land',
+        imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&h=200&fit=crop',
+      ),
+      PropertyType(
+        id: 'commercial',
+        name: 'Commercial',
+        imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&h=200&fit=crop',
+      ),
+    ];
+    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -427,11 +455,12 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
             topRight: Radius.circular(20),
           ),
         ),
+        padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              margin: const EdgeInsets.only(top: 12),
+              margin: const EdgeInsets.only(bottom: 12),
               width: 40,
               height: 4,
               decoration: BoxDecoration(
@@ -440,13 +469,108 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
               ),
             ),
             const Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Text(
                 'More Property Types',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            // Additional property types can be added here
+            const SizedBox(height: 12),
+            Consumer<OnboardingController>(
+              builder: (context, controller, child) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: additionalTypes.length,
+                  itemBuilder: (context, index) {
+                    final propertyType = additionalTypes[index];
+                    final isSelected = controller.onboardingData.selectedPropertyTypes
+                        .any((type) => type.id == propertyType.id);
+                    
+                    return GestureDetector(
+                      onTap: () {
+                        controller.togglePropertyType(propertyType);
+                        HapticFeedback.lightImpact();
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF7BC142) : Colors.grey[300]!,
+                            width: isSelected ? 2 : 1,
+                          ),
+                        ),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.network(
+                                propertyType.imageUrl,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.7),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 12,
+                              left: 12,
+                              right: 12,
+                              child: Text(
+                                propertyType.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            if (isSelected)
+                              Positioned(
+                                top: 8,
+                                left: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF7BC142),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -455,16 +579,21 @@ class _Step3PropertyTypesScreenState extends State<Step3PropertyTypesScreen> wit
   }
 
   void _completeOnboarding() async {
+    print('Step3PropertyTypesScreen: _completeOnboarding called');
     final controller = context.read<OnboardingController>();
     await controller.completeOnboarding();
     
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      print('Step3PropertyTypesScreen: Navigating to home screen');
+      // After onboarding completion, go to home screen
+      context.go('/home');
     }
   }
 
   void _skipOnboarding() {
+    print('Step3PropertyTypesScreen: _skipOnboarding called');
     context.read<OnboardingController>().skipToEnd();
-    Navigator.of(context).pushReplacementNamed('/home');
+    // Skip to home screen
+    context.go('/home');
   }
 }

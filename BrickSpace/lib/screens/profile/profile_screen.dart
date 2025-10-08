@@ -5,9 +5,14 @@ import 'dart:io';
 import '../../providers/auth_provider.dart';
 import '../../providers/favorites_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,12 +61,12 @@ class ProfileScreen extends StatelessWidget {
                               ? CircleAvatar(
                                   radius: 50,
                                   backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  backgroundImage: NetworkImage(user.profileImage) as ImageProvider,
+                                  backgroundImage: NetworkImage(user.profileImage),
                                 )
                               : CircleAvatar(
                                   radius: 50,
                                   backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  backgroundImage: FileImage(File(user.profileImage)) as ImageProvider,
+                                  backgroundImage: FileImage(File(user.profileImage)),
                                 ))
                           : CircleAvatar(
                               radius: 50,
@@ -161,6 +166,12 @@ class ProfileScreen extends StatelessWidget {
                   context,
                   'Account',
                   [
+                    _buildMenuItem(
+                      context,
+                      'Go to Home',
+                      Icons.home,
+                      () => context.go('/home'),
+                    ),
                     _buildMenuItem(
                       context,
                       'Edit Profile',

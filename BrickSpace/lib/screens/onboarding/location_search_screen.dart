@@ -10,13 +10,13 @@ class LocationSearchScreen extends StatefulWidget {
 
 class _LocationSearchScreenState extends State<LocationSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String _selectedAddress = 'Srengseng, Kembangan, West Jakarta City, Jakarta 11630';
-  bool _isSearching = false;
+  String _selectedAddress = 'San Francisco, CA';
 
   @override
   void initState() {
     super.initState();
-    print('LocationSearchScreen: initState called - SIMPLIFIED VERSION');
+    _searchController.text = _selectedAddress;
+    print('LocationSearchScreen: Initialized - WORKING VERSION');
   }
 
   @override
@@ -25,20 +25,15 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     super.dispose();
   }
 
-  Future<void> _searchLocation(String query) async {
-    if (query.isEmpty) return;
+  void _proceedToNext() {
+    print('LocationSearchScreen: Next button tapped');
+    print('LocationSearchScreen: Navigating to confirmation with address: $_selectedAddress');
+    context.go('/onboarding/location-confirmation');
+  }
 
-    setState(() {
-      _isSearching = true;
-    });
-
-    // Simulate search delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    setState(() {
-      _selectedAddress = query;
-      _isSearching = false;
-    });
+  void _goBack() {
+    print('LocationSearchScreen: Back button tapped');
+    context.pop();
   }
 
   @override
@@ -50,10 +45,10 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => context.pop(),
+          onPressed: _goBack,
         ),
         title: const Text(
-          'Find location',
+          'Search Location',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -68,172 +63,73 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search Bar
+              const Text(
+                'Search your location',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Enter your address or select from suggestions',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Search Field
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[300]!),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search, color: Colors.grey),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          hintText: 'Search for a location',
-                          border: InputBorder.none,
-                        ),
-                        onSubmitted: _searchLocation,
-                      ),
-                    ),
-                    if (_isSearching)
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                  ],
+                child: TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your address',
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.search, color: Color(0xFF4CAF50)),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAddress = value;
+                    });
+                  },
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               
-              // Map Placeholder
+              // Location Suggestions
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      color: Colors.grey[200],
-                      child: Stack(
-                        children: [
-                          const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.map,
-                                  size: 64,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Map will be available here',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Pin overlay
-                          const Positioned(
-                            top: 50,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                          ),
-                          // My Location Button
-                          Positioned(
-                            top: 16,
-                            right: 16,
-                            child: FloatingActionButton.small(
-                              onPressed: () {
-                                // Handle my location
-                              },
-                              backgroundColor: Colors.white,
-                              child: const Icon(Icons.my_location, color: Colors.black),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Location Detail Card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
+                child: ListView(
                   children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: Color(0xFF4CAF50),
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Selected Location',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _selectedAddress,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    _buildLocationSuggestion('San Francisco, CA'),
+                    _buildLocationSuggestion('New York, NY'),
+                    _buildLocationSuggestion('Los Angeles, CA'),
+                    _buildLocationSuggestion('Chicago, IL'),
+                    _buildLocationSuggestion('Miami, FL'),
+                    _buildLocationSuggestion('Seattle, WA'),
+                    _buildLocationSuggestion('Boston, MA'),
+                    _buildLocationSuggestion('Denver, CO'),
                   ],
                 ),
               ),
               
               const SizedBox(height: 24),
               
-              // Choose Location Button
+              // Next Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print('LocationSearchScreen: Navigating to location confirmation');
-                    context.go('/onboarding/location-confirmation');
-                  },
+                  onPressed: _proceedToNext,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4CAF50),
                     shape: RoundedRectangleBorder(
@@ -242,7 +138,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                     elevation: 0,
                   ),
                   child: const Text(
-                    'Choose your location',
+                    'Next',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -255,6 +151,23 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLocationSuggestion(String location) {
+    return ListTile(
+      leading: const Icon(
+        Icons.location_on,
+        color: Color(0xFF4CAF50),
+      ),
+      title: Text(location),
+      onTap: () {
+        setState(() {
+          _selectedAddress = location;
+          _searchController.text = location;
+        });
+        print('LocationSearchScreen: Selected $location');
+      },
     );
   }
 }

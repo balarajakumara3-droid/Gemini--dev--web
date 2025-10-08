@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'dart:io';
+import '../../providers/auth_provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class NewHomeScreen extends StatefulWidget {
+  const NewHomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<NewHomeScreen> createState() => _NewHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateMixin {
   String selectedCategory = 'All';
   String currentLocation = 'Strengseng, Ke...';
   int selectedNavIndex = 0;
@@ -17,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> categories = ['All', 'House', 'Apartment'];
+  final List<String> categories = ['All', 'House', 'Apartment', 'Villa', 'Office'];
   
   final List<Map<String, dynamic>> promotionalCards = [
     {
@@ -53,45 +56,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
-      body: SafeArea(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      _buildHeader(),
-                      _buildGreeting(),
-                      _buildSearchBar(),
-                      _buildCategoryPills(),
-                      _buildPromotionalCards(),
-                      _buildFeaturedEstates(),
-                      const SizedBox(height: 100), // Space for bottom nav
-                    ],
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final user = authProvider.user;
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F7F9),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(user),
+                        _buildGreeting(),
+                        _buildSearchBar(),
+                        _buildCategoryPills(),
+                        _buildPromotionalCards(),
+                        _buildFeaturedEstates(),
+                        _buildTopAgents(),
+                        _buildTopLocations(),
+                        const SizedBox(height: 120), // Extra space for bottom nav and FAB
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigation(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showPropertyComparison,
-        backgroundColor: const Color(0xFF4CAF50),
-        child: const Icon(Icons.compare_arrows, color: Colors.white),
-        tooltip: 'Compare Properties',
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          bottomNavigationBar: _buildBottomNavigation(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showPropertyComparison,
+            backgroundColor: const Color(0xFF4CAF50),
+            child: const Icon(Icons.compare_arrows, color: Colors.white),
+            tooltip: 'Compare Properties',
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        );
+      },
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(user) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
@@ -191,9 +199,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              child: const CircleAvatar(
-                backgroundImage: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'),
-              ),
+              child: user != null && user.profileImage.isNotEmpty
+                  ? (user.profileImage.startsWith('http')
+                      ? CircleAvatar(
+                          radius: 22.5,
+                          backgroundImage: NetworkImage(user.profileImage),
+                        )
+                      : CircleAvatar(
+                          radius: 22.5,
+                          backgroundImage: FileImage(File(user.profileImage)),
+                        ))
+                  : const CircleAvatar(
+                      backgroundImage: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'),
+                    ),
             ),
           ),
         ],
@@ -202,30 +220,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildGreeting() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Hey, Naren!',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final user = authProvider.user;
+        final firstName = user?.name.split(' ').first ?? 'Guest';
+        
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hey, $firstName!',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Let\'s start exploring',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Let\'s start exploring',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -445,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             height: 280,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 3,
+              itemCount: 4,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 16),
@@ -484,6 +509,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         'location': 'Surabaya, Indonesia',
         'image': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop',
         'isFavorite': false,
+      },
+      {
+        'title': 'Luxury Condo',
+        'price': '\$380/month',
+        'rating': 4.7,
+        'location': 'Bandung, Indonesia',
+        'image': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop',
+        'isFavorite': true,
       },
     ];
     
@@ -542,57 +575,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
             // Content
-            Expanded(
+            Flexible(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          property['title'] as String,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            property['title'] as String,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              property['rating'].toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                property['location'] as String,
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.star, color: Colors.amber, size: 16),
+                              const SizedBox(width: 4),
+                              Text(
+                                property['rating'].toString(),
                                 style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  property['location'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     Text(
                       property['price'] as String,
@@ -604,6 +639,334 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopAgents() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Top Agents',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => context.push('/agents'),
+                child: const Text(
+                  'view all',
+                  style: TextStyle(
+                    color: Color(0xFF4CAF50),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 180,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: _buildAgentCard(index),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgentCard(int index) {
+    final agents = [
+      {
+        'name': 'Sarah Johnson',
+        'rating': 4.9,
+        'listings': 45,
+        'image': 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
+      },
+      {
+        'name': 'Michael Chen',
+        'rating': 4.8,
+        'listings': 32,
+        'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      },
+      {
+        'name': 'Emily Rodriguez',
+        'rating': 4.7,
+        'listings': 28,
+        'image': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+      },
+      {
+        'name': 'David Wilson',
+        'rating': 4.9,
+        'listings': 56,
+        'image': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+      },
+    ];
+    
+    final agent = agents[index];
+    
+    return GestureDetector(
+      onTap: () => _showAgentProfile(agent),
+      child: Container(
+        width: 140,
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Agent Image
+            Container(
+              margin: const EdgeInsets.all(12),
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 35,
+                    backgroundImage: NetworkImage(agent['image'] as String),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF4CAF50),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Agent Info
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      agent['name'] as String,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 12),
+                        const SizedBox(width: 2),
+                        Text(
+                          agent['rating'].toString(),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${agent['listings']} listings',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopLocations() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Top Locations',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => context.push('/top-locations'),
+                child: const Text(
+                  'view all',
+                  style: TextStyle(
+                    color: Color(0xFF4CAF50),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: _buildLocationCard(index),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationCard(int index) {
+    final locations = [
+      {
+        'name': 'Jakarta',
+        'properties': 120,
+        'image': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=120&fit=crop',
+      },
+      {
+        'name': 'Bali',
+        'properties': 85,
+        'image': 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=120&fit=crop',
+      },
+      {
+        'name': 'Surabaya',
+        'properties': 65,
+        'image': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=120&fit=crop',
+      },
+      {
+        'name': 'Bandung',
+        'properties': 42,
+        'image': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=120&fit=crop',
+      },
+    ];
+    
+    final location = locations[index];
+    
+    return GestureDetector(
+      onTap: () => _showLocationProperties(location),
+      child: Container(
+        width: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Location Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                location['image'] as String,
+                width: 200,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+            // Dark overlay
+            Container(
+              width: 200,
+              height: 120,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+            // Location Info
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    location['name'] as String,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${location['properties']} properties',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -783,8 +1146,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showNotification() {
-    // Navigate to notifications screen (using search screen as placeholder)
-    context.push('/search');
+    // Navigate to notifications screen
+    context.push('/notifications');
   }
 
   void _showProfile() {
@@ -805,6 +1168,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _showPropertyDetails(Map<String, dynamic> property) {
     // Navigate to property detail screen with the property ID
     context.push('/properties/1');
+  }
+
+  void _showAgentProfile(Map<String, dynamic> agent) {
+    // Navigate to agent profile screen
+    context.push('/agents/1');
+  }
+
+  void _showLocationProperties(Map<String, dynamic> location) {
+    // Navigate to properties in location
+    context.push('/properties');
   }
 
   void _showPropertyComparison() {

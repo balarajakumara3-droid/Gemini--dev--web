@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({super.key});
@@ -253,7 +254,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, '/onboarding/property-types'),
+        onPressed: () => context.push('/onboarding/property-types'),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF7BC142),
           shape: RoundedRectangleBorder(

@@ -312,9 +312,9 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
                 ),
                 itemCount: properties.length,
                 itemBuilder: (context, index) {
@@ -324,7 +324,7 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -396,7 +396,7 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Property Image
-            Expanded(
+            Flexible(
               flex: 3,
               child: Stack(
                 children: [
@@ -457,10 +457,9 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
               ),
             ),
             // Property Details
-            Expanded(
-              flex: 2,
+            Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -468,13 +467,13 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                     Text(
                       property['title'],
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 12),
@@ -488,7 +487,7 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.location_on, color: Colors.grey, size: 12),
@@ -506,7 +505,7 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const Spacer(),
                     Text(
                       property['price'],
                       style: const TextStyle(

@@ -103,23 +103,29 @@ class _PropertyTypesSelectionScreenState extends State<PropertyTypesSelectionScr
                             width: isSelected ? 2 : 1,
                           ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Stack(
                           children: [
-                            Icon(
-                              property['icon'] as IconData,
-                              size: 32,
-                              color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              property['name'] as String,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    property['icon'] as IconData,
+                                    size: 32,
+                                    color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    property['name'] as String,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
                             ),
                             if (isSelected)
                               const Positioned(

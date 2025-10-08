@@ -16,6 +16,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> with Ticker
   late PageController _pageController;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  int _previousStep = 0;
 
   @override
   void initState() {
@@ -29,6 +30,8 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> with Ticker
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
+    
+    print('OnboardingFlowScreen: Initialized');
   }
 
   @override
@@ -40,15 +43,43 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> with Ticker
 
   @override
   Widget build(BuildContext context) {
+    print('OnboardingFlowScreen: Building widget');
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7F9),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: Consumer<OnboardingController>(
           builder: (context, controller, child) {
+            print('OnboardingFlowScreen: Current step is ${controller.currentStep}, previous was $_previousStep');
+            
+            // Only animate if the step has actually changed
+            if (controller.currentStep != _previousStep) {
+              print('OnboardingFlowScreen: Step changed, animating to page ${controller.currentStep}');
+              _previousStep = controller.currentStep;
+              
+              // Use addPostFrameCallback to ensure the widget is properly built
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_pageController.hasClients) {
+                  _pageController.animateToPage(
+                    controller.currentStep,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              });
+            }
+            
             return PageView(
               controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(), // Disable swipe gestures
+              onPageChanged: (page) {
+                // This ensures the controller stays in sync with the PageView
+                if (page != controller.currentStep) {
+                  print('OnboardingFlowScreen: PageView changed to page $page');
+                  // Update the controller to match the PageView position
+                  controller.goToStep(page);
+                }
+              },
               children: [
                 const Step1LocationScreen(),
                 const Step2LocationDetailScreen(),

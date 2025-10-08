@@ -105,16 +105,9 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(context, 3),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement new chat functionality
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('New chat feature coming soon!'),
-              backgroundColor: Color(0xFF2E7D32),
-            ),
-          );
-        },
+        onPressed: _startNewChat,
         backgroundColor: const Color(0xFF2E7D32),
         child: const Icon(Icons.chat, color: Colors.white),
       ),
@@ -141,6 +134,16 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
             children: [
               Expanded(
                 child: _buildQuickActionButton(
+                  icon: Icons.add,
+                  label: 'New Chat',
+                  onTap: () {
+                    _startNewChat();
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildQuickActionButton(
                   icon: Icons.support_agent,
                   label: 'Support',
                   onTap: () {
@@ -155,21 +158,6 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                   label: 'FAQ',
                   onTap: () {
                     context.push('/support/faq');
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildQuickActionButton(
-                  icon: Icons.feedback_outlined,
-                  label: 'Feedback',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Feedback feature coming soon!'),
-                        backgroundColor: Color(0xFF2E7D32),
-                      ),
-                    );
                   },
                 ),
               ),
@@ -336,6 +324,65 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
     } else {
       return 'Just now';
     }
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context, int currentIndex) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: currentIndex,
+      selectedItemColor: const Color(0xFF4CAF50),
+      unselectedItemColor: Colors.grey,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite_border),
+          activeIcon: Icon(Icons.favorite),
+          label: 'Favorites',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          activeIcon: Icon(Icons.chat),
+          label: 'Chat',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          activeIcon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            context.go('/home');
+            break;
+          case 1:
+            context.go('/search');
+            break;
+          case 2:
+            context.go('/favorites');
+            break;
+          case 3:
+            // Already on chat
+            break;
+          case 4:
+            context.go('/profile');
+            break;
+        }
+      },
+    );
+  }
+
+  void _startNewChat() {
+    // Navigate to a new chat screen or show a dialog to select an agent
+    context.push('/chat?agentName=New Agent&agentImage=https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face');
   }
 }
 

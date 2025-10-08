@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
+import '../../models/property.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Property property;
+  final String agentId;
   final String agentName;
   final String agentImage;
-  
+
   const ChatScreen({
     super.key,
+    required this.property,
+    required this.agentId,
     required this.agentName,
     required this.agentImage,
   });
@@ -17,276 +24,86 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
+  final List<ChatMessage> _messages = [];
 
   @override
   void initState() {
     super.initState();
-    // Add welcome message
-    _messages.add(ChatMessage(
-      text: "Hello! I'm ${widget.agentName}. How can I help you with your property search?",
-      isFromUser: false,
-      timestamp: DateTime.now(),
-    ));
+    _loadInitialMessages();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(widget.agentImage),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.agentName,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text(
-                  'Online',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
-            onPressed: () {
-              _showOptionsDialog();
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Messages List
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _buildMessageBubble(message);
-              },
-            ),
-          ),
-          // Message Input
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                      ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (value) {
-                        _sendMessage();
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                GestureDetector(
-                  onTap: _sendMessage,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF2E7D32),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        mainAxisAlignment: message.isFromUser 
-            ? MainAxisAlignment.end 
-            : MainAxisAlignment.start,
-        children: [
-          if (!message.isFromUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(widget.agentImage),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: message.isFromUser 
-                    ? const Color(0xFF2E7D32) 
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(20).copyWith(
-                  bottomLeft: message.isFromUser 
-                      ? const Radius.circular(20) 
-                      : const Radius.circular(4),
-                  bottomRight: message.isFromUser 
-                      ? const Radius.circular(4) 
-                      : const Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: message.isFromUser ? Colors.white : Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatTime(message.timestamp),
-                    style: TextStyle(
-                      color: message.isFromUser 
-                          ? Colors.white.withOpacity(0.7) 
-                          : Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (message.isFromUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: const Color(0xFF2E7D32),
-              child: const Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 16,
-              ),
-            ),
-          ],
-        ],
+  void _loadInitialMessages() {
+    // Add initial messages
+    _messages.addAll([
+      ChatMessage(
+        id: '1',
+        text: 'Hello! I\'m interested in this property. Can you tell me more about it?',
+        isFromUser: true,
+        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
       ),
-    );
+      ChatMessage(
+        id: '2',
+        text: 'Hi! I\'d be happy to help you with information about this property. What would you like to know?',
+        isFromUser: false,
+        timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
+      ),
+    ]);
   }
 
   void _sendMessage() {
-    final text = _messageController.text.trim();
-    if (text.isNotEmpty) {
-      setState(() {
-        _messages.add(ChatMessage(
-          text: text,
-          isFromUser: true,
-          timestamp: DateTime.now(),
-        ));
-      });
-      
-      _messageController.clear();
-      _scrollToBottom();
-      
-      // Simulate agent response
-      Future.delayed(const Duration(seconds: 1), () {
-        _addAgentResponse(text);
-      });
-    }
-  }
+    if (_messageController.text.trim().isEmpty) return;
 
-  void _addAgentResponse(String userMessage) {
-    String response = _getAgentResponse(userMessage);
+    final message = ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      text: _messageController.text.trim(),
+      isFromUser: true,
+      timestamp: DateTime.now(),
+    );
+
     setState(() {
-      _messages.add(ChatMessage(
-        text: response,
-        isFromUser: false,
-        timestamp: DateTime.now(),
-      ));
+      _messages.add(message);
     });
+
+    _messageController.clear();
     _scrollToBottom();
+
+    // Simulate agent response
+    _simulateAgentResponse();
   }
 
-  String _getAgentResponse(String userMessage) {
-    final message = userMessage.toLowerCase();
-    
-    if (message.contains('price') || message.contains('cost')) {
-      return "I'd be happy to discuss pricing options with you. The price depends on the property type and location. Would you like to see some specific properties?";
-    } else if (message.contains('location') || message.contains('where')) {
-      return "We have properties in various locations including downtown, suburbs, and waterfront areas. What type of location are you interested in?";
-    } else if (message.contains('bedroom') || message.contains('room')) {
-      return "We have properties ranging from studio apartments to 5+ bedroom houses. How many bedrooms are you looking for?";
-    } else if (message.contains('view') || message.contains('schedule')) {
-      return "I can arrange a property viewing for you. When would be a good time for you to visit?";
-    } else if (message.contains('help') || message.contains('assist')) {
-      return "I'm here to help you find the perfect property! What specific requirements do you have?";
-    } else {
-      return "Thank you for your message! I'll help you find the perfect property. What are you looking for in your next home?";
-    }
+  void _simulateAgentResponse() {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        final responses = [
+          'That\'s a great question! Let me get that information for you.',
+          'I can arrange a viewing for you. When would be convenient?',
+          'The property has excellent amenities and is in a prime location.',
+          'Would you like to schedule a virtual tour?',
+          'I can provide you with more photos and details.',
+        ];
+
+        final response = ChatMessage(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          text: responses[DateTime.now().millisecond % responses.length],
+          isFromUser: false,
+          timestamp: DateTime.now(),
+        );
+
+        setState(() {
+          _messages.add(response);
+        });
+
+        _scrollToBottom();
+      }
+    });
   }
 
   void _scrollToBottom() {
@@ -301,138 +118,430 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  String _formatTime(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
-    } else {
-      return '${timestamp.day}/${timestamp.month}';
-    }
-  }
-
-  void _showOptionsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Chat Options'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
           children: [
-            ListTile(
-              leading: const Icon(Icons.call),
-              title: const Text('Call Agent'),
-              onTap: () {
-                Navigator.pop(context);
-                _showCallDialog();
+            CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage(widget.agentImage),
+              onBackgroundImageError: (exception, stackTrace) {
+                // Handle image error
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.video_call),
-              title: const Text('Video Call'),
-              onTap: () {
-                Navigator.pop(context);
-                _showVideoCallDialog();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('Share Contact'),
-              onTap: () {
-                Navigator.pop(context);
-                _showShareDialog();
-              },
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.agentName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    'Online',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green[600],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.phone),
+            onPressed: () => _makeCall(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam),
+            onPressed: () => _startVideoCall(),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'property_details':
+                  _showPropertyDetails();
+                  break;
+                case 'schedule_viewing':
+                  _scheduleViewing();
+                  break;
+                case 'share':
+                  _shareProperty();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'property_details',
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline),
+                    SizedBox(width: 8),
+                    Text('Property Details'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'schedule_viewing',
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today),
+                    SizedBox(width: 8),
+                    Text('Schedule Viewing'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'share',
+                child: Row(
+                  children: [
+                    Icon(Icons.share),
+                    SizedBox(width: 8),
+                    Text('Share Property'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Property Info Bar
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[300],
+                  ),
+                  child: widget.property.images.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            widget.property.images.first,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.home, color: Colors.grey);
+                            },
+                          ),
+                        )
+                      : const Icon(Icons.home, color: Colors.grey),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.property.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        widget.property.formattedPrice,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: _showPropertyDetails,
+                ),
+              ],
+            ),
+          ),
+
+          // Messages List
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return _buildMessageBubble(message);
+              },
+            ),
+          ),
+
+          // Quick Actions
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                _buildQuickActionButton(
+                  icon: Icons.calendar_today,
+                  label: 'Schedule',
+                  onTap: _scheduleViewing,
+                ),
+                const SizedBox(width: 8),
+                _buildQuickActionButton(
+                  icon: Icons.videocam,
+                  label: 'Video Call',
+                  onTap: _startVideoCall,
+                ),
+                const SizedBox(width: 8),
+                _buildQuickActionButton(
+                  icon: Icons.phone,
+                  label: 'Call',
+                  onTap: _makeCall,
+                ),
+              ],
+            ),
+          ),
+
+          // Message Input
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(
+                top: BorderSide(color: Colors.grey[300]!),
+              ),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.attach_file),
+                  onPressed: _attachFile,
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    maxLines: null,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FloatingActionButton.small(
+                  onPressed: _sendMessage,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: const Icon(Icons.send, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble(ChatMessage message) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: message.isFromUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
+        children: [
+          if (!message.isFromUser) ...[
+            CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage(widget.agentImage),
+              onBackgroundImageError: (exception, stackTrace) {
+                // Handle image error
+              },
+            ),
+            const SizedBox(width: 8),
+          ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: message.isFromUser
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey[200],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.text,
+                    style: TextStyle(
+                      color: message.isFromUser
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatTime(message.timestamp),
+                    style: TextStyle(
+                      color: message.isFromUser
+                          ? Colors.white70
+                          : Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (message.isFromUser) ...[
+            const SizedBox(width: 8),
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Consumer<AuthProvider>(
+                builder: (context, authProvider, child) {
+                  return Text(
+                    authProvider.user?.name?.substring(0, 1).toUpperCase() ?? 'U',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 20),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _showCallDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Call Agent'),
-        content: Text('Would you like to call ${widget.agentName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Calling agent...'),
-                  backgroundColor: Color(0xFF2E7D32),
-                ),
-              );
-            },
-            child: const Text('Call'),
-          ),
-        ],
-      ),
-    );
+  String _formatTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
   }
 
-  void _showVideoCallDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Video Call'),
-        content: Text('Would you like to start a video call with ${widget.agentName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Starting video call...'),
-                  backgroundColor: Color(0xFF2E7D32),
-                ),
-              );
-            },
-            child: const Text('Start Call'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showShareDialog() {
+  void _makeCall() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Contact information shared!'),
-        backgroundColor: Color(0xFF2E7D32),
+      const SnackBar(content: Text('Calling agent...')),
+    );
+  }
+
+  void _startVideoCall() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Starting video call...')),
+    );
+  }
+
+  void _showPropertyDetails() {
+    context.push('/properties/${widget.property.id}');
+  }
+
+  void _scheduleViewing() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Schedule Viewing'),
+        content: const Text('Choose your preferred date and time for the property viewing.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Viewing scheduled!')),
+              );
+            },
+            child: const Text('Schedule'),
+          ),
+        ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _messageController.dispose();
-    _scrollController.dispose();
-    super.dispose();
+  void _shareProperty() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Property shared!')),
+    );
+  }
+
+  void _attachFile() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('File attachment feature coming soon!')),
+    );
   }
 }
 
 class ChatMessage {
+  final String id;
   final String text;
   final bool isFromUser;
   final DateTime timestamp;
 
   ChatMessage({
+    required this.id,
     required this.text,
     required this.isFromUser,
     required this.timestamp,
