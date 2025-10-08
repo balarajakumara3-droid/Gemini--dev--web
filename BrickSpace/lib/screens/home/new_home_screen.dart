@@ -62,28 +62,22 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
         return Scaffold(
           backgroundColor: const Color(0xFFF5F7F9),
           body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildHeader(user),
-                        _buildGreeting(),
-                        _buildSearchBar(),
-                        _buildCategoryPills(),
-                        _buildPromotionalCards(),
-                        _buildFeaturedEstates(),
-                        _buildTopAgents(),
-                        _buildTopLocations(),
-                        const SizedBox(height: 120), // Extra space for bottom nav and FAB
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(user),
+                  _buildGreeting(),
+                  _buildSearchBar(),
+                  _buildCategoryPills(),
+                  _buildPromotionalCards(),
+                  _buildFeaturedEstates(),
+                  _buildTopAgents(),
+                  _buildTopLocations(),
+                  const SizedBox(height: 120), // Extra space for bottom nav and FAB
+                ],
+              ),
             ),
           ),
           bottomNavigationBar: _buildBottomNavigation(),
@@ -1161,8 +1155,8 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
   }
 
   void _showPromotion(Map<String, dynamic> card) {
-    // Navigate to promotion detail screen
-    context.push('/promotion-detail');
+    // Navigate to promotion detail screen with data
+    context.push('/promotion-detail', extra: card);
   }
 
   void _showPropertyDetails(Map<String, dynamic> property) {

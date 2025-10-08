@@ -2,10 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class PromotionDetailScreen extends StatelessWidget {
-  const PromotionDetailScreen({super.key});
+  final String? title;
+  final String? subtitle;
+  final String? image;
+  
+  const PromotionDetailScreen({
+    super.key,
+    this.title,
+    this.subtitle,
+    this.image,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Use passed data or defaults
+    final promotionTitle = title ?? 'Halloween Sale!';
+    final promotionSubtitle = subtitle ?? 'All discount up to 60%';
+    final promotionImage = image ?? 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=250&fit=crop';
+    final couponCode = promotionTitle.contains('Halloween') ? 'HLWN40' : 'SUMMER60';
+    final discount = promotionSubtitle.contains('60') ? '60%' : '40%';
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -55,8 +71,8 @@ class PromotionDetailScreen extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=250&fit=crop'),
+                image: DecorationImage(
+                  image: NetworkImage(promotionImage),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -72,24 +88,24 @@ class PromotionDetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Halloween Sale!',
-                        style: TextStyle(
+                        promotionTitle,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'All discount up to 60%',
-                        style: TextStyle(
+                        promotionSubtitle,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -111,9 +127,9 @@ class PromotionDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title
-                    const Text(
-                      'Limited time Halloween Sale is coming back!',
-                      style: TextStyle(
+                    Text(
+                      'Limited time $promotionTitle is coming back!',
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -124,7 +140,7 @@ class PromotionDetailScreen extends StatelessWidget {
                     
                     // Date
                     Text(
-                      'October 27, 2022',
+                      'Limited time offer',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -139,7 +155,7 @@ class PromotionDetailScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2E7D32),
+                        color: const Color(0xFF4CAF50),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -157,21 +173,21 @@ class PromotionDetailScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'HLWN40',
-                                  style: TextStyle(
+                                  couponCode,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  'Use this coupon to get 40% off on your transaction',
-                                  style: TextStyle(
+                                  'Use this coupon to get $discount off on your transaction',
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
@@ -187,9 +203,9 @@ class PromotionDetailScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     
                     // Description
-                    const Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
-                      style: TextStyle(
+                    Text(
+                      'Don\'t miss this exclusive $promotionTitle! Get incredible deals on premium properties across various locations. This limited-time offer gives you the chance to save big on your dream home or investment property.',
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
                         height: 1.5,
@@ -198,9 +214,9 @@ class PromotionDetailScreen extends StatelessWidget {
                     
                     const SizedBox(height: 16),
                     
-                    const Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
-                      style: TextStyle(
+                    Text(
+                      'Browse through our extensive collection of houses, apartments, and villas. Use the coupon code "$couponCode" during checkout to unlock your discount. Hurry, this offer won\'t last long!',
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
                         height: 1.5,
@@ -215,16 +231,16 @@ class PromotionDetailScreen extends StatelessWidget {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Handle explore action
+                          context.push('/properties');
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E7D32),
+                          backgroundColor: const Color(0xFF4CAF50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text(
-                          'Explore more',
+                          'Explore Properties',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

@@ -278,7 +278,14 @@ class AppRouter {
       // Promotion Routes
       GoRoute(
         path: '/promotion-detail',
-        builder: (context, state) => const PromotionDetailScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return PromotionDetailScreen(
+            title: extra?['title'] as String?,
+            subtitle: extra?['subtitle'] as String?,
+            image: extra?['image'] as String?,
+          );
+        },
       ),
 
       // Featured Routes
