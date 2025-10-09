@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import '../../providers/auth_provider.dart';
+import '../../providers/property_provider.dart';
+import '../../providers/favorites_provider.dart';
+import '../../services/location_service.dart';
 
 class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({super.key});
@@ -46,6 +49,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
     _animationController.forward();
+
+    // Fetch current location
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final position = await LocationService.instance.getCurrentLocation();
+      final loc = LocationService.instance.currentLocation;
+      if (!mounted) return;
+      setState(() {
+        currentLocation = loc;
+      });
+    });
   }
 
   @override
@@ -306,6 +319,13 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                   setState(() {
                     selectedCategory = category;
                   });
+                  // Apply provider filter
+                  final provider = context.read<PropertyProvider>();
+                  if (category == 'All') {
+                    provider.updateFilters({'propertyType': ''});
+                  } else {
+                    provider.updateFilters({'propertyType': category.toLowerCase()});
+                  }
                   HapticFeedback.lightImpact();
                 },
                 child: AnimatedContainer(
@@ -462,13 +482,26 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
           const SizedBox(height: 16),
           SizedBox(
             height: 280,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: _buildPropertyCard(index),
+            child: Consumer2<PropertyProvider, FavoritesProvider>(
+              builder: (context, provider, favs, child) {
+                final featured = provider.getFeaturedProperties();
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (featured.isEmpty) {
+                  return const Center(child: Text('No featured properties'));
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: featured.length,
+                  itemBuilder: (context, index) {
+                    final p = featured[index];
+                    final isFav = favs.isFavorite(p.id);
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: _buildPropertyCardFromModel(p.id, p.imageUrl, p.title, p.location, p.formattedPrice, isFav),
+                    );
+                  },
                 );
               },
             ),
@@ -478,46 +511,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildPropertyCard(int index) {
-    final properties = [
-      {
-        'title': 'Sky Dandelions Apartment',
-        'price': '\$290/month',
-        'rating': 4.9,
-        'location': 'Jakarta, Indonesia',
-        'image': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop',
-        'isFavorite': false,
-      },
-      {
-        'title': 'The Laurels Villa',
-        'price': '\$320/month',
-        'rating': 4.9,
-        'location': 'Bali, Indonesia',
-        'image': 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=200&fit=crop',
-        'isFavorite': true,
-      },
-      {
-        'title': 'Modern Penthouse',
-        'price': '\$450/month',
-        'rating': 4.8,
-        'location': 'Surabaya, Indonesia',
-        'image': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop',
-        'isFavorite': false,
-      },
-      {
-        'title': 'Luxury Condo',
-        'price': '\$380/month',
-        'rating': 4.7,
-        'location': 'Bandung, Indonesia',
-        'image': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop',
-        'isFavorite': true,
-      },
-    ];
-    
-    final property = properties[index];
-    
+  Widget _buildPropertyCardFromModel(String id, String imageUrl, String title, String location, String price, bool isFavorite) {
     return GestureDetector(
-      onTap: () => _showPropertyDetails(property),
+      onTap: () => _showPropertyDetailsById(id),
       child: Container(
         width: 200,
         height: 280,
@@ -541,7 +537,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.network(
-                    property['image'] as String,
+                    imageUrl,
                     width: 200,
                     height: 120,
                     fit: BoxFit.cover,
@@ -551,16 +547,15 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                   top: 8,
                   right: 8,
                   child: GestureDetector(
-                    onTap: () => _toggleFavorite(index),
+                    onTap: () => context.read<FavoritesProvider>().toggleFavorite(id, context),
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Icon(
-                        (property['isFavorite'] as bool) ? Icons.favorite : Icons.favorite_border,
-                        color: (property['isFavorite'] as bool) ? const Color(0xFF4CAF50) : Colors.grey,
+                      child: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? const Color(0xFF4CAF50) : Colors.grey,
                         size: 18,
                       ),
                     ),
@@ -581,7 +576,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            property['title'] as String,
+                            title,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -592,25 +587,11 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 16),
-                              const SizedBox(width: 4),
-                              Text(
-                                property['rating'].toString(),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
                               const Icon(Icons.location_on, size: 14, color: Colors.grey),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  property['location'] as String,
+                                  location,
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
@@ -624,7 +605,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
                       ),
                     ),
                     Text(
-                      property['price'] as String,
+                      price,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -1159,9 +1140,8 @@ class _NewHomeScreenState extends State<NewHomeScreen> with TickerProviderStateM
     context.push('/promotion-detail', extra: card);
   }
 
-  void _showPropertyDetails(Map<String, dynamic> property) {
-    // Navigate to property detail screen with the property ID
-    context.push('/properties/1');
+  void _showPropertyDetailsById(String id) {
+    context.push('/properties/$id');
   }
 
   void _showAgentProfile(Map<String, dynamic> agent) {

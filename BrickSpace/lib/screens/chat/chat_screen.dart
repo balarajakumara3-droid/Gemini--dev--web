@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:real_estate_app/screens/chat/video_call_screen.dart';
+import 'package:real_estate_app/utils/permission_helper.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/property.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatScreen extends StatefulWidget {
   final Property property;
@@ -118,6 +121,50 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void _startAudioCall() async {
+    // Request audio permission first but don't block the call
+    await PermissionHelper.requestAudioCallPermission(context);
+    
+    // Generate a unique channel ID for the call
+    final channelId = 'call_${DateTime.now().millisecondsSinceEpoch}';
+    
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoCallScreen(
+            channelId: channelId,
+            agentName: widget.agentName,
+            agentImage: widget.agentImage,
+            isVideoCall: false,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _startVideoCall() async {
+    // Request video permissions first but don't block the call
+    await PermissionHelper.requestVideoCallPermissions(context);
+    
+    // Generate a unique channel ID for the call
+    final channelId = 'call_${DateTime.now().millisecondsSinceEpoch}';
+    
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoCallScreen(
+            channelId: channelId,
+            agentName: widget.agentName,
+            agentImage: widget.agentImage,
+            isVideoCall: true,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,11 +205,11 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.phone),
-            onPressed: () => _makeCall(),
+            onPressed: _startAudioCall,
           ),
           IconButton(
             icon: const Icon(Icons.videocam),
-            onPressed: () => _startVideoCall(),
+            onPressed: _startVideoCall,
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -306,7 +353,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 _buildQuickActionButton(
                   icon: Icons.phone,
                   label: 'Call',
-                  onTap: _makeCall,
+                  onTap: _startAudioCall,
                 ),
               ],
             ),
@@ -478,18 +525,6 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       return 'Just now';
     }
-  }
-
-  void _makeCall() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calling agent...')),
-    );
-  }
-
-  void _startVideoCall() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Starting video call...')),
-    );
   }
 
   void _showPropertyDetails() {

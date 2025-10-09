@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../../controllers/onboarding_controller.dart';
+import '../../models/onboarding_models.dart';
 
 class Step2LocationDetailScreen extends StatefulWidget {
   const Step2LocationDetailScreen({super.key});
@@ -13,6 +17,11 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  
+  GoogleMapController? _mapController;
+  LatLng _currentPosition = const LatLng(-6.2088, 106.8456); // Jakarta default
+  bool _isLoadingLocation = false;
+  String _currentAddress = 'Getting your location...';
 
   @override
   void initState() {
@@ -32,12 +41,99 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
     ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
     
     _animationController.forward();
+    _loadCurrentLocation();
   }
 
   @override
   void dispose() {
+    _mapController?.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+  
+  Future<void> _loadCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final newPermission = await Geolocator.requestPermission();
+        if (newPermission == LocationPermission.denied || 
+            newPermission == LocationPermission.deniedForever) {
+          setState(() {
+            _currentAddress = 'Location permission denied';
+            _isLoadingLocation = false;
+          });
+          return;
+        }
+      }
+      
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+      });
+      
+      // Reverse geocode to get address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        
+        if (placemarks.isNotEmpty) {
+          final placemark = placemarks.first;
+          final fullAddress = [
+            if (placemark.street?.isNotEmpty ?? false) placemark.street,
+            if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+            if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+            if (placemark.postalCode?.isNotEmpty ?? false) placemark.postalCode,
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
+          
+          setState(() {
+            _currentAddress = fullAddress.isNotEmpty ? fullAddress : 'Current Location';
+            _isLoadingLocation = false;
+          });
+          
+          // Update location in controller
+          context.read<OnboardingController>().setLocation(
+            LocationData(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              address: placemark.street ?? '',
+              city: placemark.locality ?? '',
+              state: placemark.administrativeArea ?? '',
+              country: placemark.country ?? '',
+              postalCode: placemark.postalCode ?? '',
+            ),
+          );
+        } else {
+          setState(() {
+            _currentAddress = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+            _isLoadingLocation = false;
+          });
+        }
+      } catch (e) {
+        print('Error reverse geocoding: $e');
+        setState(() {
+          _currentAddress = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+          _isLoadingLocation = false;
+        });
+      }
+      
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentPosition, 15),
+      );
+    } catch (e) {
+      print('Error getting location: $e');
+      setState(() {
+        _currentAddress = 'Unable to get location';
+        _isLoadingLocation = false;
+      });
+    }
   }
 
   @override
@@ -153,7 +249,7 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
             ),
           ),
           const SizedBox(height: 20),
-          // Map Container
+          // Map Container with Real Google Maps
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -170,84 +266,106 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
                 borderRadius: BorderRadius.circular(20),
                 child: Stack(
                   children: [
-                    // Map Placeholder
-                    Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
-                        ),
+                    // Google Maps
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _currentPosition,
+                        zoom: 14,
                       ),
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.map,
-                              size: 60,
-                              color: Color(0xFF234F68),
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Interactive Map',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF234F68),
+                      onMapCreated: (controller) {
+                        _mapController = controller;
+                      },
+                      onTap: (position) async {
+                        setState(() {
+                          _currentPosition = position;
+                          _isLoadingLocation = true;
+                        });
+                        
+                        // Reverse geocode the tapped position
+                        try {
+                          List<Placemark> placemarks = await placemarkFromCoordinates(
+                            position.latitude,
+                            position.longitude,
+                          );
+                          
+                          if (placemarks.isNotEmpty) {
+                            final placemark = placemarks.first;
+                            final fullAddress = [
+                              if (placemark.street?.isNotEmpty ?? false) placemark.street,
+                              if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+                              if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+                              if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+                              if (placemark.country?.isNotEmpty ?? false) placemark.country,
+                              if (placemark.postalCode?.isNotEmpty ?? false) placemark.postalCode,
+                            ].where((e) => e != null && e.isNotEmpty).join(', ');
+                            
+                            setState(() {
+                              _currentAddress = fullAddress.isNotEmpty ? fullAddress : 'Selected Location';
+                              _isLoadingLocation = false;
+                            });
+                            
+                            // Update location in controller
+                            context.read<OnboardingController>().setLocation(
+                              LocationData(
+                                latitude: position.latitude,
+                                longitude: position.longitude,
+                                address: placemark.street ?? '',
+                                city: placemark.locality ?? '',
+                                state: placemark.administrativeArea ?? '',
+                                country: placemark.country ?? '',
+                                postalCode: placemark.postalCode ?? '',
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Tap to select location',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                            );
+                          }
+                        } catch (e) {
+                          print('Error reverse geocoding tapped position: $e');
+                          setState(() => _isLoadingLocation = false);
+                        }
+                      },
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      mapToolbarEnabled: false,
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId('selected_location'),
+                          position: _currentPosition,
+                          icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueBlue,
+                          ),
+                        ),
+                      },
+                    ),
+                    // Loading indicator
+                    if (_isLoadingLocation)
+                      Container(
+                        color: Colors.white.withOpacity(0.8),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
                         ),
                       ),
-                    ),
-                    // Location Pin
-                    const Positioned(
-                      top: 100,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Icon(
-                          Icons.location_on,
-                          size: 40,
-                          color: Color(0xFF234F68),
-                        ),
-                      ),
-                    ),
                     // GPS Button
                     Positioned(
                       bottom: 20,
                       right: 20,
-                      child: GestureDetector(
-                        onTap: () => _getCurrentLocation(),
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF234F68),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.my_location,
-                            color: Colors.white,
-                            size: 24,
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(30),
+                        child: InkWell(
+                          onTap: () => _loadCurrentLocation(),
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF234F68),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.my_location,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
                         ),
                       ),
@@ -348,7 +466,7 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                location?.fullAddress ?? 'Srengseng, Kembangan, West Jakarta City, Jakarta 11630',
+                                location?.fullAddress ?? _currentAddress,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -395,14 +513,6 @@ class _Step2LocationDetailScreenState extends State<Step2LocationDetailScreen> w
     );
   }
 
-  void _getCurrentLocation() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Getting current location...'),
-        backgroundColor: Color(0xFF7BC142),
-      ),
-    );
-  }
 
   void _chooseLocation() {
     print('Step2LocationDetailScreen: _chooseLocation called');

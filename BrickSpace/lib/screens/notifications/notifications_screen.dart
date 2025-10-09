@@ -112,10 +112,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          _buildFilterTab('All', true),
-          _buildFilterTab('Unread', false),
-          _buildFilterTab('Property', false),
-          _buildFilterTab('Messages', false),
+          _buildFilterTab('All', _selectedFilter == 'All'),
+          _buildFilterTab('Unread', _selectedFilter == 'Unread'),
+          _buildFilterTab('Property', _selectedFilter == 'Property'),
+          _buildFilterTab('Messages', _selectedFilter == 'Messages'),
         ],
       ),
     );
@@ -293,13 +293,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _onNotificationTap(NotificationItem notification) {
-    // Handle notification tap
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tapped on: ${notification.title}'),
-        backgroundColor: const Color(0xFF4CAF50),
-      ),
-    );
+    setState(() {
+      notification.isRead = true;
+    });
+
+    switch (notification.type) {
+      case 'message':
+        context.push('/chat?agentName=Sarah%20Johnson&agentImage=https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face');
+        break;
+      case 'property':
+      case 'price':
+        context.push('/properties/1');
+        break;
+      case 'reminder':
+        context.push('/schedule-visit/1');
+        break;
+      case 'feature':
+      default:
+        // no-op or navigate to feature page
+        break;
+    }
   }
 
   List<NotificationItem> _getFilteredNotifications() {

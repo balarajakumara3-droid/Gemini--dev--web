@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class LocationSetupScreen extends StatefulWidget {
   const LocationSetupScreen({super.key});
@@ -11,8 +12,8 @@ class LocationSetupScreen extends StatefulWidget {
 }
 
 class _LocationSetupScreenState extends State<LocationSetupScreen> {
-  String _selectedLocation = 'West Jakarta';
-  bool _isLocationSelected = true;
+  String _selectedLocation = 'Getting your location...';
+  bool _isLocationSelected = false;
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(-6.1753, 106.8271); // West Jakarta default
   bool _isLoadingLocation = false;
@@ -35,21 +36,73 @@ class _LocationSetupScreenState extends State<LocationSetupScreen> {
     try {
       final permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        await Geolocator.requestPermission();
+        final newPermission = await Geolocator.requestPermission();
+        if (newPermission == LocationPermission.denied || 
+            newPermission == LocationPermission.deniedForever) {
+          setState(() {
+            _selectedLocation = 'Location permission denied';
+            _isLoadingLocation = false;
+            _isLocationSelected = false;
+          });
+          return;
+        }
       }
       
-      final position = await Geolocator.getCurrentPosition();
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
-        _isLoadingLocation = false;
       });
       
+      // Reverse geocode to get address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        
+        if (placemarks.isNotEmpty) {
+          final placemark = placemarks.first;
+          final address = [
+            if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+            if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
+          
+          setState(() {
+            _selectedLocation = address.isNotEmpty ? address : 'Current Location';
+            _isLocationSelected = true;
+            _isLoadingLocation = false;
+          });
+        } else {
+          setState(() {
+            _selectedLocation = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+            _isLocationSelected = true;
+            _isLoadingLocation = false;
+          });
+        }
+      } catch (e) {
+        print('Error reverse geocoding: $e');
+        setState(() {
+          _selectedLocation = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+          _isLocationSelected = true;
+          _isLoadingLocation = false;
+        });
+      }
+      
       _mapController?.animateCamera(
-        CameraUpdate.newLatLng(_currentPosition),
+        CameraUpdate.newLatLngZoom(_currentPosition, 15),
       );
     } catch (e) {
       print('Error getting location: $e');
-      setState(() => _isLoadingLocation = false);
+      setState(() {
+        _selectedLocation = 'Unable to get location';
+        _isLoadingLocation = false;
+        _isLocationSelected = false;
+      });
     }
   }
 

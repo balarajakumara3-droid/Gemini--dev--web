@@ -9,6 +9,13 @@ class PropertyProvider extends ChangeNotifier {
   String? _error;
   String _searchQuery = '';
   Map<String, dynamic> _filters = {};
+  String _sortBy = 'popular'; // popular | price_asc | price_desc | newest
+  bool _sortAscending = true;
+  // Basic geo-bounds filter (southWest/ northEast)
+  double? _minLatitude;
+  double? _maxLatitude;
+  double? _minLongitude;
+  double? _maxLongitude;
 
   List<Property> get properties => _filteredProperties;
   List<Property> get allProperties => _properties;
@@ -16,6 +23,7 @@ class PropertyProvider extends ChangeNotifier {
   String? get error => _error;
   String get searchQuery => _searchQuery;
   Map<String, dynamic> get filters => _filters;
+  String get sortBy => _sortBy;
 
   final PropertyService _propertyService = PropertyService();
 
@@ -53,8 +61,44 @@ class PropertyProvider extends ChangeNotifier {
     _filters.clear();
     _searchQuery = '';
     _filteredProperties = List.from(_properties);
+    // also clear geo bounds
+    _minLatitude = null;
+    _maxLatitude = null;
+    _minLongitude = null;
+    _maxLongitude = null;
     notifyListeners();
   }
+
+  void setSort(String sortKey) {
+    _sortBy = sortKey;
+    switch (sortKey) {
+      case 'price_asc':
+        _sortAscending = true;
+        break;
+      case 'price_desc':
+        _sortAscending = false;
+        break;
+      default:
+        // popular/newest handled in _applySort
+        _sortAscending = true;
+    }
+    _applyFilters();
+  }
+
+  void setGeoBounds({
+    double? minLatitude,
+    double? maxLatitude,
+    double? minLongitude,
+    double? maxLongitude,
+  }) {
+    _minLatitude = minLatitude;
+    _maxLatitude = maxLatitude;
+    _minLongitude = minLongitude;
+    _maxLongitude = maxLongitude;
+    _applyFilters();
+  }
+
+  
 
   void _applyFilters() {
     _filteredProperties = _properties.where((property) {
@@ -104,10 +148,41 @@ class PropertyProvider extends ChangeNotifier {
         }
       }
 
+      // Geo-bounds filter
+      if (_minLatitude != null && property.latitude < _minLatitude!) return false;
+      if (_maxLatitude != null && property.latitude > _maxLatitude!) return false;
+      if (_minLongitude != null && property.longitude < _minLongitude!) return false;
+      if (_maxLongitude != null && property.longitude > _maxLongitude!) return false;
+
       return true;
     }).toList();
 
+    _applySort();
     notifyListeners();
+  }
+
+  void _applySort() {
+    switch (_sortBy) {
+      case 'price_asc':
+        _filteredProperties.sort((a, b) => a.price.compareTo(b.price));
+        break;
+      case 'price_desc':
+        _filteredProperties.sort((a, b) => b.price.compareTo(a.price));
+        break;
+      case 'newest':
+        _filteredProperties.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case 'popular':
+      default:
+        // Popular as a proxy: featured first then newest
+        _filteredProperties.sort((a, b) {
+          if (a.isFeatured != b.isFeatured) {
+            return (a.isFeatured ? -1 : 1);
+          }
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        break;
+    }
   }
 
   Property? getPropertyById(String id) {

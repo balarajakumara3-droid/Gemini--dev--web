@@ -49,6 +49,10 @@
 	<string>This app needs access to location to show nearby properties and provide location-based services.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location to show nearby properties and provide location-based services.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required for video calling</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required for audio and video calling</string>
 	<key>GMSApiKey</key>
 	<string>AIzaSyC_ZOcnbekb5a5OEl-MBN8n070oaoFN4eA</string>
 </dict>

@@ -6,6 +6,8 @@ import '../../providers/property_provider.dart';
 import '../../providers/favorites_provider.dart';
 import '../../widgets/property_card.dart';
 import '../../widgets/search_bar_widget.dart';
+import '../../services/location_service.dart';
+import 'dart:async';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -18,18 +20,39 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _showMapView = false;
+  // debounce
+  Duration _debounceDuration = const Duration(milliseconds: 350);
+  Timer? _debounceTimer;
+  GoogleMapController? _mapController;
+  LatLng _initialCenter = const LatLng(37.42796133580664, -122.085749655962);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PropertyProvider>().loadProperties();
+      _initUserLocation();
     });
+  }
+  Future<void> _initUserLocation() async {
+    final pos = await LocationService.instance.getCurrentLocation();
+    final position = LocationService.instance.currentPosition;
+    if (position != null && mounted) {
+      setState(() {
+        _initialCenter = LatLng(position.latitude, position.longitude);
+      });
+      _mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: _initialCenter, zoom: 14.5),
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -66,6 +89,31 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: Consumer2<PropertyProvider, FavoritesProvider>(
         builder: (context, propertyProvider, favoritesProvider, child) {
+          // error surface
+          if (propertyProvider.error != null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    const SizedBox(height: 12),
+                    Text(
+                      propertyProvider.error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.black87),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () => propertyProvider.loadProperties(),
+                      child: const Text('Retry'),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
           return Column(
             children: [
               // Search Bar
@@ -79,17 +127,38 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (query) {
-                      setState(() {
-                        _searchQuery = query;
+                      _debounceTimer?.cancel();
+                      _debounceTimer = Timer(_debounceDuration, () {
+                        if (!mounted) return;
+                        setState(() {
+                          _searchQuery = query;
+                        });
+                        propertyProvider.searchProperties(query);
                       });
-                      propertyProvider.searchProperties(query);
                     },
                     decoration: InputDecoration(
                       hintText: 'Search',
                       prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.tune, color: Colors.grey),
-                        onPressed: () => context.push('/filters'),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.sort, color: Colors.grey),
+                            onSelected: (value) {
+                              context.read<PropertyProvider>().setSort(value);
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(value: 'popular', child: Text('Popular')),
+                              PopupMenuItem(value: 'newest', child: Text('Newest')),
+                              PopupMenuItem(value: 'price_asc', child: Text('Price: Low to High')),
+                              PopupMenuItem(value: 'price_desc', child: Text('Price: High to Low')),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.tune, color: Colors.grey),
+                            onPressed: () => context.push('/filters'),
+                          ),
+                        ],
                       ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -444,6 +513,16 @@ class _SearchScreenState extends State<SearchScreen> {
             target: LatLng(37.42796133580664, -122.085749655962),
             zoom: 14.4746,
           ),
+          onMapCreated: (c) {
+            _mapController = c;
+            // center to user if available
+            final pos = LocationService.instance.currentPosition;
+            if (pos != null) {
+              _mapController!.moveCamera(
+                CameraUpdate.newLatLng(LatLng(pos.latitude, pos.longitude)),
+              );
+            }
+          },
           markers: propertyProvider.properties.map((property) {
             return Marker(
               markerId: MarkerId(property.id.toString()),
@@ -511,8 +590,16 @@ class _SearchScreenState extends State<SearchScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Apply location filter
+                    onPressed: () async {
+                      final center = await _mapController?.getVisibleRegion();
+                      if (center != null) {
+                        propertyProvider.setGeoBounds(
+                          minLatitude: center.southwest.latitude,
+                          maxLatitude: center.northeast.latitude,
+                          minLongitude: center.southwest.longitude,
+                          maxLongitude: center.northeast.longitude,
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

@@ -10,7 +10,7 @@ class ChatHistoryScreen extends StatefulWidget {
 
 class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
   // Mock chat history data
-  final List<ChatHistoryItem> _chatHistory = [
+  List<ChatHistoryItem> _chatHistory = [
     ChatHistoryItem(
       id: '1',
       agentName: 'Sarah Johnson',
@@ -19,6 +19,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
       unreadCount: 2,
       isOnline: true,
+      agentPhone: '+1234567890',
     ),
     ChatHistoryItem(
       id: '2',
@@ -28,6 +29,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
       timestamp: DateTime.now().subtract(const Duration(days: 1)),
       unreadCount: 0,
       isOnline: false,
+      agentPhone: '+1234567891',
     ),
     ChatHistoryItem(
       id: '3',
@@ -37,6 +39,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
       timestamp: DateTime.now().subtract(const Duration(days: 2)),
       unreadCount: 1,
       isOnline: true,
+      agentPhone: '+1234567892',
     ),
     ChatHistoryItem(
       id: '4',
@@ -46,6 +49,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
       timestamp: DateTime.now().subtract(const Duration(days: 3)),
       unreadCount: 0,
       isOnline: false,
+      agentPhone: '+1234567893',
     ),
     ChatHistoryItem(
       id: '5',
@@ -55,6 +59,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
       timestamp: DateTime.now().subtract(const Duration(days: 5)),
       unreadCount: 0,
       isOnline: true,
+      agentPhone: '+1234567894',
     ),
   ];
 
@@ -99,7 +104,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
               itemCount: _chatHistory.length,
               itemBuilder: (context, index) {
                 final chat = _chatHistory[index];
-                return _buildChatItem(chat);
+                return _buildChatItemWithSwipe(chat, index);
               },
             ),
           ),
@@ -196,6 +201,48 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildChatItemWithSwipe(ChatHistoryItem chat, int index) {
+    return Dismissible(
+      key: Key(chat.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+              size: 24,
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        return await _showDeleteConfirmationDialog(chat);
+      },
+      onDismissed: (direction) {
+        _deleteChat(index);
+      },
+      child: _buildChatItem(chat),
     );
   }
 
@@ -384,6 +431,62 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
     // Navigate to a new chat screen or show a dialog to select an agent
     context.push('/chat?agentName=New Agent&agentImage=https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face');
   }
+
+  Future<bool?> _showDeleteConfirmationDialog(ChatHistoryItem chat) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Chat'),
+          content: Text('Are you sure you want to delete the chat with ${chat.agentName}?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteChat(int index) {
+    setState(() {
+      final deletedChat = _chatHistory.removeAt(index);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Chat with ${deletedChat.agentName} deleted'),
+          backgroundColor: Colors.red,
+          action: SnackBarAction(
+            label: 'Undo',
+            textColor: Colors.white,
+            onPressed: () {
+              setState(() {
+                _chatHistory.insert(index, deletedChat);
+              });
+            },
+          ),
+        ),
+      );
+    });
+  }
 }
 
 class ChatHistoryItem {
@@ -394,6 +497,7 @@ class ChatHistoryItem {
   final DateTime timestamp;
   final int unreadCount;
   final bool isOnline;
+  final String agentPhone;
 
   ChatHistoryItem({
     required this.id,
@@ -403,5 +507,6 @@ class ChatHistoryItem {
     required this.timestamp,
     required this.unreadCount,
     required this.isOnline,
+    required this.agentPhone,
   });
 }

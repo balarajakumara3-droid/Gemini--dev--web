@@ -13,6 +13,7 @@ import '../screens/auth/forgot_password_screen.dart';
 import '../screens/home/new_home_screen.dart';
 import '../screens/properties/property_list_screen.dart';
 import '../screens/properties/property_detail_screen.dart';
+import '../screens/properties/schedule_visit_screen.dart';
 import '../screens/properties/search_screen.dart';
 import '../screens/properties/filters_screen.dart';
 import '../screens/onboarding/location_setup_screen.dart';
@@ -128,6 +129,43 @@ class AppRouter {
         builder: (context, state) {
           final propertyId = state.pathParameters['id']!;
           return PropertyDetailScreen(propertyId: propertyId);
+        },
+      ),
+      GoRoute(
+        path: '/schedule-visit/:propertyId',
+        builder: (context, state) {
+          final propertyId = state.pathParameters['propertyId']!;
+          // You would typically fetch the property here
+          final property = Property(
+            id: propertyId,
+            title: 'Modern Apartment in Downtown',
+            description: 'Beautiful modern apartment with stunning city views.',
+            price: 2500,
+            location: 'Downtown',
+            address: '123 Main Street, Downtown',
+            latitude: 37.7749,
+            longitude: -122.4194,
+            images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800'],
+            bedrooms: 2,
+            bathrooms: 2,
+            area: 1200,
+            areaUnit: 'sq ft',
+            propertyType: 'Apartment',
+            listingType: 'rent',
+            amenities: ['Parking', 'Gym', 'Pool', 'Balcony', 'Air Conditioning'],
+            agent: Agent(
+              id: 'agent1',
+              name: 'Sarah Johnson',
+              email: 'sarah@premiumrealestate.com',
+              phone: '+1 (555) 123-4567',
+              profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+              company: 'Premium Real Estate',
+              rating: 4.8,
+              totalListings: 45,
+            ),
+            createdAt: DateTime.now(),
+          );
+          return ScheduleVisitScreen(property: property);
         },
       ),
       GoRoute(

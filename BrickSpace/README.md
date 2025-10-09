@@ -11,6 +11,7 @@ A modern Flutter real estate application for browsing and discovering properties
 - **Favorites**: Save your favorite properties for easy access
 - **Map View**: View properties on a map (placeholder for Google Maps integration)
 - **User Authentication**: Secure login and registration system
+- **Audio/Video Calling**: Direct communication with property agents through voice and video calls
 
 ### 📱 Screens Included
 1. **Splash Screen** - Welcome screen with app branding
@@ -30,6 +31,7 @@ A modern Flutter real estate application for browsing and discovering properties
    - Edit Profile Screen
    - Settings Screen
 6. **Map View** - Property location visualization
+7. **Chat System** - Communicate with agents through text, audio, and video calls
 
 ### 🎨 Design Features
 - **Modern UI**: Clean, intuitive interface following Material Design principles
@@ -83,6 +85,7 @@ lib/
 │   ├── properties/
 │   ├── map/
 │   ├── favorites/
+│   ├── chat/                 # Chat system with audio/video call support
 │   └── profile/
 ├── widgets/                  # Reusable components
 │   ├── custom_text_field.dart
@@ -91,7 +94,8 @@ lib/
 │   └── ...
 ├── services/                 # API services
 │   ├── auth_service.dart
-│   └── property_service.dart
+│   ├── property_service.dart
+│   └── call_service.dart     # Audio/video call service
 ├── routes/                   # Navigation
 │   └── app_router.dart
 └── utils/                    # Utilities
@@ -106,6 +110,8 @@ lib/
 - **google_fonts**: Typography
 - **cached_network_image**: Image caching
 - **shared_preferences**: Local storage
+- **agora_rtc_engine**: Audio/video calling
+- **permission_handler**: Device permission management
 
 ### UI Dependencies
 - **google_maps_flutter**: Map integration
@@ -132,6 +138,16 @@ To enable map functionality:
 GMSServices.provideAPIKey("YOUR_API_KEY_HERE")
 ```
 
+### Audio/Video Call Setup
+To enable audio/video calling features:
+
+1. Create an account at [Agora.io](https://www.agora.io/en/)
+2. Obtain your App ID and temporary token
+3. Update the credentials in `lib/services/call_service.dart`
+4. Add required permissions to platform-specific configuration files
+
+See `AUDIO_VIDEO_CALL_SETUP.md` for detailed setup instructions.
+
 ## Features Implementation
 
 ### Authentication
@@ -153,6 +169,13 @@ GMSServices.provideAPIKey("YOUR_API_KEY_HERE")
 - Price range selection
 - Property type filtering
 - Amenities filtering
+
+### Chat System with Audio/Video Calls
+- Text-based messaging with agents
+- Audio calling functionality
+- Video calling functionality
+- Quick access call buttons
+- Call controls (mute, camera switch, end call)
 
 ### User Experience
 - Favorites system
@@ -220,11 +243,11 @@ For support and questions:
 ## Roadmap
 
 ### Planned Features
-- [ ] Real API integration
+- [x] Real API integration
 - [ ] Push notifications
 - [ ] Property comparison
 - [ ] Virtual tours
-- [ ] Chat with agents
+- [x] Chat with agents (including audio/video calls)
 - [ ] Property alerts
 - [ ] Advanced map features
 - [ ] Offline support

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'dart:convert';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
@@ -21,7 +22,6 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _initializeAuth() async {
-    await _clearUserData();
     await _loadUserFromStorage();
   }
 
@@ -41,9 +41,14 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('user');
-      // Don't load any user data - start fresh
-      _user = null;
-      print('AuthProvider: _user is null, isAuthenticated: ${_user != null}');
+      if (userJson != null && userJson.isNotEmpty) {
+        final Map<String, dynamic> map = json.decode(userJson) as Map<String, dynamic>;
+        _user = User.fromJson(map);
+        print('AuthProvider: Loaded user from storage, isAuthenticated: ${_user != null}');
+      } else {
+        _user = null;
+        print('AuthProvider: No stored user, isAuthenticated: ${_user != null}');
+      }
     } catch (e) {
       _error = e.toString();
       _user = null;
@@ -120,7 +125,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _saveUserToStorage() async {
     if (_user != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user', _user!.toJson().toString());
+      await prefs.setString('user', json.encode(_user!.toJson()));
     }
   }
 

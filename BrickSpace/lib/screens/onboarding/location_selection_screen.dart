@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationSelectionScreen extends StatefulWidget {
   const LocationSelectionScreen({super.key});
@@ -16,11 +17,22 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
   bool _isLoading = false;
   LatLng? _selectedLocation;
   String _selectedAddress = '';
+  GoogleMapController? _mapController;
+  LatLng _currentMapPosition = const LatLng(-6.2088, 106.8456); // Jakarta default
+  bool _isLoadingLocation = false;
 
   @override
   void initState() {
     super.initState();
     _loadPopularLocations();
+    _getCurrentLocation();
+  }
+  
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _loadPopularLocations() {
@@ -85,11 +97,81 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
     });
   }
 
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final newPermission = await Geolocator.requestPermission();
+        if (newPermission == LocationPermission.denied || 
+            newPermission == LocationPermission.deniedForever) {
+          setState(() => _isLoadingLocation = false);
+          return;
+        }
+      }
+      
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      final currentLatLng = LatLng(position.latitude, position.longitude);
+      
+      setState(() {
+        _currentMapPosition = currentLatLng;
+        _isLoadingLocation = false;
+      });
+      
+      // Reverse geocode to get address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        
+        if (placemarks.isNotEmpty) {
+          final placemark = placemarks.first;
+          final address = [
+            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
+          
+          // Add current location to top of suggestions
+          if (mounted) {
+            setState(() {
+              _suggestions.insert(
+                0,
+                LocationSuggestion(
+                  name: 'Current Location',
+                  address: address.isNotEmpty ? address : 'Your current location',
+                  coordinates: currentLatLng,
+                ),
+              );
+            });
+          }
+        }
+      } catch (e) {
+        print('Error reverse geocoding: $e');
+      }
+      
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentMapPosition, 12),
+      );
+    } catch (e) {
+      print('Error getting location: $e');
+      setState(() => _isLoadingLocation = false);
+    }
+  }
+  
   void _selectLocation(LocationSuggestion suggestion) {
     setState(() {
       _selectedLocation = suggestion.coordinates;
       _selectedAddress = suggestion.address;
     });
+    
+    // Animate map to selected location
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(suggestion.coordinates, 12),
+    );
   }
 
   @override
@@ -151,24 +233,67 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: GoogleMap(
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(-6.2088, 106.8456), // Jakarta
-                    zoom: 10,
-                  ),
-                  markers: _selectedLocation != null
-                      ? {
-                          Marker(
-                            markerId: const MarkerId('selected'),
-                            position: _selectedLocation!,
-                            infoWindow: InfoWindow(title: _selectedAddress),
+                child: Stack(
+                  children: [
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _currentMapPosition,
+                        zoom: 10,
+                      ),
+                      onMapCreated: (controller) {
+                        _mapController = controller;
+                      },
+                      markers: _selectedLocation != null
+                          ? {
+                              Marker(
+                                markerId: const MarkerId('selected'),
+                                position: _selectedLocation!,
+                                infoWindow: InfoWindow(title: _selectedAddress),
+                              ),
+                            }
+                          : {},
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      mapToolbarEnabled: false,
+                    ),
+                    // Current Location Button
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(30),
+                        child: InkWell(
+                          onTap: _getCurrentLocation,
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: _isLoadingLocation
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF2E7D32),
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.my_location,
+                                    color: Color(0xFF2E7D32),
+                                    size: 20,
+                                  ),
                           ),
-                        }
-                      : {},
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  zoomControlsEnabled: false,
-                  mapToolbarEnabled: false,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

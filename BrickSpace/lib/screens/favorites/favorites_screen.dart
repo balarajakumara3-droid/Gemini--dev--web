@@ -536,6 +536,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             },
                             onDismissed: (direction) {
                               favoritesProvider.removeFromFavorites(property.id);
+                              // Update local list immediately to remove the widget from tree
+                              setState(() {
+                                // No-op setState to trigger rebuild; provider list already updated
+                              });
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('${property.title} removed from favorites'),

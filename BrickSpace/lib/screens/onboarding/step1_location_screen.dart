@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../../controllers/onboarding_controller.dart';
 import '../../models/onboarding_models.dart';
 
@@ -20,6 +21,7 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(-6.2088, 106.8456); // Jakarta default
   bool _isLoadingLocation = false;
+  String _currentAddress = 'Getting your location...';
 
   @override
   void initState() {
@@ -54,21 +56,90 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
     try {
       final permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        await Geolocator.requestPermission();
+        final newPermission = await Geolocator.requestPermission();
+        if (newPermission == LocationPermission.denied || 
+            newPermission == LocationPermission.deniedForever) {
+          setState(() {
+            _currentAddress = 'Location permission denied';
+            _isLoadingLocation = false;
+          });
+          return;
+        }
       }
       
-      final position = await Geolocator.getCurrentPosition();
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
-        _isLoadingLocation = false;
       });
       
+      // Reverse geocode to get address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        
+        if (placemarks.isNotEmpty) {
+          final placemark = placemarks.first;
+          final address = [
+            if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+            if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
+          
+          final fullAddress = [
+            if (placemark.street?.isNotEmpty ?? false) placemark.street,
+            if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+            if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+            if (placemark.postalCode?.isNotEmpty ?? false) placemark.postalCode,
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
+          
+          setState(() {
+            _currentAddress = address.isNotEmpty ? address : 'Current Location';
+            _isLoadingLocation = false;
+          });
+          
+          // Update location in controller
+          context.read<OnboardingController>().setLocation(
+            LocationData(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              address: placemark.street ?? '',
+              city: placemark.locality ?? '',
+              state: placemark.administrativeArea ?? '',
+              country: placemark.country ?? '',
+              postalCode: placemark.postalCode ?? '',
+            ),
+          );
+        } else {
+          setState(() {
+            _currentAddress = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+            _isLoadingLocation = false;
+          });
+        }
+      } catch (e) {
+        print('Error reverse geocoding: $e');
+        setState(() {
+          _currentAddress = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+          _isLoadingLocation = false;
+        });
+      }
+      
       _mapController?.animateCamera(
-        CameraUpdate.newLatLng(_currentPosition),
+        CameraUpdate.newLatLngZoom(_currentPosition, 15),
       );
     } catch (e) {
       print('Error getting location: $e');
-      setState(() => _isLoadingLocation = false);
+      setState(() {
+        _currentAddress = 'Unable to get location';
+        _isLoadingLocation = false;
+      });
     }
   }
 
@@ -215,20 +286,50 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
                     onMapCreated: (controller) {
                       _mapController = controller;
                     },
-                    onTap: (position) {
-                      setState(() => _currentPosition = position);
-                      // Update location in controller
-                      context.read<OnboardingController>().setLocation(
-                        LocationData(
-                          latitude: position.latitude,
-                          longitude: position.longitude,
-                          address: '${position.latitude}, ${position.longitude}',
-                          city: 'Selected Location',
-                          state: '',
-                          country: '',
-                          postalCode: '',
-                        ),
-                      );
+                    onTap: (position) async {
+                      setState(() {
+                        _currentPosition = position;
+                        _isLoadingLocation = true;
+                      });
+                      
+                      // Reverse geocode the tapped position
+                      try {
+                        List<Placemark> placemarks = await placemarkFromCoordinates(
+                          position.latitude,
+                          position.longitude,
+                        );
+                        
+                        if (placemarks.isNotEmpty) {
+                          final placemark = placemarks.first;
+                          final address = [
+                            if (placemark.subLocality?.isNotEmpty ?? false) placemark.subLocality,
+                            if (placemark.locality?.isNotEmpty ?? false) placemark.locality,
+                            if (placemark.administrativeArea?.isNotEmpty ?? false) placemark.administrativeArea,
+                            if (placemark.country?.isNotEmpty ?? false) placemark.country,
+                          ].where((e) => e != null && e.isNotEmpty).join(', ');
+                          
+                          setState(() {
+                            _currentAddress = address.isNotEmpty ? address : 'Selected Location';
+                            _isLoadingLocation = false;
+                          });
+                          
+                          // Update location in controller
+                          context.read<OnboardingController>().setLocation(
+                            LocationData(
+                              latitude: position.latitude,
+                              longitude: position.longitude,
+                              address: placemark.street ?? '',
+                              city: placemark.locality ?? '',
+                              state: placemark.administrativeArea ?? '',
+                              country: placemark.country ?? '',
+                              postalCode: placemark.postalCode ?? '',
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        print('Error reverse geocoding tapped position: $e');
+                        setState(() => _isLoadingLocation = false);
+                      }
                     },
                     myLocationEnabled: true,
                     myLocationButtonEnabled: false,
@@ -335,7 +436,7 @@ class _Step1LocationScreenState extends State<Step1LocationScreen> with TickerPr
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        location?.fullAddress ?? 'West Jakarta',
+                        location?.fullAddress ?? _currentAddress,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],

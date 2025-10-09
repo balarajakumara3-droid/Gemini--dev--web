@@ -6,6 +6,7 @@ import '../../providers/property_provider.dart';
 import '../../providers/favorites_provider.dart';
 import '../../models/property.dart';
 import '../../widgets/custom_button.dart';
+import 'schedule_visit_screen.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final String propertyId;
@@ -381,7 +382,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         IconButton(
                           icon: const Icon(Icons.message),
                           onPressed: () {
-                            // Handle contact agent
+                            _contactAgent();
                           },
                         ),
                       ],
@@ -396,20 +397,37 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            // Handle schedule visit
+                            _scheduleVisit();
                           },
                           icon: const Icon(Icons.calendar_today),
                           label: const Text('Schedule Visit'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF2E7D32),
+                            side: const BorderSide(color: Color(0xFF2E7D32)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: CustomButton(
-                          text: 'Contact Agent',
+                        child: ElevatedButton.icon(
                           onPressed: () {
-                            // Handle contact agent
+                            _contactAgent();
                           },
-                          icon: Icons.message,
+                          icon: const Icon(Icons.message),
+                          label: const Text('Contact Agent'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2E7D32),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
                         ),
                       ),
                     ],
@@ -421,6 +439,236 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _scheduleVisit() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScheduleVisitScreen(property: _property!),
+      ),
+    );
+  }
+
+  void _contactAgent() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildContactAgentBottomSheet(),
+    );
+  }
+
+  Widget _buildContactAgentBottomSheet() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Agent Info
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: _property!.agent.profileImage.isNotEmpty
+                      ? CachedNetworkImageProvider(_property!.agent.profileImage)
+                      : null,
+                  child: _property!.agent.profileImage.isEmpty
+                      ? const Icon(Icons.person, size: 30)
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _property!.agent.name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _property!.agent.company,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.star, size: 16, color: Colors.amber),
+                          const SizedBox(width: 4),
+                          Text('${_property!.agent.rating}'),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${_property!.agent.totalListings} listings',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Contact Options
+            _buildContactOption(
+              icon: Icons.message,
+              title: 'Send Message',
+              subtitle: 'Start a conversation',
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/chat?agentName=${_property!.agent.name}&agentImage=${_property!.agent.profileImage}');
+              },
+            ),
+            
+            const SizedBox(height: 12),
+            
+            _buildContactOption(
+              icon: Icons.phone,
+              title: 'Call Agent',
+              subtitle: _property!.agent.phone,
+              onTap: () {
+                Navigator.pop(context);
+                _makePhoneCall();
+              },
+            ),
+            
+            const SizedBox(height: 12),
+            
+            _buildContactOption(
+              icon: Icons.email,
+              title: 'Send Email',
+              subtitle: _property!.agent.email,
+              onTap: () {
+                Navigator.pop(context);
+                _sendEmail();
+              },
+            ),
+            
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E7D32).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: const Color(0xFF2E7D32),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _makePhoneCall() {
+    // TODO: Implement phone call functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Calling ${_property!.agent.phone}...'),
+        backgroundColor: const Color(0xFF2E7D32),
+      ),
+    );
+  }
+
+  void _sendEmail() {
+    // TODO: Implement email functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Opening email to ${_property!.agent.email}...'),
+        backgroundColor: const Color(0xFF2E7D32),
       ),
     );
   }
