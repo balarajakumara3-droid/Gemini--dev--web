@@ -19,6 +19,7 @@ import '../screens/properties/filters_screen.dart';
 import '../screens/onboarding/location_setup_screen.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/favorites/favorites_screen.dart';
+import '../screens/favorites/wishlist_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/settings_screen.dart';
@@ -40,6 +41,11 @@ import '../screens/featured/top_locations_screen.dart';
 import '../screens/featured/top_agents_screen.dart' as featured;
 import '../screens/properties/property_comparison_screen.dart';
 import '../screens/properties/property_comparison_results_screen.dart';
+import '../screens/properties/property_booking_screen.dart';
+import '../screens/properties/property_sharing_screen.dart';
+import '../screens/properties/property_alerts_screen.dart';
+import '../screens/properties/property_reviews_screen.dart';
+import '../screens/properties/property_report_screen.dart';
 import '../screens/calculators/mortgage_calculator_screen.dart';
 import '../screens/chat/chat_screen.dart';
 import '../screens/chat/chat_history_screen.dart';
@@ -207,6 +213,38 @@ class AppRouter {
         builder: (context, state) {
           final propertyIds = state.extra as List<String>? ?? [];
           return PropertyComparisonResultsScreen(propertyIds: propertyIds);
+        },
+      ),
+      GoRoute(
+        path: '/properties/booking/:propertyId',
+        builder: (context, state) {
+          final propertyId = state.pathParameters['propertyId']!;
+          return PropertyBookingScreen(propertyId: propertyId);
+        },
+      ),
+      GoRoute(
+        path: '/properties/sharing/:propertyId',
+        builder: (context, state) {
+          final propertyId = state.pathParameters['propertyId']!;
+          return PropertySharingScreen(propertyId: propertyId);
+        },
+      ),
+      GoRoute(
+        path: '/properties/alerts',
+        builder: (context, state) => const PropertyAlertsScreen(),
+      ),
+      GoRoute(
+        path: '/properties/reviews/:propertyId',
+        builder: (context, state) {
+          final propertyId = state.pathParameters['propertyId']!;
+          return PropertyReviewsScreen(propertyId: propertyId);
+        },
+      ),
+      GoRoute(
+        path: '/properties/report/:propertyId',
+        builder: (context, state) {
+          final propertyId = state.pathParameters['propertyId']!;
+          return PropertyReportScreen(propertyId: propertyId);
         },
       ),
       GoRoute(
@@ -401,6 +439,10 @@ class AppRouter {
       GoRoute(
         path: '/map-filter',
         builder: (context, state) => const MapFilterScreen(),
+      ),
+      GoRoute(
+        path: '/wishlist',
+        builder: (context, state) => const WishlistScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

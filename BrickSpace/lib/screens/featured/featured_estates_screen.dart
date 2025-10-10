@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../filters/price_range_filter_screen.dart';
+import '../filters/location_filter_screen.dart';
+import '../filters/property_type_filter_screen.dart';
 
 class FeaturedEstatesScreen extends StatefulWidget {
   const FeaturedEstatesScreen({super.key});
@@ -635,19 +638,22 @@ class _FeaturedEstatesScreenState extends State<FeaturedEstatesScreen> with Tick
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
         ),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Drag handle
             Container(
-              margin: const EdgeInsets.only(top: 12),
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
               width: 40,
               height: 4,
               decoration: BoxDecoration(
@@ -655,33 +661,206 @@ class _FeaturedEstatesScreenState extends State<FeaturedEstatesScreen> with Tick
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
+            // Title
             const Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(vertical: 16),
               child: Text(
                 'Filter Options',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.tune, color: Color(0xFF4CAF50)),
-              title: const Text('Price Range'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            // Price Range Option
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                _showPriceRangeFilter();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4CAF50).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.tune,
+                        color: Color(0xFF4CAF50),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Text(
+                        'Price Range',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.location_on, color: Color(0xFF4CAF50)),
-              title: const Text('Location'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            // Location Option
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                _showLocationFilter();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4CAF50).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Color(0xFF4CAF50),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Text(
+                        'Location',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.home, color: Color(0xFF4CAF50)),
-              title: const Text('Property Type'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            // Property Type Option
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                _showPropertyTypeFilter();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4CAF50).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.home,
+                        color: Color(0xFF4CAF50),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Text(
+                        'Property Type',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
     );
+  }
+
+  void _showPriceRangeFilter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PriceRangeFilterScreen(),
+      ),
+    ).then((result) {
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Price: \$${result['minPrice']} - \$${result['maxPrice']}',
+            ),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
+      }
+    });
+  }
+
+  void _showLocationFilter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LocationFilterScreen(),
+      ),
+    ).then((result) {
+      if (result != null) {
+        final locations = result['locations'] as List<String>;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Selected: ${locations.join(', ')}'),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
+      }
+    });
+  }
+
+  void _showPropertyTypeFilter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PropertyTypeFilterScreen(),
+      ),
+    ).then((result) {
+      if (result != null) {
+        final types = result['propertyTypes'] as List<String>;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Selected: ${types.join(', ')}'),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
+      }
+    });
   }
 
   void _showPropertyDetails(Map<String, dynamic> property) {

@@ -307,20 +307,23 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
             // Properties Grid
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.75,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
+              child: SizedBox(
+                height: 400, // Set a fixed height to prevent overflow
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: properties.length,
+                  itemBuilder: (context, index) {
+                    final property = properties[index];
+                    return _buildPropertyCard(property, index);
+                  },
                 ),
-                itemCount: properties.length,
-                itemBuilder: (context, index) {
-                  final property = properties[index];
-                  return _buildPropertyCard(property, index);
-                },
               ),
             ),
 
@@ -396,7 +399,7 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Property Image
-            Flexible(
+            Expanded(
               flex: 3,
               child: Stack(
                 children: [
@@ -457,12 +460,13 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
               ),
             ),
             // Property Details
-            Flexible(
+            Expanded(
+              flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       property['title'],
@@ -473,7 +477,6 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 12),
@@ -487,7 +490,6 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.location_on, color: Colors.grey, size: 12),
@@ -505,7 +507,6 @@ class _TopLocationsScreenState extends State<TopLocationsScreen> {
                         ),
                       ],
                     ),
-                    const Spacer(),
                     Text(
                       property['price'],
                       style: const TextStyle(

@@ -206,7 +206,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
 
   Widget _buildChatItemWithSwipe(ChatHistoryItem chat, int index) {
     return Dismissible(
-      key: Key(chat.id),
+      key: UniqueKey(), // Use UniqueKey to ensure proper widget disposal
       direction: DismissDirection.endToStart,
       background: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -237,10 +237,14 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
         ),
       ),
       confirmDismiss: (direction) async {
-        return await _showDeleteConfirmationDialog(chat);
+        final confirmed = await _showDeleteConfirmationDialog(chat);
+        return confirmed ?? false;
       },
       onDismissed: (direction) {
-        _deleteChat(index);
+        setState(() {
+          _chatHistory.removeAt(index);
+        });
+        _showDeleteSnackBar(chat, index);
       },
       child: _buildChatItem(chat),
     );
@@ -467,25 +471,23 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
     );
   }
 
-  void _deleteChat(int index) {
-    setState(() {
-      final deletedChat = _chatHistory.removeAt(index);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Chat with ${deletedChat.agentName} deleted'),
-          backgroundColor: Colors.red,
-          action: SnackBarAction(
-            label: 'Undo',
-            textColor: Colors.white,
-            onPressed: () {
-              setState(() {
-                _chatHistory.insert(index, deletedChat);
-              });
-            },
-          ),
+  void _showDeleteSnackBar(ChatHistoryItem deletedChat, int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Chat with ${deletedChat.agentName} deleted'),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Undo',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _chatHistory.insert(index, deletedChat);
+            });
+          },
         ),
-      );
-    });
+      ),
+    );
   }
 }
 

@@ -9,8 +9,14 @@ import 'providers/property_provider.dart';
 import 'providers/favorites_provider.dart';
 import 'controllers/onboarding_controller.dart';
 import 'config/api_config.dart';
+import 'services/database_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize database service
+  await DatabaseService().init();
+  
   // Initialize Google Maps
   if (ApiConfig.hasValidKeys) {
     // Google Maps will be initialized automatically with the API keys

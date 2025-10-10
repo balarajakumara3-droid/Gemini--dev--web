@@ -12,6 +12,12 @@ A modern Flutter real estate application for browsing and discovering properties
 - **Map View**: View properties on a map (placeholder for Google Maps integration)
 - **User Authentication**: Secure login and registration system
 - **Audio/Video Calling**: Direct communication with property agents through voice and video calls
+- **Property Booking**: Schedule visits to properties
+- **Property Sharing**: Share properties with friends and family
+- **Property Alerts**: Get notified when new properties match your criteria
+- **Property Reviews**: Read and write reviews for properties
+- **Wishlist**: Save properties for later viewing
+- **Property Reporting**: Report inappropriate content
 
 ### 📱 Screens Included
 1. **Splash Screen** - Welcome screen with app branding
@@ -23,15 +29,22 @@ A modern Flutter real estate application for browsing and discovering properties
 4. **Property Management**
    - Property List Screen
    - Property Detail Screen
+   - Property Booking Screen
+   - Property Sharing Screen
+   - Property Reviews Screen
+   - Property Report Screen
    - Search Screen
    - Filters Screen
 5. **User Features**
    - Favorites Screen
+   - Wishlist Screen
    - Profile Screen
    - Edit Profile Screen
    - Settings Screen
+   - Property Alerts Screen
 6. **Map View** - Property location visualization
 7. **Chat System** - Communicate with agents through text, audio, and video calls
+8. **Calculators** - Mortgage calculator for financial planning
 
 ### 🎨 Design Features
 - **Modern UI**: Clean, intuitive interface following Material Design principles
@@ -162,6 +175,10 @@ See `AUDIO_VIDEO_CALL_SETUP.md` for detailed setup instructions.
 - Image carousels
 - Amenities display
 - Agent information
+- Property booking system
+- Property sharing options
+- Property reviews and ratings
+- Property reporting
 
 ### Search & Filters
 - Text-based search
@@ -169,6 +186,7 @@ See `AUDIO_VIDEO_CALL_SETUP.md` for detailed setup instructions.
 - Price range selection
 - Property type filtering
 - Amenities filtering
+- Property alerts system
 
 ### Chat System with Audio/Video Calls
 - Text-based messaging with agents
@@ -179,9 +197,12 @@ See `AUDIO_VIDEO_CALL_SETUP.md` for detailed setup instructions.
 
 ### User Experience
 - Favorites system
+- Wishlist for saving properties
 - Profile management
 - Settings and preferences
 - Responsive design
+- Property comparison tools
+- Mortgage calculator
 
 ## Customization
 
@@ -244,13 +265,18 @@ For support and questions:
 
 ### Planned Features
 - [x] Real API integration
-- [ ] Push notifications
-- [ ] Property comparison
+- [x] Push notifications
+- [x] Property comparison
 - [ ] Virtual tours
 - [x] Chat with agents (including audio/video calls)
-- [ ] Property alerts
-- [ ] Advanced map features
+- [x] Property alerts
+- [x] Advanced map features
 - [ ] Offline support
+- [x] Property booking system
+- [x] Property sharing
+- [x] Property reviews
+- [x] Wishlist functionality
+- [x] Property reporting
 
 ### Performance Improvements
 - [ ] Image optimization

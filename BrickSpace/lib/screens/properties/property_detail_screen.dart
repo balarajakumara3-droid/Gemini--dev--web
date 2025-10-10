@@ -168,7 +168,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               IconButton(
                 icon: const Icon(Icons.share),
                 onPressed: () {
-                  // Handle share
+                  // Navigate to sharing screen
+                  context.push('/properties/sharing/${_property!.id}');
                 },
               ),
             ],
@@ -200,35 +201,19 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             Text(
                               _property!.title,
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  size: 16,
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  _property!.location,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(width: 16),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _property!.listingType == 'rent' 
-                              ? Colors.blue 
-                              : Colors.green,
+                          color: _property!.listingType == 'sale'
+                              ? const Color(0xFF2E7D32)
+                              : const Color(0xFF1565C0),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -243,30 +228,76 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 8),
 
-                  // Property Info
+                  // Location
                   Row(
                     children: [
-                      _buildInfoCard(
-                        context,
-                        Icons.bed,
-                        '${_property!.bedrooms}',
-                        'Bedrooms',
+                      const Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: Colors.grey,
                       ),
-                      const SizedBox(width: 16),
-                      _buildInfoCard(
-                        context,
-                        Icons.bathtub,
-                        '${_property!.bathrooms}',
-                        'Bathrooms',
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          _property!.address,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      _buildInfoCard(
-                        context,
-                        Icons.square_foot,
-                        '${_property!.area.toStringAsFixed(0)} ${_property!.areaUnit}',
-                        'Area',
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Property Info Chips
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          '${_property!.bedrooms} beds',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          '${_property!.bathrooms} baths',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          '${_property!.area} ${_property!.areaUnit}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
                     ],
                   ),
@@ -276,14 +307,14 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   // Description
                   Text(
                     'Description',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     _property!.description,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
 
                   const SizedBox(height: 24),
@@ -291,8 +322,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   // Amenities
                   Text(
                     'Amenities',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -391,7 +422,50 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Action Buttons
+                  // Additional Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            context.push('/properties/reviews/${_property!.id}');
+                          },
+                          icon: const Icon(Icons.star),
+                          label: const Text('Reviews'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF2E7D32),
+                            side: const BorderSide(color: Color(0xFF2E7D32)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            context.push('/properties/report/${_property!.id}');
+                          },
+                          icon: const Icon(Icons.flag),
+                          label: const Text('Report'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Main Action Buttons
                   Row(
                     children: [
                       Expanded(
@@ -444,12 +518,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   void _scheduleVisit() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ScheduleVisitScreen(property: _property!),
-      ),
-    );
+    context.push('/properties/booking/${_property!.id}');
   }
 
   void _contactAgent() {
@@ -510,94 +579,76 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     children: [
                       Text(
                         _property!.agent.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _property!.agent.company,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.star, size: 16, color: Colors.amber),
-                          const SizedBox(width: 4),
-                          Text('${_property!.agent.rating}'),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${_property!.agent.totalListings} listings',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Contact Options
             _buildContactOption(
-              icon: Icons.message,
-              title: 'Send Message',
-              subtitle: 'Start a conversation',
-              onTap: () {
-                Navigator.pop(context);
-                context.push('/chat?agentName=${_property!.agent.name}&agentImage=${_property!.agent.profileImage}');
-              },
+              Icons.phone,
+              'Call',
+              _property!.agent.phone,
+              _makePhoneCall,
             ),
-            
             const SizedBox(height: 12),
-            
             _buildContactOption(
-              icon: Icons.phone,
-              title: 'Call Agent',
-              subtitle: _property!.agent.phone,
-              onTap: () {
-                Navigator.pop(context);
-                _makePhoneCall();
-              },
+              Icons.email,
+              'Email',
+              _property!.agent.email,
+              _sendEmail,
             ),
-            
             const SizedBox(height: 12),
-            
             _buildContactOption(
-              icon: Icons.email,
-              title: 'Send Email',
-              subtitle: _property!.agent.email,
-              onTap: () {
-                Navigator.pop(context);
-                _sendEmail();
-              },
+              Icons.message,
+              'Chat',
+              'Send a message',
+              _startChat,
             ),
-            
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 24),
+
+            // Close Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[200],
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('Close'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContactOption({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
+  Widget _buildContactOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -671,6 +722,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         backgroundColor: const Color(0xFF2E7D32),
       ),
     );
+  }
+
+  void _startChat() {
+    // Navigate to chat screen with agent
+    context.push('/chat/${_property!.agent.id}?agentName=${_property!.agent.name}&agentImage=${_property!.agent.profileImage}');
   }
 
   Widget _buildInfoCard(BuildContext context, IconData icon, String value, String label) {

@@ -20,8 +20,10 @@ class FavoritesProvider extends ChangeNotifier {
       final favoritesJson = prefs.getString('favorites');
       if (favoritesJson != null) {
         _favoriteIds = List<String>.from(json.decode(favoritesJson));
+        print('Loaded favorites: $_favoriteIds');
       }
     } catch (e) {
+      print('Error loading favorites: $e');
       // Handle error silently
     }
   }
@@ -30,22 +32,29 @@ class FavoritesProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('favorites', json.encode(_favoriteIds));
+      print('Saved favorites: $_favoriteIds');
     } catch (e) {
+      print('Error saving favorites: $e');
       // Handle error silently
     }
   }
 
   bool isFavorite(String propertyId) {
-    return _favoriteIds.contains(propertyId);
+    final result = _favoriteIds.contains(propertyId);
+    print('isFavorite($propertyId): $result');
+    return result;
   }
 
   Future<void> toggleFavorite(String propertyId, BuildContext context) async {
+    print('Toggling favorite for property: $propertyId');
     if (_favoriteIds.contains(propertyId)) {
       _favoriteIds.remove(propertyId);
       _showNotification(context, 'Removed from favorites', Icons.favorite_border);
+      print('Removed from favorites: $propertyId');
     } else {
       _favoriteIds.add(propertyId);
       _showNotification(context, 'Added to favorites', Icons.favorite);
+      print('Added to favorites: $propertyId');
     }
     
     await _saveFavorites();
@@ -73,6 +82,7 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   Future<void> addToFavorites(String propertyId) async {
+    print('Adding to favorites: $propertyId');
     if (!_favoriteIds.contains(propertyId)) {
       _favoriteIds.add(propertyId);
       await _saveFavorites();
@@ -81,6 +91,7 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   Future<void> removeFromFavorites(String propertyId) async {
+    print('Removing from favorites: $propertyId');
     if (_favoriteIds.contains(propertyId)) {
       _favoriteIds.remove(propertyId);
       await _saveFavorites();
@@ -89,13 +100,27 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   void updateFavoriteProperties(List<Property> allProperties) {
-    _favoriteProperties = allProperties
-        .where((property) => _favoriteIds.contains(property.id))
-        .toList();
-    notifyListeners();
+    try {
+      print('Updating favorite properties. Favorite IDs: $_favoriteIds');
+      print('All properties count: ${allProperties.length}');
+      _favoriteProperties = allProperties
+          .where((property) {
+            final isFavorite = _favoriteIds.contains(property.id);
+            print('Property ${property.id} is favorite: $isFavorite');
+            return isFavorite;
+          })
+          .toList();
+      print('Favorite properties updated. Count: ${_favoriteProperties.length}');
+      notifyListeners();
+    } catch (e) {
+      print('Error updating favorite properties: $e');
+      _favoriteProperties = [];
+      notifyListeners();
+    }
   }
 
   void clearFavorites() {
+    print('Clearing all favorites');
     _favoriteIds.clear();
     _favoriteProperties.clear();
     _saveFavorites();
