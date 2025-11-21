@@ -222,7 +222,7 @@ const App: React.FC = () => {
                         whileInView={{ scale: 1, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="w-48 h-48 rounded-full bg-brand-red flex items-center justify-center shadow-[0_0_50px_rgba(255,59,48,0.3)] z-10"
+                        className="w-48 h-48 rounded-full bg-brand-red flex items-center justify-center shadow-[0_0_50px_rgba(163,163,163,0.3)] z-10"
                       >
                           <Brain size={80} className="text-white" strokeWidth={1.5} />
                       </motion.div>
