@@ -21,6 +21,7 @@ import {
 import { CustomCursor } from './components/CustomCursor';
 import { Navbar } from './components/Navbar';
 import { ParticleBackground } from './components/ParticleBackground';
+import OurProducts from "@/components/OurProducts";
 
 // --- Helper Components ---
 
@@ -340,7 +341,7 @@ const App: React.FC = () => {
               </div>
           </div>
       </section>
-
+<OurProducts/>
       {/* COLLABORATE / CASE STUDIES SECTION */}
       <section className="py-32 px-6 md:px-12 bg-background overflow-hidden">
           <div className="max-w-7xl mx-auto">
