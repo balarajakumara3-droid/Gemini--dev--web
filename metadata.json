@@ -1,5 +1,5 @@
 {
-  "name": "Idea Manifest",
+  "name": ["Idea Manifest", "IdeaManifest"],
   "description": "A high-fidelity clone of a premium digital design agency website featuring smooth animations, dark mode aesthetics, and responsive layout.",
   "requestFramePermissions": []
 }

@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/summarizer",
+      "destination": "https://summarizer-wheat-pi.vercel.app/"
+    },
+    {
+      "source": "/summarizer/(.*)",
+      "destination": "https://summarizer-wheat-pi.vercel.app/$1"
+    }
+  ]
+}
