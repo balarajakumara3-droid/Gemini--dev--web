@@ -7,7 +7,7 @@ const products = [
     number: "01",
     title: "AI Text Summarizer",
     description: "Instantly summarize long articles, PDFs, or YouTube videos using advanced LLMs and RAG pipelines.",
-    url: "https://summarizer-wheat-pi.vercel.app/",
+    url: "summarizer",
     icon: Sparkles,
     accentColor: "indigo",
   },
