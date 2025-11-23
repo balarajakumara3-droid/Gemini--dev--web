@@ -13,13 +13,13 @@
         theme: {
           extend: {
             colors: {
-              background: '#F3F4F6',
-              surface: '#FFFFFF',
-              primary: '#0F172A',
-              secondary: '#475569',
-              accent: '#4338ca', // Indigo 700
-              'brand-dark': '#1e1b4b', // Indigo 950
-              'brand-light': '#e0e7ff', // Indigo 100
+              background: '#020617', // Slate 950 - Deepest Dark
+              surface: '#0f172a',    // Slate 900 - Card Surface
+              primary: '#f8fafc',    // Slate 50 - Primary Text
+              secondary: '#94a3b8',  // Slate 400 - Secondary Text
+              accent: '#818cf8',     // Indigo 400 - Premium Glow
+              'brand-dark': '#312e81', // Indigo 900
+              'brand-light': '#1e293b', // Slate 800 - Used for tags
             },
             fontFamily: {
               sans: ['Roboto', 'sans-serif'],
@@ -34,8 +34,8 @@
     </script>
     <style>
       body {
-        background-color: #F3F4F6;
-        color: #0F172A;
+        background-color: #020617;
+        color: #f8fafc;
         cursor: none;
       }
       /* Custom scrollbar */
@@ -43,14 +43,14 @@
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #F3F4F6;
+        background: #020617;
       }
       ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #334155;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: #475569;
       }
       
       .serif-italic {

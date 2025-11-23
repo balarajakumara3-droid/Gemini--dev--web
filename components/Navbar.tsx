@@ -28,19 +28,19 @@ export const Navbar: React.FC = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all duration-500 ${
-          scrolled ? 'bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 py-4' : 'bg-transparent py-6'
+          scrolled ? 'bg-background/80 backdrop-blur-md shadow-lg shadow-indigo-500/5 border-b border-white/5 py-4' : 'bg-transparent py-6'
         }`}
       >
         <div className="flex items-center gap-3">
            {/* Professional Logo */}
-           <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${scrolled ? 'bg-primary text-white' : 'bg-white text-primary'}`}>
+           <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${scrolled ? 'bg-accent text-background' : 'bg-white text-background'}`}>
              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
              </svg>
            </div>
-           <a href="#" className={`font-sans font-bold text-xl tracking-tight transition-colors ${scrolled ? 'text-primary' : 'text-white'}`}>
+           <a href="#" className={`font-sans font-bold text-xl tracking-tight transition-colors text-white`}>
              Idea Manifest
            </a>
         </div>
@@ -51,18 +51,18 @@ export const Navbar: React.FC = () => {
             <a
               key={item.label}
               href={item.href}
-              className={`text-sm font-medium transition-colors relative group ${scrolled ? 'text-primary hover:text-accent' : 'text-white/90 hover:text-white'}`}
+              className={`text-sm font-medium transition-colors relative group text-white/80 hover:text-accent`}
             >
               {item.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-current transition-all group-hover:w-full"></span>
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent transition-all group-hover:w-full"></span>
             </a>
           ))}
           <a
             href="#contact"
             className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                 scrolled 
-                ? 'bg-primary text-white hover:bg-accent' 
-                : 'bg-white text-primary hover:bg-gray-100'
+                ? 'bg-accent text-background hover:bg-white' 
+                : 'bg-white text-background hover:bg-white/90'
             }`}
           >
              Contact Us
@@ -71,7 +71,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Toggle */}
         <button
-          className={`md:hidden z-50 relative ${scrolled ? 'text-primary' : 'text-white'}`}
+          className={`md:hidden z-50 relative text-white`}
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -85,7 +85,7 @@ export const Navbar: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-primary z-40 flex items-center justify-center"
+            className="fixed inset-0 bg-background/95 backdrop-blur-xl z-40 flex items-center justify-center"
           >
             <div className="flex flex-col items-center gap-8">
               {navItems.map((item, index) => (
@@ -106,7 +106,7 @@ export const Navbar: React.FC = () => {
                   initial={{ y: 50, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4, duration: 0.5 }}
-                  className="mt-4 px-8 py-3 bg-white text-primary rounded-full text-lg font-medium"
+                  className="mt-4 px-8 py-3 bg-accent text-background rounded-full text-lg font-medium"
                   onClick={() => setIsOpen(false)}
                 >
                   Contact Us

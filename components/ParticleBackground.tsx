@@ -13,10 +13,6 @@ export const ParticleBackground: React.FC = () => {
     let particles: Particle[] = [];
     const particleCount = 60;
     const connectionDistance = 150;
-    const mouseDistance = 200;
-
-    let mouseX = -1000;
-    let mouseY = -1000;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -49,7 +45,8 @@ export const ParticleBackground: React.FC = () => {
       draw() {
         ctx!.beginPath();
         ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx!.fillStyle = 'rgba(150, 150, 150, 0.5)';
+        // Changed to white/transparent for dark mode
+        ctx!.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx!.fill();
       }
     }
@@ -77,7 +74,8 @@ export const ParticleBackground: React.FC = () => {
 
             if (distance < connectionDistance) {
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(150, 150, 150, ${0.1 * (1 - distance / connectionDistance)})`;
+                // Changed to white/transparent for dark mode lines
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / connectionDistance)})`;
                 ctx.lineWidth = 1;
                 ctx.moveTo(particle.x, particle.y);
                 ctx.lineTo(particles[j].x, particles[j].y);
@@ -89,20 +87,13 @@ export const ParticleBackground: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    }
-
     window.addEventListener('resize', resize);
-    // window.addEventListener('mousemove', handleMouseMove);
     
     init();
     animate();
 
     return () => {
       window.removeEventListener('resize', resize);
-    //   window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
