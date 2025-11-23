@@ -15,7 +15,7 @@ const products = [
     number: "02",
     title: "Namma Ooru SPL",
     description: "Local discovery platform for Tamil Nadu — events, offers, hidden gems, all in one beautiful app.",
-    url: "https://nammaooruspl.vercel.app/",
+    url: "nammaooruspl",
     icon: MapPin,
     accentColor: "emerald",
   },
