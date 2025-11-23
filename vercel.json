@@ -1,21 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    {
-      "source": "/nammaooruspl",
-      "destination": "https://nammaooruspl.vercel.app"
-    },
-    {
-      "source": "/nammaooruspl/:path*",
-      "destination": "https://nammaooruspl.vercel.app/:path*"
-    },
-    {
-      "source": "/summarizer",
-      "destination": "https://summarizer-wheat-pi.vercel.app"
-    },
+  "redirects": [
     {
       "source": "/summarizer/:path*",
-      "destination": "https://summarizer-wheat-pi.vercel.app/:path*"
+      "destination": "https://summarizer-wheat-pi.vercel.app/:path*",
+      "permanent": true
+    },
+     {
+      "source": "/nammaooruspl/:path*",
+      "destination": "https://nammaooruspl.vercel.app/:path*",
+      "permanent": true
     }
   ]
 }
