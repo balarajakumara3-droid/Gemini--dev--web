@@ -3,7 +3,7 @@
   "redirects": [
     {
       "source": "/summarizer/:path*",
-      "destination": "https://summarizer-wheat-pl.vercel.app/:path*",
+      "destination": "https://summarizer-wheat-pi.vercel.app/:path*",
       "permanent": true
     }
   ]
