@@ -1,12 +1,10 @@
 {
-  "rewrites": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
     {
-      "source": "/summarizer",
-      "destination": "https://summarizer-wheat-pi.vercel.app/"
-    },
-    {
-      "source": "/summarizer/(.*)",
-      "destination": "https://summarizer-wheat-pi.vercel.app/$1"
+      "source": "/summarizer/:path*",
+      "destination": "https://summarizer-wheat-pl.vercel.app/:path*",
+      "permanent": true
     }
   ]
 }
