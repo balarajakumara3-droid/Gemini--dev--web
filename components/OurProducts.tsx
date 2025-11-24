@@ -4,7 +4,6 @@ import { ExternalLink, Sparkles, MapPin, Smartphone } from 'lucide-react';
 
 const products = [
   {
-    number: "01",
     title: "AI Text Summarizer",
     description: "Instantly summarize long articles, PDFs, or YouTube videos using advanced LLMs and RAG pipelines.",
     url: "summarizer",
@@ -12,7 +11,6 @@ const products = [
     accentColor: "indigo",
   },
   {
-    number: "02",
     title: "Namma Ooru SPL",
     description: "Local discovery platform for Tamil Nadu — events, offers, hidden gems, all in one beautiful app.",
     url: "nammaooruspl",
@@ -20,7 +18,6 @@ const products = [
     accentColor: "emerald",
   },
   {
-    number: "03",
     title: "BrickSpace Mobile App",
     description: "AR LEGO® brick scanner, puzzle games, and Shopify store builder — all in one powerful mobile app.",
     url: "https://play.google.com/store/apps/details?id=com.brickspace", // update when live
@@ -45,7 +42,7 @@ const OurProducts = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {products.map((product) => (
             <a
-              key={product.number}
+              key={product.title}
               href={product.url}
               target="_blank"
               rel="noopener noreferrer"
@@ -56,12 +53,6 @@ const OurProducts = () => {
               {/* Gradient overlay on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent 
                             opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              {/* Big number background */}
-              <div className="absolute top-0 right-0 p-6 opacity-10 font-serif text-6xl text-white 
-                            group-hover:opacity-20 transition-opacity">
-                {product.number}
-              </div>
 
               {/* Icon */}
               <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center 

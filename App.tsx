@@ -74,7 +74,7 @@ const StaggeredTitle = ({ text, className = "", delay = 0 }: { text: string, cla
     )
 }
 
-const ServiceCard = ({ title, description, Icon, number }: { title: string, description: string, Icon: any, number: string }) => (
+const ServiceCard = ({ title, description, Icon }: { title: string, description: string, Icon: any }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -84,9 +84,6 @@ const ServiceCard = ({ title, description, Icon, number }: { title: string, desc
         className="group p-8 bg-surface border border-white/5 hover:border-accent/30 shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 rounded-xl relative overflow-hidden"
     >
         <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="absolute top-0 right-0 p-6 opacity-10 font-serif text-6xl text-white group-hover:opacity-20 transition-opacity">
-            {number}
-        </div>
         <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center text-accent mb-6 group-hover:scale-110 group-hover:bg-accent group-hover:text-background transition-all duration-300">
             <Icon size={24} strokeWidth={1.5} />
         </div>
@@ -231,26 +228,74 @@ const App: React.FC = () => {
                 </div>
             </section>
 
-            {/* SEO CONTENT SECTION */}
-            <section className="py-20 px-6 md:px-12 bg-surface border-b border-white/5">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
-                    <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
-                        <p>
-                            <strong>Idea Manifest</strong> is on a mission to democratize access to premium software engineering. We believe every business deserves world-class digital tools, regardless of their size or budget. By leveraging <strong>AI-driven efficiency</strong>, we work smarter, not harder, to deliver superior results.
-                        </p>
-                        <p>
-                            Our core values center on <strong>Client-Centricity</strong> and <strong>Transparent Quality</strong>. Your success is our obsession, and we ensure clean code, clear communication, and no surprises. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
-                        </p>
-                        <p>
-                            Stay tuned for our upcoming suite of SaaS tools and AI plugins designed to further accelerate your business growth. Choose <strong>Idea Manifest</strong> for a development partner that values speed without compromising on quality.
-                        </p>
+
+            {/* SERVICES SECTION */}
+            < section id="services" className="py-32 px-6 md:px-12 bg-surface" >
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex justify-between items-end mb-16">
+                        <div>
+                            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">Core <span className="italic text-accent">Capabilities</span></h2>
+                            <p className="text-secondary max-w-xl">End-to-end development from architecture to deployment.</p>
+                        </div>
+                        <a href="#" className="hidden md:flex items-center gap-2 text-white font-medium hover:text-accent transition-colors">
+                            View Technical Docs <ArrowRight size={16} />
+                        </a>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <ServiceCard
+                            title="Custom Websites"
+                            description="High-performance, SEO-optimized websites tailored to your brand. We use Next.js and React to build blazing fast platforms that convert visitors into customers."
+                            Icon={Monitor}
+                        />
+                        <ServiceCard
+                            title="Mobile Applications"
+                            description="Native-quality iOS and Android apps built with Flutter and React Native. Launch on both platforms simultaneously with a single, maintainable codebase."
+                            Icon={Smartphone}
+                        />
+                        <ServiceCard
+                            title="Backend Development"
+                            description="Robust, secure, and scalable server-side solutions. We architect APIs and databases that can handle complex logic and high traffic loads with ease."
+                            Icon={Server}
+                        />
+                        <ServiceCard
+                            title="UI/UX Design"
+                            description="User-centric interfaces that are as beautiful as they are functional. We create intuitive journeys that delight users and drive engagement."
+                            Icon={Zap}
+                        />
+                        <ServiceCard
+                            title="Tech Consulting"
+                            description="Strategic guidance to navigate the digital landscape. We help you choose the right stack, plan your roadmap, and leverage AI for business growth."
+                            Icon={Settings}
+                        />
+                    </div>
+                </div>
+            </section>
+            <OurProducts />
+
+            {/* TECHNOLOGY SECTION */}
+            <section id="technology" className="py-24 px-6 md:px-12 bg-background border-t border-white/5">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-16 text-center">
+                        <h2 className="font-serif text-3xl md:text-4xl text-primary mb-4">Technology Stack</h2>
+                        <p className="text-secondary">Engineered with the world's most robust frameworks.</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <TechBadge name="FastAPI" Icon={Zap} />
+                        <TechBadge name="Next.js" Icon={Globe} />
+                        <TechBadge name="AWS / Cloud" Icon={Server} />
+                        <TechBadge name="PostgreSQL" Icon={Database} />
+                        <TechBadge name="OpenAI / LLMs" Icon={Bot} />
+                        <TechBadge name="Flutter" Icon={Smartphone} />
+                        <TechBadge name="Docker" Icon={Settings} />
+                        <TechBadge name="Python" Icon={Code} />
                     </div>
                 </div>
             </section>
 
-            {/* INTRO SECTION */}
-            < section className="py-32 px-6 md:px-12 bg-background relative z-10" >
+            {/* INTRO SECTION - Why Choose Us */}
+            < section className="py-32 px-6 md:px-12 bg-surface relative z-10" >
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
                         <div className="lg:col-span-4">
@@ -284,56 +329,26 @@ const App: React.FC = () => {
                 </div>
             </section>
 
-            {/* SERVICES SECTION */}
-            < section id="services" className="py-32 px-6 md:px-12 bg-surface" >
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-end mb-16">
-                        <div>
-                            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">Core <span className="italic text-accent">Capabilities</span></h2>
-                            <p className="text-secondary max-w-xl">End-to-end development from architecture to deployment.</p>
-                        </div>
-                        <a href="#" className="hidden md:flex items-center gap-2 text-white font-medium hover:text-accent transition-colors">
-                            View Technical Docs <ArrowRight size={16} />
-                        </a>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <ServiceCard
-                            number="01"
-                            title="Custom Websites"
-                            description="High-performance, SEO-optimized websites tailored to your brand. We use Next.js and React to build blazing fast platforms that convert visitors into customers."
-                            Icon={Monitor}
-                        />
-                        <ServiceCard
-                            number="02"
-                            title="Mobile Applications"
-                            description="Native-quality iOS and Android apps built with Flutter and React Native. Launch on both platforms simultaneously with a single, maintainable codebase."
-                            Icon={Smartphone}
-                        />
-                        <ServiceCard
-                            number="03"
-                            title="Backend Development"
-                            description="Robust, secure, and scalable server-side solutions. We architect APIs and databases that can handle complex logic and high traffic loads with ease."
-                            Icon={Server}
-                        />
-                        <ServiceCard
-                            number="04"
-                            title="UI/UX Design"
-                            description="User-centric interfaces that are as beautiful as they are functional. We create intuitive journeys that delight users and drive engagement."
-                            Icon={Zap}
-                        />
-                        <ServiceCard
-                            number="05"
-                            title="Tech Consulting"
-                            description="Strategic guidance to navigate the digital landscape. We help you choose the right stack, plan your roadmap, and leverage AI for business growth."
-                            Icon={Settings}
-                        />
+            {/* SEO CONTENT SECTION - About Us */}
+            <section className="py-20 px-6 md:px-12 bg-background border-b border-white/5">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
+                    <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
+                        <p>
+                            <strong>Idea Manifest</strong> is on a mission to democratize access to premium software engineering. We believe every business deserves world-class digital tools, regardless of their size or budget. By leveraging <strong>AI-driven efficiency</strong>, we work smarter, not harder, to deliver superior results.
+                        </p>
+                        <p>
+                            Our core values center on <strong>Client-Centricity</strong> and <strong>Transparent Quality</strong>. Your success is our obsession, and we ensure clean code, clear communication, and no surprises. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
+                        </p>
+                        <p>
+                            Stay tuned for our upcoming suite of SaaS tools and AI plugins designed to further accelerate your business growth. Choose <strong>Idea Manifest</strong> for a development partner that values speed without compromising on quality.
+                        </p>
                     </div>
                 </div>
             </section>
-            <OurProducts />
+
             {/* COLLABORATE / CASE STUDIES SECTION */}
-            <section className="py-32 px-6 md:px-12 bg-background overflow-hidden">
+            <section className="py-32 px-6 md:px-12 bg-surface overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center max-w-3xl mx-auto mb-24">
                         <span className="text-accent uppercase tracking-widest text-xs font-bold mb-4 block">Our Partners</span>
@@ -366,31 +381,11 @@ const App: React.FC = () => {
                 </div>
             </section>
 
-            {/* TECHNOLOGY SECTION */}
-            <section id="technology" className="py-24 px-6 md:px-12 bg-surface border-t border-white/5">
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-16 text-center">
-                        <h2 className="font-serif text-3xl md:text-4xl text-primary mb-4">Technology Stack</h2>
-                        <p className="text-secondary">Engineered with the world's most robust frameworks.</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        <TechBadge name="FastAPI" Icon={Zap} />
-                        <TechBadge name="Next.js" Icon={Globe} />
-                        <TechBadge name="AWS / Cloud" Icon={Server} />
-                        <TechBadge name="PostgreSQL" Icon={Database} />
-                        <TechBadge name="OpenAI / LLMs" Icon={Bot} />
-                        <TechBadge name="Flutter" Icon={Smartphone} />
-                        <TechBadge name="Docker" Icon={Settings} />
-                        <TechBadge name="Python" Icon={Code} />
-                    </div>
-                </div>
-            </section>
 
             {/* FAQ SECTION */}
             <section id="faq" className="py-32 px-6 md:px-12 bg-background">
                 <div className="max-w-4xl mx-auto">
-                    <div className="mb-16">
+                    <div className="mb-4">
                         <h2 className="font-serif text-4xl md:text-5xl text-primary mb-6">Technical <span className="italic text-accent">FAQ</span></h2>
                     </div>
 
