@@ -3,12 +3,12 @@
   "redirects": [
     {
       "source": "/summarizer/:path*",
-      "destination": "https://summarizer-wheat-pi.vercel.app/:path*",
+      "destination": "https://summarizer.ideamanifest.com/:path*",
       "permanent": true
     },
     {
       "source": "/nammaooruspl/:path*",
-      "destination": "https://nammaooruspl.vercel.app/:path*",
+      "destination": "https://nammaooruspl.ideamanifest.com/:path*",
       "permanent": true
     }
   ],
