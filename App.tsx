@@ -177,22 +177,34 @@ const App: React.FC = () => {
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [projectType, setProjectType] = useState("");
 useEffect(() => {
-  const path = window.location.pathname.replace("/", "");
+  const handleScrollToPath = () => {
+    const path = window.location.pathname.replace("/", "");
 
-  const scrollToSection = (id: string) => {
-    setTimeout(() => {
-      const section = document.getElementById(id);
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 400);
+    const scrollToSection = (id: string) => {
+      setTimeout(() => {
+        const section = document.getElementById(id);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 200);
+    };
+
+    if (path === "services") scrollToSection("services");
+    if (path === "technology") scrollToSection("technology");
+    if (path === "faq") scrollToSection("faq");
+    if (path === "contact") scrollToSection("contact");
+    if (path === "") scrollToSection("home");
   };
 
-  if (path === "services") scrollToSection("services");
-  if (path === "technology") scrollToSection("technology");
-  if (path === "faq") scrollToSection("faq");
-  if (path === "contact") scrollToSection("contact");
+  handleScrollToPath();
+
+  window.addEventListener("popstate", handleScrollToPath);
+
+  return () => {
+    window.removeEventListener("popstate", handleScrollToPath);
+  };
 }, []);
+
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
             <CustomCursor />

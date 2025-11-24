@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
-  { label: 'Home', path: '/' },
+  { label: 'Home', path: '/', section: 'home' },
   { label: 'Services', path: '/services', section: 'services' },
   { label: 'Technology', path: '/technology', section: 'technology' },
   { label: 'FAQ', path: '/faq', section: 'faq' },
@@ -14,46 +15,41 @@ export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const location = useLocation();
+
   const scrollToSection = (id?: string) => {
     if (!id) return;
 
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 200);
+  };
+
+  // ✅ Auto scroll when URL changes (ex: /services -> services section)
+  useEffect(() => {
+    const path = location.pathname.replace("/", "");
+
+    if (path === "") {
+      scrollToSection("home");
+      return;
     }
-  };
 
-  const handleNavClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    item: typeof navItems[0]
-  ) => {
-    e.preventDefault();
-
-    window.history.pushState({}, '', item.path);
-
-    scrollToSection(item.section);
-
-    setIsOpen(false);
-  };
+    const matched = navItems.find((item) => item.section === path);
+    if (matched) {
+      scrollToSection(matched.section);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
 
-    const handlePopState = () => {
-      const path = window.location.pathname.replace('/', '');
-
-      if (path) scrollToSection(path);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('popstate', handlePopState);
-    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -62,38 +58,46 @@ export const Navbar: React.FC = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8 }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all duration-500 ${
+        className={`fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all ${
           scrolled
-            ? 'bg-background/80 backdrop-blur-md shadow-lg border-b border-white/5'
-            : 'bg-transparent'
+            ? "bg-background/80 backdrop-blur-md border-b border-white/5"
+            : "bg-transparent"
         }`}
       >
-        <div className="flex items-center gap-3">
-          <a
-            href="/"
-            onClick={(e) => handleNavClick(e, navItems[0])}
-            className="font-bold text-xl text-white"
-          >
-            Idea Manifest
-          </a>
-        </div>
+        {/* Logo */}
+        <Link
+          to="/"
+          onClick={() => {
+            scrollToSection("home");
+            setIsOpen(false);
+          }}
+          className="font-bold text-xl text-white"
+        >
+          Idea Manifest
+        </Link>
 
-        {/* Desktop */}
+        {/* Desktop Nav */}
         <div className="hidden md:flex gap-10 items-center">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.label}
-              href={item.path}
-              onClick={(e) => handleNavClick(e, item)}
+              to={item.path}
+              onClick={() => {
+                scrollToSection(item.section);
+                setIsOpen(false);
+              }}
               className="text-sm font-medium text-white/80 hover:text-accent transition"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        {/* Mobile */}
-        <button className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
+        {/* Mobile button */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </motion.nav>
@@ -101,17 +105,25 @@ export const Navbar: React.FC = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div className="fixed inset-0 bg-background/95 z-40 flex justify-center items-center">
+          <motion.div
+            className="fixed inset-0 bg-background/95 z-40 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <div className="flex flex-col gap-8 text-center">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.label}
-                  href={item.path}
-                  onClick={(e) => handleNavClick(e, item)}
+                  to={item.path}
+                  onClick={() => {
+                    scrollToSection(item.section);
+                    setIsOpen(false);
+                  }}
                   className="text-3xl text-white hover:text-accent"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </div>
           </motion.div>
