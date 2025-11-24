@@ -73,6 +73,7 @@ export const Navbar: React.FC = () => {
           }}
           className="font-bold text-xl text-white"
         >
+          <span className="font-serif font-bold text-xl">IM </span>
           Idea Manifest
         </Link>
 
