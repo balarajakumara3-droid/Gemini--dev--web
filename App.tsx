@@ -129,7 +129,7 @@ const CollaborateSection = ({ title, description, image, align = 'left' }: { tit
                     <p className="text-secondary leading-relaxed mb-6">
                         {description}
                     </p>
-                    <button className="flex items-center gap-2 bg-accent text-background px-6 py-3 rounded-full text-sm font-bold hover:bg-white transition-colors group">
+                    <button className="flex items-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition-colors group border border-white/5">
                         Explore Stack
                         <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </button>
@@ -219,7 +219,7 @@ const App: React.FC = () => {
 
                     <RevealText delay={0.8}>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="px-8 py-4 bg-accent text-background rounded-full font-bold hover:bg-white transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(129,140,248,0.3)] hover:shadow-[0_0_30px_rgba(129,140,248,0.5)]">
+                            <button className="px-8 py-4 bg-slate-800 text-white rounded-full font-bold hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(30,41,59,0.5)] hover:shadow-[0_0_30px_rgba(30,41,59,0.7)] border border-white/5">
                                 Get Free Estimate
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -458,7 +458,7 @@ const App: React.FC = () => {
                                     <option value="custom" className="bg-surface">Custom Solution</option>
                                 </select>
                                 <textarea rows={4} placeholder="Message" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all resize-none"></textarea>
-                                <button className="w-full py-4 bg-accent text-background rounded-lg font-bold hover:bg-white transition-colors shadow-[0_0_20px_rgba(129,140,248,0.3)]">Book Free Consultation</button>
+                                <button className="w-full py-4 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors shadow-[0_0_20px_rgba(30,41,59,0.3)] border border-white/5">Book Free Consultation</button>
                             </form>
                         </div>      </div>
                 </div>
