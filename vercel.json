@@ -6,10 +6,28 @@
       "destination": "https://summarizer-wheat-pi.vercel.app/:path*",
       "permanent": true
     },
-     {
+    {
       "source": "/nammaooruspl/:path*",
       "destination": "https://nammaooruspl.vercel.app/:path*",
       "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/services",
+      "destination": "/"
+    },
+    {
+      "source": "/technology",
+      "destination": "/"
+    },
+    {
+      "source": "/faq",
+      "destination": "/"
+    },
+    {
+      "source": "/contact",
+      "destination": "/"
     }
   ]
 }
