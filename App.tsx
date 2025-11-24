@@ -204,7 +204,7 @@ const App: React.FC = () => {
 
                     <div className="mb-8 max-w-5xl">
                         <h1 className="font-sans font-bold text-4xl md:text-7xl lg:text-8xl text-white leading-[1.1] tracking-tight">
-                            <StaggeredTitle text="Your Ideas → Websites & Apps. Faster With AI" delay={0.1} />
+                            <span className="text-accent">Your Ideas</span> → Websites & Apps - Faster With AI
                         </h1>
                     </div>
 
@@ -297,12 +297,12 @@ const App: React.FC = () => {
             {/* INTRO SECTION - Why Choose Us */}
             < section className="py-32 px-6 md:px-12 bg-surface relative z-10" >
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-                        <div className="lg:col-span-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 items-start">
+                        <div className="lg:col-span-2">
                             <span className="block w-12 h-1 bg-accent mb-6 shadow-[0_0_10px_#818cf8]"></span>
                             <h4 className="text-secondary uppercase tracking-widest text-xs font-bold">Why Choose Us</h4>
                         </div>
-                        <div className="lg:col-span-8">
+                        <div className="lg:col-span-10">
                             <h2 className="text-3xl md:text-5xl leading-tight font-sans font-light text-primary mb-12">
                                 We combine elite engineering with <span className="font-serif italic text-accent">AI acceleration</span> to build robust webapps and mobile experiences faster than traditional agencies. Affordable digital solutions with a <span className="font-serif italic text-accent">premium look</span> and scalable future.
                             </h2>
@@ -329,29 +329,10 @@ const App: React.FC = () => {
                 </div>
             </section>
 
-            {/* SEO CONTENT SECTION - About Us */}
-            <section className="py-20 px-6 md:px-12 bg-background border-b border-white/5">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
-                    <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
-                        <p>
-                            <strong>Idea Manifest</strong> is on a mission to democratize access to premium software engineering. We believe every business deserves world-class digital tools, regardless of their size or budget. By leveraging <strong>AI-driven efficiency</strong>, we work smarter, not harder, to deliver superior results.
-                        </p>
-                        <p>
-                            Our core values center on <strong>Client-Centricity</strong> and <strong>Transparent Quality</strong>. Your success is our obsession, and we ensure clean code, clear communication, and no surprises. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
-                        </p>
-                        <p>
-                            Stay tuned for our upcoming suite of SaaS tools and AI plugins designed to further accelerate your business growth. Choose <strong>Idea Manifest</strong> for a development partner that values speed without compromising on quality.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
             {/* COLLABORATE / CASE STUDIES SECTION */}
-            <section className="py-32 px-6 md:px-12 bg-surface overflow-hidden">
+            <section className="py-32 px-6 md:px-12 bg-background overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center max-w-3xl mx-auto mb-24">
-                        <span className="text-accent uppercase tracking-widest text-xs font-bold mb-4 block">Our Partners</span>
                         <h2 className="font-serif text-4xl md:text-6xl text-primary mb-6">Build <span className="italic">With Us</span></h2>
                         <p className="text-secondary text-lg">
                             We adapt our engineering velocity to match your stage of growth, from rapid MVP iteration to enterprise-grade stability.
@@ -377,6 +358,24 @@ const App: React.FC = () => {
                             image="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2664&auto=format&fit=crop"
                             align="left"
                         />
+                    </div>
+                </div>
+            </section>
+
+            {/* SEO CONTENT SECTION - About Us */}
+            <section className="py-20 px-6 md:px-12 bg-surface border-b border-white/5">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
+                    <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
+                        <p>
+                            <strong>Idea Manifest</strong> is on a mission to democratize access to premium software engineering. We believe every business deserves world-class digital tools, regardless of their size or budget. By leveraging <strong>AI-driven efficiency</strong>, we work smarter, not harder, to deliver superior results.
+                        </p>
+                        <p>
+                            Our core values center on <strong>Client-Centricity</strong> and <strong>Transparent Quality</strong>. Your success is our obsession, and we ensure clean code, clear communication, and no surprises. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
+                        </p>
+                        <p>
+                            Stay tuned for our upcoming suite of SaaS tools and AI plugins designed to further accelerate your business growth. Choose <strong>Idea Manifest</strong> for a development partner that values speed without compromising on quality.
+                        </p>
                     </div>
                 </div>
             </section>
