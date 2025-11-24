@@ -345,20 +345,20 @@ const App: React.FC = () => {
 
                     <div className="space-y-24">
                         <CollaborateSection
-                            title="Startup E-Commerce App"
-                            description="A feature-rich shopping app for a fashion startup. We used AI to generate product descriptions and personalize recommendations, boosting sales by 30%. Delivered in 4 weeks."
+                            title="Startup Launch App"
+                            description="A fast, flexible MVP built for early-stage startups. We help founders validate ideas quickly with an AI-enhanced development workflow that accelerates design, builds core features faster, and reduces cost. From prototype to polished v1.0 — we help you launch with confidence and gather real user traction in weeks, not months. Delivered in 4 Weeks. Built for rapid iteration."
                             image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2340&auto=format&fit=crop"
                             align="left"
                         />
                         <CollaborateSection
-                            title="FinTech Dashboard"
-                            description="A secure, real-time analytics dashboard for a financial services firm. Our scalable backend handles thousands of transactions per second with zero latency. 50% Cost Reduction."
+                            title="Enterprise Digital Transformation Suite"
+                            description="A secure, scalable platform designed for high-growth enterprises. We modernize legacy systems, automate workflows, and integrate AI-driven intelligence to improve operational efficiency at scale. Our architecture handles large user volumes, complex data flows, and mission-critical uptime — ensuring your business runs faster, smarter, and with enterprise-grade reliability. 50% Faster Delivery. Enterprise-Level Performance."
                             image="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2340&auto=format&fit=crop"
                             align="right"
                         />
                         <CollaborateSection
-                            title="Healthcare Telemedicine Platform"
-                            description="A HIPAA-compliant video consultation platform. We prioritized user experience to make healthcare accessible and easy for patients of all ages. Launched in 6 Weeks."
+                            title="SMB Operations & Growth Platform"
+                            description="A clean, efficient web & mobile solution built to help SMBs streamline operations and increase customer engagement. We use AI to automate routine tasks, personalize user experiences, and give you tools that scale as you grow — all without enterprise-level complexity or cost. Affordable. Scalable. Built to Grow With Your Business."
                             image="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2664&auto=format&fit=crop"
                             align="left"
                         />
