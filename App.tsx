@@ -22,8 +22,10 @@ import { CustomCursor } from './components/CustomCursor';
 import { Navbar } from './components/Navbar';
 import { ParticleBackground } from './components/ParticleBackground';
 import OurProducts from "@/components/OurProducts";
+import { useEffect } from "react";
 
 // --- Helper Components ---
+
 
 const RevealText = ({ children, delay = 0, className = "" }: { children?: React.ReactNode, delay?: number, className?: string }) => {
     return (
@@ -173,14 +175,31 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: { question: string
 
 const App: React.FC = () => {
     const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const [projectType, setProjectType] = useState("");
+useEffect(() => {
+  const path = window.location.pathname.replace("/", "");
 
+  const scrollToSection = (id: string) => {
+    setTimeout(() => {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 400);
+  };
+
+  if (path === "services") scrollToSection("services");
+  if (path === "technology") scrollToSection("technology");
+  if (path === "faq") scrollToSection("faq");
+  if (path === "contact") scrollToSection("contact");
+}, []);
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
             <CustomCursor />
             <Navbar />
 
             {/* HERO SECTION */}
-            <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+            <section id="home" className="scroll-mt-[120px] relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Background Image - Futuristic/AI */}
                 <div className="absolute inset-0 z-0">
                     <img
@@ -230,7 +249,7 @@ const App: React.FC = () => {
 
 
             {/* SERVICES SECTION */}
-            < section id="services" className="py-32 px-6 md:px-12 bg-surface" >
+            < section id="services" className="scroll-mt-[120px] py-32 px-6 md:px-12 bg-surface" >
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-end mb-16">
                         <div>
@@ -274,7 +293,7 @@ const App: React.FC = () => {
             <OurProducts />
 
             {/* TECHNOLOGY SECTION */}
-            <section id="technology" className="py-24 px-6 md:px-12 bg-background border-t border-white/5">
+            <section id="technology" className=" scroll-mt-[120px] py-24 px-6 md:px-12 bg-background border-t border-white/5">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-16 text-center">
                         <h2 className="font-serif text-3xl md:text-4xl text-primary mb-4">Technology Stack</h2>
@@ -382,7 +401,7 @@ const App: React.FC = () => {
 
 
             {/* FAQ SECTION */}
-            <section id="faq" className="py-32 px-6 md:px-12 bg-background">
+            <section id="faq" className="scroll-mt-[120px] py-32 px-6 md:px-12 bg-background">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-4">
                         <h2 className="font-serif text-4xl md:text-5xl text-primary mb-6">Technical <span className="italic text-accent">FAQ</span></h2>
@@ -418,7 +437,7 @@ const App: React.FC = () => {
             </section>
 
             {/* CONTACT CTA */}
-            <section id="contact" className="py-20 px-6 md:px-12 bg-background relative overflow-hidden">
+            <section id="contact" className="scroll-mt-[120px] py-20 px-6 md:px-12 bg-background relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/5 blur-[120px] rounded-full"></div>
 
                 <div className="max-w-7xl mx-auto bg-surface border border-white/10 rounded-[2rem] overflow-hidden relative shadow-2xl">
@@ -444,13 +463,17 @@ const App: React.FC = () => {
                                     <input type="text" placeholder="Name" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all" />
                                     <input type="email" placeholder="Email Address" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all" />
                                 </div>
-                                <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all appearance-none">
-                                    <option value="" disabled selected>Project Type</option>
-                                    <option value="website" className="bg-surface">Website</option>
-                                    <option value="mobile" className="bg-surface">Mobile App</option>
-                                    <option value="backend" className="bg-surface">Backend</option>
-                                    <option value="custom" className="bg-surface">Custom Solution</option>
-                                </select>
+                                <select
+  value={projectType}
+  onChange={(e) => setProjectType(e.target.value)}
+  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all appearance-none"
+>
+  <option value="" disabled>Project Type</option>
+  <option value="website">Website</option>
+  <option value="mobile">Mobile App</option>
+  <option value="backend">Backend</option>
+  <option value="custom">Custom Solution</option>
+</select>
                                 <textarea rows={4} placeholder="Message" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all resize-none"></textarea>
                                 <button className="w-full py-4 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors shadow-[0_0_20px_rgba(30,41,59,0.3)] border border-white/5">Book Free Consultation</button>
                             </form>
