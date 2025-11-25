@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
           }}
           className="flex items-center gap-2"
         >
-          <img src="/logo.png" alt="Idea Manifest" className="h-20 w-auto" />
+          <img src="/logo.png" alt="Idea Manifest" className="h-20 w-auto max-md:h-10" />
         </Link>
 
         {/* Desktop Nav */}
