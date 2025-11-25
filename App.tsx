@@ -235,7 +235,7 @@ const App: React.FC = () => {
 
                     <div className="mb-8 max-w-5xl">
                         <h1 className="font-sans font-bold text-4xl md:text-7xl lg:text-8xl text-white leading-[1.1] tracking-tight">
-                            <span className="text-accent">Your Ideas</span> <motion.span className="inline-block text-accent" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>→</motion.span> Websites & Apps
+                            <span className="text-accent">Your Ideas</span> <motion.span className="inline-block text-[#ffdc00]" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>→</motion.span> Websites & Apps
                             <span className="block text-2xl md:text-4xl mt-4 text-white/80 font-normal">Faster With AI</span>
                         </h1>
                     </div>
