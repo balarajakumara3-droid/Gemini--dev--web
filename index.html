@@ -1,76 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Primary SEO -->
-    <title>Idea Manifest | AI-Powered Custom Websites & Mobile Apps</title>
-    <meta property="og:site_name" content="Idea Manifest" />
-    <meta
-      name="description"
-      content="We build premium websites and mobile apps 50% faster using AI. Affordable, scalable custom software solutions for startups and enterprises. Get a free quote."
-    />
-    <meta
-      name="keywords"
-      content="Idea Manifest, web development company, AI software development, custom websites, mobile app development, SaaS development, AI consulting, startup tech partner"
-    />
-    <meta name="author" content="Idea Manifest" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://ideamanifest.com" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Open Graph (Facebook / LinkedIn / WhatsApp) -->
-    <meta
-      property="og:title"
-      content="Idea Manifest | AI-Powered Websites, Apps & Software"
-    />
-    <meta
-      property="og:description"
-      content="Idea Manifest builds AI-powered websites, mobile apps and custom software for startups and enterprises. Fast delivery. Scalable architecture. Get a free consultation today."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ideamanifest.com" />
-    <!-- make sure this file exists in /public -->
-    <meta property="og:image" content="https://ideamanifest.com/og-image.png" />
+  <!-- Primary SEO -->
+  <title>Idea Manifest | AI-Powered Custom Websites & Mobile Apps</title>
+  <meta property="og:site_name" content="Idea Manifest" />
+  <meta name="description"
+    content="We build premium websites and mobile apps 50% faster using AI. Affordable, scalable custom software solutions for startups and enterprises. Get a free quote." />
+  <meta name="keywords"
+    content="Idea Manifest, web development company, AI software development, custom websites, mobile app development, SaaS development, AI consulting, startup tech partner" />
+  <meta name="author" content="Idea Manifest" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ideamanifest.com" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Idea Manifest | AI-Powered Websites & Apps"
-    />
-    <meta
-      name="twitter:description"
-      content="AI-powered websites, web apps and mobile apps for startups and businesses. Premium design with enterprise performance."
-    />
-    <meta name="twitter:image" content="https://ideamanifest.com/og-image.png" />
+  <!-- Open Graph (Facebook / LinkedIn / WhatsApp) -->
+  <meta property="og:title" content="Idea Manifest | AI-Powered Websites, Apps & Software" />
+  <meta property="og:description"
+    content="Idea Manifest builds AI-powered websites, mobile apps and custom software for startups and enterprises. Fast delivery. Scalable architecture. Get a free consultation today." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ideamanifest.com" />
+  <!-- make sure this file exists in /public -->
+  <meta property="og:image" content="https://ideamanifest.com/og-image.png" />
 
-    <!-- Favicons / Icons (Google search icon uses these) -->
-    <link rel="icon" type="image/x-icon" href="/favicon.png" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/favicon-16x16.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/apple-touch-icon.png"
-    />
-    <link rel="manifest" href="/manifest.json" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Idea Manifest | AI-Powered Websites & Apps" />
+  <meta name="twitter:description"
+    content="AI-powered websites, web apps and mobile apps for startups and businesses. Premium design with enterprise performance." />
+  <meta name="twitter:image" content="https://ideamanifest.com/og-image.png" />
 
-    <!-- Browser theme color (mobile address bar) -->
-    <meta name="theme-color" content="#000814" />
+  <!-- Favicons / Icons (Google search icon uses these) -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
 
-    <!-- Structured Data for logo in search (Google) -->
-    <script type="application/ld+json">
+  <!-- Browser theme color (mobile address bar) -->
+  <meta name="theme-color" content="#000814" />
+
+  <!-- Structured Data for logo in search (Google) -->
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -80,88 +52,88 @@
       }
     </script>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap"
+    rel="stylesheet" />
 
-    <!-- Tailwind Config -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              background: "#000814", // Richer Dark Blue
-              surface: "#021024", // Dark Blue
-              primary: "#f8fafc", // Slate 50 - Primary Text
-              secondary: "#94a3b8", // Slate 400 - Secondary Text
-              accent: "#2563eb", // Blue 600 - Premium Royal Blue
-              "brand-dark": "#312e81", // Indigo 900
-              "brand-light": "#1e293b" // Slate 800 - Used for tags
-            },
-            fontFamily: {
-              sans: ["Roboto", "sans-serif"],
-              serif: ["Playfair Display", "serif"]
-            },
-            backgroundImage: {
-              "hero-pattern":
-                "url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2500&auto=format&fit=crop')"
-            }
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "#000814", // Richer Dark Blue
+            surface: "#021024", // Dark Blue
+            primary: "#f8fafc", // Slate 50 - Primary Text
+            secondary: "#94a3b8", // Slate 400 - Secondary Text
+            accent: "#2563eb", // Blue 600 - Premium Royal Blue
+            "brand-dark": "#312e81", // Indigo 900
+            "brand-light": "#1e293b" // Slate 800 - Used for tags
+          },
+          fontFamily: {
+            sans: ["Roboto", "sans-serif"],
+            serif: ["Playfair Display", "serif"]
+          },
+          backgroundImage: {
+            "hero-pattern":
+              "url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2500&auto=format&fit=crop')"
           }
         }
-      };
-    </script>
+      }
+    };
+  </script>
 
-    <style>
+  <style>
+    body {
+      background-color: #000814;
+      color: #f8fafc;
+      cursor: none;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .serif-italic {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
       body {
-        background-color: #000814;
-        color: #f8fafc;
-        cursor: none;
+        cursor: auto;
       }
 
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
+      .custom-cursor {
+        display: none;
       }
+    }
+  </style>
+</head>
 
-      ::-webkit-scrollbar-track {
-        background: #020617;
-      }
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
 
-      ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-
-      .serif-italic {
-        font-family: "Playfair Display", serif;
-        font-style: italic;
-      }
-
-      @media (hover: none) and (pointer: coarse) {
-        body {
-          cursor: auto;
-        }
-
-        .custom-cursor {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
 </html>
