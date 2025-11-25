@@ -58,11 +58,10 @@ export const Navbar: React.FC = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8 }}
-        className={`fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all ${
-          scrolled
-            ? "bg-background/80 backdrop-blur-md border-b border-white/5"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all ${scrolled
+          ? "bg-background/80 backdrop-blur-md border-b border-white/5"
+          : "bg-transparent"
+          }`}
       >
         {/* Logo */}
         <Link
@@ -71,10 +70,9 @@ export const Navbar: React.FC = () => {
             scrollToSection("home");
             setIsOpen(false);
           }}
-          className="font-bold text-xl text-white"
+          className="flex items-center gap-2"
         >
-          <span className="font-serif font-bold text-xl">IM </span>
-          Idea Manifest
+          <img src="/logo.png" alt="Idea Manifest" className="h-20 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
