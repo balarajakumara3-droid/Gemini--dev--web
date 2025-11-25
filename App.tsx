@@ -176,34 +176,34 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: { question: string
 const App: React.FC = () => {
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [projectType, setProjectType] = useState("");
-useEffect(() => {
-  const handleScrollToPath = () => {
-    const path = window.location.pathname.replace("/", "");
+    useEffect(() => {
+        const handleScrollToPath = () => {
+            const path = window.location.pathname.replace("/", "");
 
-    const scrollToSection = (id: string) => {
-      setTimeout(() => {
-        const section = document.getElementById(id);
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 200);
-    };
+            const scrollToSection = (id: string) => {
+                setTimeout(() => {
+                    const section = document.getElementById(id);
+                    if (section) {
+                        section.scrollIntoView({ behavior: "smooth" });
+                    }
+                }, 200);
+            };
 
-    if (path === "services") scrollToSection("services");
-    if (path === "technology") scrollToSection("technology");
-    if (path === "faq") scrollToSection("faq");
-    if (path === "contact") scrollToSection("contact");
-    if (path === "") scrollToSection("home");
-  };
+            if (path === "services") scrollToSection("services");
+            if (path === "technology") scrollToSection("technology");
+            if (path === "faq") scrollToSection("faq");
+            if (path === "contact") scrollToSection("contact");
+            if (path === "") scrollToSection("home");
+        };
 
-  handleScrollToPath();
+        handleScrollToPath();
 
-  window.addEventListener("popstate", handleScrollToPath);
+        window.addEventListener("popstate", handleScrollToPath);
 
-  return () => {
-    window.removeEventListener("popstate", handleScrollToPath);
-  };
-}, []);
+        return () => {
+            window.removeEventListener("popstate", handleScrollToPath);
+        };
+    }, []);
 
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
@@ -235,7 +235,8 @@ useEffect(() => {
 
                     <div className="mb-8 max-w-5xl">
                         <h1 className="font-sans font-bold text-4xl md:text-7xl lg:text-8xl text-white leading-[1.1] tracking-tight">
-                            <span className="text-accent">Your Ideas</span> → Websites & Apps - Faster With AI
+                            <span className="text-accent">Your Ideas</span> <motion.span className="inline-block text-accent" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>→</motion.span> Websites & Apps
+                            <span className="block text-2xl md:text-4xl mt-4 text-white/80 font-normal">Faster With AI</span>
                         </h1>
                     </div>
 
@@ -335,7 +336,7 @@ useEffect(() => {
                         </div>
                         <div className="lg:col-span-10">
                             <h2 className="text-3xl md:text-5xl leading-tight font-sans font-light text-primary mb-12">
-                                We combine elite engineering with <span className="font-serif italic text-accent">AI acceleration</span> to build robust webapps and mobile experiences faster than traditional agencies. Affordable digital solutions with a <span className="font-serif italic text-accent">premium look</span> and scalable future.
+                                Our <span className="font-serif italic text-accent">AI-powered</span> development process cuts build time in half while maintaining <span className="font-serif italic text-accent">enterprise-grade quality</span>. You get modern design, robust engineering, and transparent communication—built around your goals.
                             </h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-12">
                                 <div className="group">
@@ -380,13 +381,13 @@ useEffect(() => {
                         <CollaborateSection
                             title="Enterprise Digital Transformation Suite"
                             description="A secure, scalable platform designed for high-growth enterprises. We modernize legacy systems, automate workflows, and integrate AI-driven intelligence to improve operational efficiency at scale. Our architecture handles large user volumes, complex data flows, and mission-critical uptime — ensuring your business runs faster, smarter, and with enterprise-grade reliability. 50% Faster Delivery. Enterprise-Level Performance."
-                            image="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2340&auto=format&fit=crop"
+                            image="https://iili.io/ffts3q7.png"
                             align="right"
                         />
                         <CollaborateSection
                             title="SMB Operations & Growth Platform"
                             description="A clean, efficient web & mobile solution built to help SMBs streamline operations and increase customer engagement. We use AI to automate routine tasks, personalize user experiences, and give you tools that scale as you grow — all without enterprise-level complexity or cost. Affordable. Scalable. Built to Grow With Your Business."
-                            image="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2664&auto=format&fit=crop"
+                            image="https://iili.io/fftb6YP.png"
                             align="left"
                         />
                     </div>
@@ -476,16 +477,16 @@ useEffect(() => {
                                     <input type="email" placeholder="Email Address" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all" />
                                 </div>
                                 <select
-  value={projectType}
-  onChange={(e) => setProjectType(e.target.value)}
-  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all appearance-none"
->
-  <option value="" disabled>Project Type</option>
-  <option value="website">Website</option>
-  <option value="mobile">Mobile App</option>
-  <option value="backend">Backend</option>
-  <option value="custom">Custom Solution</option>
-</select>
+                                    value={projectType}
+                                    onChange={(e) => setProjectType(e.target.value)}
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all appearance-none"
+                                >
+                                    <option value="" disabled>Project Type</option>
+                                    <option value="website">Website</option>
+                                    <option value="mobile">Mobile App</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="custom">Custom Solution</option>
+                                </select>
                                 <textarea rows={4} placeholder="Message" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent focus:bg-white/10 text-white placeholder-gray-500 transition-all resize-none"></textarea>
                                 <button className="w-full py-4 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors shadow-[0_0_20px_rgba(30,41,59,0.3)] border border-white/5">Book Free Consultation</button>
                             </form>
