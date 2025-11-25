@@ -7,7 +7,7 @@
 
   <!-- Primary SEO -->
   <title>Idea Manifest | AI-Powered Custom Websites & Mobile Apps</title>
-  <meta property="og:site_name" content="Idea Manifest" />
+  
   <meta name="description"
     content="We build premium websites and mobile apps 50% faster using AI. Affordable, scalable custom software solutions for startups and enterprises. Get a free quote." />
   <meta name="keywords"
@@ -31,6 +31,8 @@
   <meta name="twitter:description"
     content="AI-powered websites, web apps and mobile apps for startups and businesses. Premium design with enterprise performance." />
   <meta name="twitter:image" content="https://ideamanifest.com/og-image.png" />
+<meta property="og:site_name" content="Idea Manifest">
+<meta name="application-name" content="Idea Manifest">
 
   <!-- Favicons / Icons (Google search icon uses these) -->
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -51,6 +53,15 @@
         "logo": "https://ideamanifest.com/logo.png"
       }
     </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Idea Manifest",
+  "url": "https://ideamanifest.com",
+  "logo": "https://ideamanifest.com/logo.png"
+}
+</script>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -133,6 +144,8 @@
 
 <body>
   <div id="root"></div>
+  <h1 class="sr-only">Idea Manifest</h1>
+
   <script type="module" src="/index.tsx"></script>
 </body>
 
