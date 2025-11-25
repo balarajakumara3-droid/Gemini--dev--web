@@ -45,14 +45,22 @@
 
   <!-- Structured Data for logo in search (Google) -->
   <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Idea Manifest",
-        "url": "https://ideamanifest.com",
-        "logo": "https://ideamanifest.com/logo.png"
-      }
-    </script>
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": "https://ideamanifest.com/",
+  "name": "Idea Manifest",
+  "alternateName": "Idea Manifest AI Solutions",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Idea Manifest",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://ideamanifest.com/logo.png"
+    }
+  }
+}
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -60,8 +68,10 @@
   "name": "Idea Manifest",
   "url": "https://ideamanifest.com",
   "logo": "https://ideamanifest.com/logo.png"
+
 }
 </script>
+
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
