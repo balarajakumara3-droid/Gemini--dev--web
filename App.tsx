@@ -91,7 +91,7 @@ const ServiceCard = ({ title, description, Icon }: { title: string, description:
         </div>
         <h3 className="font-serif text-2xl text-primary font-medium mb-3 relative z-10">{title}</h3>
         <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10">{description}</p>
-        <a href="#" className="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest hover:gap-3 transition-all relative z-10">
+        <a href="/services/" className="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest hover:gap-3 transition-all relative z-10">
             Technical Details <ArrowRight size={14} />
         </a>
     </motion.div>
@@ -204,44 +204,44 @@ const App: React.FC = () => {
             window.removeEventListener("popstate", handleScrollToPath);
         };
     }, []);
-const [result, setResult] = useState("");
+    const [result, setResult] = useState("");
 
-const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  setResult("Sending....");
+    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setResult("Sending....");
 
-  // ✅ Capture the form element BEFORE any await
-  const form = event.currentTarget;
+        // ✅ Capture the form element BEFORE any await
+        const form = event.currentTarget;
 
-  const formData = new FormData(form);
-  formData.append("access_key", "55579e15-9a8e-45a0-a6b7-26f2cddb193b");
+        const formData = new FormData(form);
+        formData.append("access_key", "55579e15-9a8e-45a0-a6b7-26f2cddb193b");
 
-  try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData,
-    });
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData,
+            });
 
-    const data = await response.json();
+            const data = await response.json();
 
-    if (data.success) {
-      setResult("✅ Message Sent Successfully!");
+            if (data.success) {
+                setResult("✅ Message Sent Successfully!");
 
-      // ✅ Use saved form ref, not event.currentTarget
-      form.reset();
+                // ✅ Use saved form ref, not event.currentTarget
+                form.reset();
 
-      // ✅ Reset React state for select
-      setProjectType("");
+                // ✅ Reset React state for select
+                setProjectType("");
 
-      // optional: hide message after a few seconds
-      setTimeout(() => setResult(""), 4000);
-    } else {
-      setResult("❌ Something went wrong. Try again.");
-    }
-  } catch (err) {
-    setResult("❌ Something went wrong. Try again.");
-  }
-};
+                // optional: hide message after a few seconds
+                setTimeout(() => setResult(""), 4000);
+            } else {
+                setResult("❌ Something went wrong. Try again.");
+            }
+        } catch (err) {
+            setResult("❌ Something went wrong. Try again.");
+        }
+    };
 
 
     return (
@@ -308,7 +308,7 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                             <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">Core <span className="italic text-accent">Capabilities</span></h2>
                             <p className="text-secondary max-w-xl">End-to-end development from architecture to deployment.</p>
                         </div>
-                        <a href="#" className="hidden md:flex items-center gap-2 text-white font-medium hover:text-accent transition-colors">
+                        <a href="/services/" className="hidden md:flex items-center gap-2 text-white font-medium hover:text-accent transition-colors">
                             View Technical Docs <ArrowRight size={16} />
                         </a>
                     </div>
@@ -347,9 +347,12 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             {/* TECHNOLOGY SECTION */}
             <section id="technology" className=" scroll-mt-[120px] py-24 px-6 md:px-12 bg-background border-t border-white/5">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-16 text-center">
+                    <div className="mb-16 text-center relative">
                         <h2 className="font-serif text-3xl md:text-4xl text-primary mb-4">Technology Stack</h2>
-                        <p className="text-secondary">Engineered with the world's most robust frameworks.</p>
+                        <p className="text-secondary mb-6">Engineered with the world's most robust frameworks.</p>
+                        <a href="/technology/" className="inline-flex items-center gap-2 text-accent font-medium hover:gap-3 transition-all">
+                            View Full Tech Stack <ArrowRight size={16} />
+                        </a>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -434,7 +437,7 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             </section>
 
             {/* SEO CONTENT SECTION - About Us */}
-            <section className="py-20 px-6 md:px-12 bg-surface border-b border-white/5">
+            <section id="about" className="py-20 px-6 md:px-12 bg-surface border-b border-white/5">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
                     <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
@@ -455,8 +458,11 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             {/* FAQ SECTION */}
             <section id="faq" className="scroll-mt-[120px] py-32 px-6 md:px-12 bg-background">
                 <div className="max-w-4xl mx-auto">
-                    <div className="mb-4">
+                    <div className="mb-4 flex justify-between items-end">
                         <h2 className="font-serif text-4xl md:text-5xl text-primary mb-6">Technical <span className="italic text-accent">FAQ</span></h2>
+                        <a href="/faq/" className="hidden md:flex items-center gap-2 text-white font-medium hover:text-accent transition-colors mb-6">
+                            View All FAQs <ArrowRight size={16} />
+                        </a>
                     </div>
 
                     <div className="space-y-2">
@@ -497,81 +503,81 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                     <div className="relative z-10 px-8 py-20 md:p-24 flex flex-col md:flex-row items-center justify-between gap-12">
                         <div className="md:w-1/2">
                             <h2 className="font-serif text-4xl md:text-6xl text-white mb-6">Ready to <span className="italic text-accent">Scale Your Vision?</span></h2>
-                            <p className="text-secondary text-lg mb-8">Let's build something extraordinary together. Book your free consultation today.</p>
+                            <p className="text-secondary text-lg mb-8">Let's build something extraordinary together. Book your free consultation today or <a href="/contact/" className="text-accent hover:underline">visit our contact page</a>.</p>
 
                             <div className="flex flex-col gap-4 text-secondary">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                                         <span className="text-sm">✉️</span>
                                     </div>
-                                   helloatideamanifest@gmail.com
+                                    helloatideamanifest@gmail.com
                                 </div>
                             </div>
                         </div>
 
                         <div className="md:w-1/2 w-full bg-surface p-8 rounded-2xl shadow-2xl border border-white/5">
-                           <form onSubmit={onSubmit} className="space-y-4">
+                            <form onSubmit={onSubmit} className="space-y-4">
 
-  <div className="grid grid-cols-2 gap-4">
-    <input
-      type="text"
-      name="name"
-      placeholder="Name"
-      required
-      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
-    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="Name"
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
+                                    />
 
-    <input
-      type="email"
-      name="email"
-      placeholder="Email Address"
-      required
-      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
-    />
-  </div>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="Email Address"
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
+                                    />
+                                </div>
 
- <select
-  name="projectType"
-  value={projectType}
-  onChange={(e) => setProjectType(e.target.value)}
-  required
-  className="w-full px-4 py-3 bg-[#020617] border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white appearance-none"
->
-  <option value="" disabled className="bg-[#020617] text-gray-400">
-    Project Type
-  </option>
-  <option value="website" className="bg-[#020617] text-white hover:bg-[#1e293b]">
-    Website
-  </option>
-  <option value="mobile" className="bg-[#020617] text-white hover:bg-[#1e293b]">
-    Mobile App
-  </option>
-  <option value="backend" className="bg-[#020617] text-white hover:bg-[#1e293b]">
-    Backend
-  </option>
-  <option value="custom" className="bg-[#020617] text-white hover:bg-[#1e293b]">
-    Custom Solution
-  </option>
-</select>
+                                <select
+                                    name="projectType"
+                                    value={projectType}
+                                    onChange={(e) => setProjectType(e.target.value)}
+                                    required
+                                    className="w-full px-4 py-3 bg-[#020617] border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white appearance-none"
+                                >
+                                    <option value="" disabled className="bg-[#020617] text-gray-400">
+                                        Project Type
+                                    </option>
+                                    <option value="website" className="bg-[#020617] text-white hover:bg-[#1e293b]">
+                                        Website
+                                    </option>
+                                    <option value="mobile" className="bg-[#020617] text-white hover:bg-[#1e293b]">
+                                        Mobile App
+                                    </option>
+                                    <option value="backend" className="bg-[#020617] text-white hover:bg-[#1e293b]">
+                                        Backend
+                                    </option>
+                                    <option value="custom" className="bg-[#020617] text-white hover:bg-[#1e293b]">
+                                        Custom Solution
+                                    </option>
+                                </select>
 
 
-  <textarea
-    name="message"
-    rows={4}
-    placeholder="Message"
-    required
-    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white resize-none"
-  ></textarea>
+                                <textarea
+                                    name="message"
+                                    rows={4}
+                                    placeholder="Message"
+                                    required
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white resize-none"
+                                ></textarea>
 
-  <button
-    type="submit"
-    className="w-full py-4 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors border border-white/5"
-  >
-    Book Free Consultation
-  </button>
+                                <button
+                                    type="submit"
+                                    className="w-full py-4 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors border border-white/5"
+                                >
+                                    Book Free Consultation
+                                </button>
 
-  {result && <p className="text-center text-secondary mt-2">{result}</p>}
-</form>
+                                {result && <p className="text-center text-secondary mt-2">{result}</p>}
+                            </form>
 
                         </div>      </div>
                 </div>
@@ -585,9 +591,9 @@ const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                         <p className="text-secondary text-sm">Full-Stack AI Engineering</p>
                     </div>
                     <div className="flex gap-6">
-                        <a href="#" className="text-secondary hover:text-accent transition-colors">GitHub</a>
-                        <a href="#" className="text-secondary hover:text-accent transition-colors">LinkedIn</a>
-                        <a href="#" className="text-secondary hover:text-accent transition-colors">Twitter</a>
+                        <a href="https://x.com/IdeaManifest" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">X (Twitter)</a>
+                        <a href="https://www.linkedin.com/company/ideamanifest/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">LinkedIn</a>
+                        <a href="https://www.instagram.com/ideamanifest_official/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">Instagram</a>
                     </div>
                     <p className="text-gray-600 text-sm">© 2025 Idea Manifest. All rights reserved.</p>
                 </div>
