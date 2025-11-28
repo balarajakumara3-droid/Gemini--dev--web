@@ -18,24 +18,54 @@
   <meta property="og:type" content="website" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "#000814",
+            surface: "#021024",
+            primary: "#f8fafc",
+            secondary: "#94a3b8",
+            accent: "#2563eb",
+            "brand-dark": "#312e81",
+            "brand-light": "#1e293b"
+          },
+          fontFamily: {
+            sans: ["Roboto", "sans-serif"],
+            serif: ["Playfair Display", "serif"]
+          },
+          backgroundImage: {
+            "hero-pattern":
+              "url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2500&auto=format&fit=crop')"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #000814;
+      color: #f8fafc;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Our Services</h1>
-
-  <p>Idea Manifest provides high-quality digital services for startups and businesses.</p>
-
-  <h2>What We Offer</h2>
-  <ul>
-    <li>Website Development</li>
-    <li>React Web Apps</li>
-    <li>Mobile App Development</li>
-    <li>AI Integration</li>
-  </ul>
-
-  <p>
-    <a href="/">Go back to Home</a>
-  </p>
+  <div id="root"></div>
+  <script type="module" src="/services/index.tsx"></script>
 </body>
 
 </html>
