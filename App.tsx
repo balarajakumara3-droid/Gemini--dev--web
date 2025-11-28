@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Footer } from './components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ArrowRight,
@@ -437,26 +438,11 @@ const App: React.FC = () => {
             </section>
 
             {/* SEO CONTENT SECTION - About Us */}
-            <section id="about" className="py-20 px-6 md:px-12 bg-surface border-b border-white/5">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="font-serif text-3xl md:text-4xl text-primary mb-8">About Us</h2>
-                    <div className="text-secondary text-lg leading-relaxed space-y-6 text-left">
-                        <p>
-                            <strong>Idea Manifest</strong> is on a mission to democratize access to premium software engineering. We believe every business deserves world-class digital tools, regardless of their size or budget. By leveraging <strong>AI-driven efficiency</strong>, we work smarter, not harder, to deliver superior results.
-                        </p>
-                        <p>
-                            Our core values center on <strong>Client-Centricity</strong> and <strong>Transparent Quality</strong>. Your success is our obsession, and we ensure clean code, clear communication, and no surprises. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
-                        </p>
-                        <p>
-                            Stay tuned for our upcoming suite of SaaS tools and AI plugins designed to further accelerate your business growth. Choose <strong>Idea Manifest</strong> for a development partner that values speed without compromising on quality.
-                        </p>
-                    </div>
-                </div>
-            </section>
+            {/* About Us Section Removed - Moved to dedicated /about page */}
 
 
             {/* FAQ SECTION */}
-            <section id="faq" className="scroll-mt-[120px] py-32 px-6 md:px-12 bg-background">
+            < section id="faq" className="scroll-mt-[120px] py-32 px-6 md:px-12 bg-background" >
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-4 flex justify-between items-end">
                         <h2 className="font-serif text-4xl md:text-5xl text-primary mb-6">Technical <span className="italic text-accent">FAQ</span></h2>
@@ -492,10 +478,10 @@ const App: React.FC = () => {
                         />
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* CONTACT CTA */}
-            <section id="contact" className="scroll-mt-[120px] py-20 px-6 md:px-12 bg-background relative overflow-hidden">
+            < section id="contact" className="scroll-mt-[120px] py-20 px-6 md:px-12 bg-background relative overflow-hidden" >
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/5 blur-[120px] rounded-full"></div>
 
                 <div className="max-w-7xl mx-auto bg-surface border border-white/10 rounded-[2rem] overflow-hidden relative shadow-2xl">
@@ -581,24 +567,11 @@ const App: React.FC = () => {
 
                         </div>      </div>
                 </div>
-            </section>
+            </section >
 
             {/* FOOTER */}
-            <footer className="bg-background text-white py-16 px-6 md:px-12 border-t border-white/5">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="text-center md:text-left">
-                        <h3 className="font-sans font-bold text-2xl mb-2">Idea Manifest</h3>
-                        <p className="text-secondary text-sm">Full-Stack AI Engineering</p>
-                    </div>
-                    <div className="flex gap-6">
-                        <a href="https://x.com/IdeaManifest" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">X (Twitter)</a>
-                        <a href="https://www.linkedin.com/company/ideamanifest/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">LinkedIn</a>
-                        <a href="https://www.instagram.com/ideamanifest_official/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">Instagram</a>
-                    </div>
-                    <p className="text-gray-600 text-sm">© 2025 Idea Manifest. All rights reserved.</p>
-                </div>
-            </footer>
-        </div>
+            < Footer />
+        </div >
     );
 };
 
