@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.ideamanifest.com/sitemap.xml
+Sitemap: https://ideamanifest.com/sitemap.xml
