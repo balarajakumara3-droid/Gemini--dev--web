@@ -20,16 +20,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      rollupOptions: {
-        input: {
-          main: path.resolve(__dirname, 'index.html'),
-          about: path.resolve(__dirname, 'about/index.html'),
-          services: path.resolve(__dirname, 'services/index.html'),
-          technology: path.resolve(__dirname, 'technology/index.html'),
-          faq: path.resolve(__dirname, 'faq/index.html'),
-          contact: path.resolve(__dirname, 'contact/index.html'),
-        },
-      },
+      outDir: 'dist',
     },
   };
 });

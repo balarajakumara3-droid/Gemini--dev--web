@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const navItems = [
   { label: 'Home', path: '/', section: 'home' },
-  { label: 'About', path: '/about/', section: 'about' },
-  { label: 'Services', path: '/services/', section: 'services' },
-  { label: 'Technology', path: '/technology/', section: 'technology' },
-  { label: 'FAQ', path: '/faq/', section: 'faq' },
-  { label: 'Contact', path: '/contact/', section: 'contact' },
+  { label: 'About', path: '/about', section: 'about' },
+  { label: 'Services', path: '/services', section: 'services' },
+  { label: 'Technology', path: '/technology', section: 'technology' },
+  { label: 'FAQ', path: '/faq', section: 'faq' },
+  { label: 'Contact', path: '/contact', section: 'contact' },
 ];
 
 export const Navbar: React.FC = () => {
@@ -36,24 +37,24 @@ export const Navbar: React.FC = () => {
           }`}
       >
         {/* Logo */}
-        <a
-          href="/"
+        <Link
+          to="/"
           className="flex items-center gap-2"
         >
           <img src="/logo.png" alt="Idea Manifest" className="h-20 w-auto max-md:h-10" />
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-10 items-center">
           <ul className="flex gap-10 items-center list-none m-0 p-0">
             {navItems.map((item) => (
               <li key={item.label}>
-                <a
-                  href={item.path}
+                <Link
+                  to={item.path}
                   className="text-sm font-medium text-white/80 hover:text-accent transition"
                 >
                   {item.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -82,13 +83,13 @@ export const Navbar: React.FC = () => {
               <ul className="flex flex-col gap-8 list-none m-0 p-0">
                 {navItems.map((item) => (
                   <li key={item.label}>
-                    <a
-                      href={item.path}
+                    <Link
+                      to={item.path}
                       onClick={() => setIsOpen(false)}
                       className="text-3xl text-white hover:text-accent"
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

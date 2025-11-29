@@ -1,8 +1,6 @@
 import React from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
+import { Helmet } from 'react-helmet-async';
 import { ServiceCard } from '../components/services/ServiceCard';
-import { CustomCursor } from '../components/CustomCursor';
 import { ParticleBackground } from '../components/ParticleBackground';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Monitor, Smartphone, Server, Zap, Settings, ArrowRight } from 'lucide-react';
@@ -10,8 +8,11 @@ import { Monitor, Smartphone, Server, Zap, Settings, ArrowRight } from 'lucide-r
 export const ServicesPage: React.FC = () => {
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
-            <CustomCursor />
-            <Navbar />
+            <Helmet>
+                <title>Services | Idea Manifest – Web, Mobile, & AI Development</title>
+                <meta name="description" content="Explore our services: Custom Web Development, Mobile Apps, AI Integration, and Enterprise Software. We build scalable solutions for modern businesses." />
+                <link rel="canonical" href="https://www.ideamanifest.com/services" />
+            </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">
                 <ParticleBackground />
@@ -52,8 +53,6 @@ export const ServicesPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 };

@@ -1,8 +1,6 @@
 import React from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
+import { Helmet } from 'react-helmet-async';
 import { TechBadge } from '../components/technology/TechBadge';
-import { CustomCursor } from '../components/CustomCursor';
 import { ParticleBackground } from '../components/ParticleBackground';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Zap, Globe, Server, Database, Bot, Smartphone, Settings, Code } from 'lucide-react';
@@ -10,8 +8,11 @@ import { Zap, Globe, Server, Database, Bot, Smartphone, Settings, Code } from 'l
 export const TechnologyPage: React.FC = () => {
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
-            <CustomCursor />
-            <Navbar />
+            <Helmet>
+                <title>Technology Stack | Idea Manifest – Modern Tech for Modern Apps</title>
+                <meta name="description" content="We use the latest technology stack: React, Next.js, Node.js, Python, Flutter, and AI tools to build robust, scalable, and future-proof applications." />
+                <link rel="canonical" href="https://www.ideamanifest.com/technology" />
+            </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">
                 <ParticleBackground />
@@ -35,8 +36,6 @@ export const TechnologyPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 };

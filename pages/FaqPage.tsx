@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
+import { Helmet } from 'react-helmet-async';
 import { AccordionItem } from '../components/faq/AccordionItem';
-import { CustomCursor } from '../components/CustomCursor';
 import { ParticleBackground } from '../components/ParticleBackground';
 import { SectionHeading } from '../components/ui/SectionHeading';
 
@@ -11,8 +9,11 @@ export const FaqPage: React.FC = () => {
 
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
-            <CustomCursor />
-            <Navbar />
+            <Helmet>
+                <title>FAQ | Idea Manifest – Common Questions Answered</title>
+                <meta name="description" content="Find answers to common questions about our services, pricing, development process, and how we use AI to accelerate your project." />
+                <link rel="canonical" href="https://www.ideamanifest.com/faq" />
+            </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">
                 <ParticleBackground />
@@ -52,8 +53,6 @@ export const FaqPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 };

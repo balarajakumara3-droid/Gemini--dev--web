@@ -1,16 +1,17 @@
 import React from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
+import { Helmet } from 'react-helmet-async';
 import { ContactForm } from '../components/contact/ContactForm';
-import { CustomCursor } from '../components/CustomCursor';
 import { ParticleBackground } from '../components/ParticleBackground';
 import { SectionHeading } from '../components/ui/SectionHeading';
 
 export const ContactPage: React.FC = () => {
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
-            <CustomCursor />
-            <Navbar />
+            <Helmet>
+                <title>Contact Us | Idea Manifest – Start Your Project</title>
+                <meta name="description" content="Ready to build something amazing? Contact Idea Manifest for a free consultation. Let's discuss your project and how we can help you succeed." />
+                <link rel="canonical" href="https://www.ideamanifest.com/contact" />
+            </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">
                 <ParticleBackground />
@@ -41,8 +42,6 @@ export const ContactPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 };
