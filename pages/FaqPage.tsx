@@ -13,6 +13,27 @@ export const FaqPage: React.FC = () => {
                 <title>FAQ | Idea Manifest – Common Questions Answered</title>
                 <meta name="description" content="Find answers to common questions about our services, pricing, development process, and how we use AI to accelerate your project." />
                 <link rel="canonical" href="https://www.ideamanifest.com/faq" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Home',
+                                item: 'https://www.ideamanifest.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'FAQ',
+                                item: 'https://www.ideamanifest.com/faq',
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">

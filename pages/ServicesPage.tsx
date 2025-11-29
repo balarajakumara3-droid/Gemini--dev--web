@@ -12,6 +12,27 @@ export const ServicesPage: React.FC = () => {
                 <title>Services | Idea Manifest – Web, Mobile, & AI Development</title>
                 <meta name="description" content="Explore our services: Custom Web Development, Mobile Apps, AI Integration, and Enterprise Software. We build scalable solutions for modern businesses." />
                 <link rel="canonical" href="https://www.ideamanifest.com/services" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Home',
+                                item: 'https://www.ideamanifest.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'Services',
+                                item: 'https://www.ideamanifest.com/services',
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">

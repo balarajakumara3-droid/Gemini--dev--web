@@ -12,6 +12,27 @@ export const TechnologyPage: React.FC = () => {
                 <title>Technology Stack | Idea Manifest – Modern Tech for Modern Apps</title>
                 <meta name="description" content="We use the latest technology stack: React, Next.js, Node.js, Python, Flutter, and AI tools to build robust, scalable, and future-proof applications." />
                 <link rel="canonical" href="https://www.ideamanifest.com/technology" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Home',
+                                item: 'https://www.ideamanifest.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'Technology',
+                                item: 'https://www.ideamanifest.com/technology',
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">

@@ -14,6 +14,27 @@ export const AboutPage: React.FC = () => {
                 <title>About Us | Idea Manifest – Democratizing Premium Engineering</title>
                 <meta name="description" content="Learn about Idea Manifest's mission to democratize premium software engineering. We combine AI efficiency with human expertise to build faster, better, and smarter." />
                 <link rel="canonical" href="https://www.ideamanifest.com/about" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Home',
+                                item: 'https://www.ideamanifest.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'About',
+                                item: 'https://www.ideamanifest.com/about',
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
             <main>
                 <HeroSection />

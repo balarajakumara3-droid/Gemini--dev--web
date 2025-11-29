@@ -107,6 +107,60 @@ export const HomePage: React.FC = () => {
                 <title>Idea Manifest | AI-Powered Websites & Mobile Apps</title>
                 <meta name="description" content="Idea Manifest builds AI-powered custom websites, mobile apps, and software for startups and enterprises. Fast delivery. Scalable architecture. Get a free quote." />
                 <link rel="canonical" href="https://www.ideamanifest.com/" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'WebSite',
+                        name: 'Idea Manifest',
+                        url: 'https://www.ideamanifest.com/',
+                        potentialAction: {
+                            '@type': 'SearchAction',
+                            target: 'https://www.ideamanifest.com/?s={search_term_string}',
+                            'query-input': 'required name=search_term_string',
+                        },
+                    })}
+                </script>
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'ItemList',
+                        name: 'Main navigation',
+                        itemListElement: [
+                            {
+                                '@type': 'SiteNavigationElement',
+                                position: 1,
+                                name: 'About',
+                                url: 'https://www.ideamanifest.com/about',
+                            },
+                            {
+                                '@type': 'SiteNavigationElement',
+                                position: 2,
+                                name: 'Services',
+                                url: 'https://www.ideamanifest.com/services',
+                            },
+                            {
+                                '@type': 'SiteNavigationElement',
+                                position: 3,
+                                name: 'Technology',
+                                url: 'https://www.ideamanifest.com/technology',
+                            },
+                            {
+                                '@type': 'SiteNavigationElement',
+                                position: 4,
+                                name: 'FAQ',
+                                url: 'https://www.ideamanifest.com/faq',
+                            },
+                            {
+                                '@type': 'SiteNavigationElement',
+                                position: 5,
+                                name: 'Contact',
+                                url: 'https://www.ideamanifest.com/contact',
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
             {/* HERO SECTION */}
             <section id="home" className="scroll-mt-[120px] relative min-h-[90vh] flex items-center justify-center overflow-hidden">
