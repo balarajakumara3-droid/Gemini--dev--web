@@ -1,9 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { TechBadge } from '../components/technology/TechBadge';
+import { CentralTechStack } from '../components/technology/CentralTechStack';
 import { ParticleBackground } from '../components/ParticleBackground';
 import { SectionHeading } from '../components/ui/SectionHeading';
-import { Zap, Globe, Server, Database, Bot, Smartphone, Settings, Code } from 'lucide-react';
 
 export const TechnologyPage: React.FC = () => {
     return (
@@ -45,15 +44,8 @@ export const TechnologyPage: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        <TechBadge name="FastAPI" Icon={Zap} />
-                        <TechBadge name="Next.js" Icon={Globe} />
-                        <TechBadge name="AWS / Cloud" Icon={Server} />
-                        <TechBadge name="PostgreSQL" Icon={Database} />
-                        <TechBadge name="OpenAI / LLMs" Icon={Bot} />
-                        <TechBadge name="Flutter" Icon={Smartphone} />
-                        <TechBadge name="Docker" Icon={Settings} />
-                        <TechBadge name="Python" Icon={Code} />
+                    <div className="w-full flex justify-center">
+                        <CentralTechStack />
                     </div>
                 </div>
             </section>
