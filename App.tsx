@@ -10,6 +10,8 @@ import { ServicesPage } from './pages/ServicesPage';
 import { TechnologyPage } from './pages/TechnologyPage';
 import { FaqPage } from './pages/FaqPage';
 import { ContactPage } from './pages/ContactPage';
+import BlogListPage from './pages/BlogListPage';
+import BlogPostPage from './pages/BlogPostPage';
 
 const App: React.FC = () => {
     return (
@@ -25,6 +27,8 @@ const App: React.FC = () => {
                         <Route path="/technology" element={<TechnologyPage />} />
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/blogs" element={<BlogListPage />} />
+                        <Route path="/blogs/:slug" element={<BlogPostPage />} />
                     </Routes>
                     <Footer />
                 </div>
