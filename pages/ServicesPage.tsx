@@ -33,6 +33,65 @@ export const ServicesPage: React.FC = () => {
                         ],
                     })}
                 </script>
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'ItemList',
+                        itemListElement: [
+                            {
+                                '@type': 'Service',
+                                position: 1,
+                                name: 'Custom Websites',
+                                description: 'High-performance, SEO-optimized websites tailored to your brand. We use Next.js and React to build blazing fast platforms that convert visitors into customers.',
+                                provider: {
+                                    '@type': 'Organization',
+                                    name: 'Idea Manifest',
+                                },
+                            },
+                            {
+                                '@type': 'Service',
+                                position: 2,
+                                name: 'Mobile Applications',
+                                description: 'Native-quality iOS and Android apps built with Flutter and React Native. Launch on both platforms simultaneously with a single, maintainable codebase.',
+                                provider: {
+                                    '@type': 'Organization',
+                                    name: 'Idea Manifest',
+                                },
+                            },
+                            {
+                                '@type': 'Service',
+                                position: 3,
+                                name: 'Backend Development',
+                                description: 'Robust, secure, and scalable server-side solutions. We architect APIs and databases that can handle complex logic and high traffic loads with ease.',
+                                provider: {
+                                    '@type': 'Organization',
+                                    name: 'Idea Manifest',
+                                },
+                            },
+                            {
+                                '@type': 'Service',
+                                position: 4,
+                                name: 'UI/UX Design',
+                                description: 'User-centric interfaces that are as beautiful as they are functional. We create intuitive journeys that delight users and drive engagement.',
+                                provider: {
+                                    '@type': 'Organization',
+                                    name: 'Idea Manifest',
+                                },
+                            },
+                            {
+                                '@type': 'Service',
+                                position: 5,
+                                name: 'Tech Consulting',
+                                description: 'Strategic guidance to navigate the digital landscape. We help you choose the right stack, plan your roadmap, and leverage AI for business growth.',
+                                provider: {
+                                    '@type': 'Organization',
+                                    name: 'Idea Manifest',
+                                },
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">

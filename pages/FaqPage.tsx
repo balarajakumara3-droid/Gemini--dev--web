@@ -34,6 +34,47 @@ export const FaqPage: React.FC = () => {
                         ],
                     })}
                 </script>
+
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'FAQPage',
+                        mainEntity: [
+                            {
+                                '@type': 'Question',
+                                name: 'What is your typical tech stack?',
+                                acceptedAnswer: {
+                                    '@type': 'Answer',
+                                    text: 'We are stack-agnostic but prefer modern, typed ecosystems. Our go-to stack typically involves React/Next.js for frontend, Python (FastAPI/Django) or Node.js for backend, and PostgreSQL for database, deployed on AWS or Azure.',
+                                },
+                            },
+                            {
+                                '@type': 'Question',
+                                name: 'How fast can you deliver an MVP?',
+                                acceptedAnswer: {
+                                    '@type': 'Answer',
+                                    text: 'By leveraging AI code generation and pre-built modules, we can often ship a functional MVP in 4-6 weeks. This includes core feature development, testing, and deployment setup.',
+                                },
+                            },
+                            {
+                                '@type': 'Question',
+                                name: 'Do you handle mobile app deployment?',
+                                acceptedAnswer: {
+                                    '@type': 'Answer',
+                                    text: 'Yes, we handle the entire submission process for both the Apple App Store and Google Play Store, ensuring compliance with their review guidelines.',
+                                },
+                            },
+                            {
+                                '@type': 'Question',
+                                name: 'How do you handle source code ownership?',
+                                acceptedAnswer: {
+                                    '@type': 'Answer',
+                                    text: 'You own 100% of the code we write. Upon project completion and final payment, we transfer all repositories and IP rights directly to your organization.',
+                                },
+                            },
+                        ],
+                    })}
+                </script>
             </Helmet>
 
             <section className="relative pt-32 pb-20 px-6 md:px-12 overflow-hidden">
