@@ -6,8 +6,6 @@ import { Footer } from './components/Footer';
 import { CustomCursor } from './components/CustomCursor';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
-import { ServicesPage } from './pages/ServicesPage';
-import { TechnologyPage } from './pages/TechnologyPage';
 import { FaqPage } from './pages/FaqPage';
 import { ContactPage } from './pages/ContactPage';
 import BlogListPage from './pages/BlogListPage';
@@ -23,8 +21,6 @@ const App: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/about" element={<AboutPage />} />
-                        <Route path="/services" element={<ServicesPage />} />
-                        <Route path="/technology" element={<TechnologyPage />} />
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/blogs" element={<BlogListPage />} />
