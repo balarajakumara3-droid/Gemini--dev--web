@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import VirtualTraderPage from './pages/VirtualTraderPage';
 import { HelmetProvider } from 'react-helmet-async';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -17,16 +18,17 @@ const App: React.FC = () => {
             <Router>
                 <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
                     <CustomCursor />
-                    <Navbar />
                     <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/about" element={<AboutPage />} />
-                        <Route path="/faq" element={<FaqPage />} />
-                        <Route path="/contact" element={<ContactPage />} />
-                        <Route path="/blogs" element={<BlogListPage />} />
-                        <Route path="/blogs/:slug" element={<BlogPostPage />} />
+                        <Route path="/virtual-trader" element={<VirtualTraderPage />} />
+                        <Route element={<><Navbar /><Outlet /><Footer /></>}>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/about" element={<AboutPage />} />
+                            <Route path="/faq" element={<FaqPage />} />
+                            <Route path="/contact" element={<ContactPage />} />
+                            <Route path="/blogs" element={<BlogListPage />} />
+                            <Route path="/blogs/:slug" element={<BlogPostPage />} />
+                        </Route>
                     </Routes>
-                    <Footer />
                 </div>
             </Router>
         </HelmetProvider>
