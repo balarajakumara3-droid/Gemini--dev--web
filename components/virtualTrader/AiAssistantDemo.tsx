@@ -1,7 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, Send, Bot, User } from 'lucide-react';
-import { sendChatMessage } from './services/geminiService';
 import { ChatMessage } from '../../types/virtualTrader';
+
+// Static mock responses for demo
+const mockResponses = [
+  "Great question! In virtual trading, you can practice buying and selling stocks without risking real money. It's the perfect way to learn!",
+  "Your virtual portfolio is performing well! You're up 2.3% this week. Consider diversifying into different sectors for better risk management.",
+  "NIFTY 50 is currently at ₹22,450. The market opened higher today with IT and Banking sectors leading the gains.",
+  "To place a virtual order: Go to the Market tab → Select a stock → Enter quantity → Click Buy or Sell. Your virtual balance will update instantly!",
+  "A P/E ratio (Price-to-Earnings) helps you understand if a stock is overvalued or undervalued. Lower P/E might indicate a bargain, but always research further!",
+  "Risk management tip: Never put more than 10% of your virtual portfolio in a single stock. Diversification is key to long-term success!",
+  "Your top performing stock today is Reliance (+3.2%). Would you like to know more about its recent performance?",
+];
 
 const AiAssistantDemo: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -32,13 +42,11 @@ const AiAssistantDemo: React.FC = () => {
     setInput('');
     setIsLoading(true);
 
-    // Format history for the API
-    const history = messages.map(m => ({
-      role: m.role === 'model' ? 'model' : 'user',
-      parts: [{ text: m.text }]
-    }));
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
 
-    const responseText = await sendChatMessage(input, history);
+    // Get random mock response
+    const responseText = mockResponses[Math.floor(Math.random() * mockResponses.length)];
 
     setMessages(prev => [...prev, { role: 'model', text: responseText }]);
     setIsLoading(false);
@@ -52,7 +60,7 @@ const AiAssistantDemo: React.FC = () => {
         </div>
         <div>
           <h3 className="text-white font-bold">Virtual Trader</h3>
-          <p className="text-indigo-200 text-xs">Built-in Portfolio Assistant</p>
+          <p className="text-indigo-200 text-xs">Built-in Portfolio Assistant (Demo)</p>
         </div>
       </div>
 
