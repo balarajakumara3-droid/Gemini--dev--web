@@ -4,24 +4,24 @@ import { ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp } from 'lucide-r
 
 const products = [
   {
-    title: "AI Text Summarizer",
-    description: "Instantly summarize long articles, PDFs, or YouTube videos using advanced LLMs and RAG pipelines.",
+    title: "Summarizer",
+    description: "An AI-based tool that turns long content into short and clear summaries. It helps users save time and quickly understand important information.",
     url: "summarizer",
     icon: Sparkles,
     accentColor: "indigo",
     isExternal: true,
   },
   {
-    title: "Namma Ooru SPL",
-    description: "Local discovery platform for Tamil Nadu — events, offers, hidden gems, all in one beautiful app.",
+    title: "Namma Ooru Special",
+    description: "A platform to discover local food, shops, and regional specialties. Built to support local businesses and promote local culture.",
     url: "nammaooruspl",
     icon: MapPin,
     accentColor: "emerald",
     isExternal: true,
   },
   {
-    title: "BrickSpace Mobile App",
-    description: "AR LEGO® brick scanner, puzzle games, and Shopify store builder — all in one powerful mobile app.",
+    title: "Real Estate App",
+    description: "A user-friendly app for buying, selling, and renting properties. It offers easy search, property listings, and smooth communication between users and agents.",
     url: "https://play.google.com/store/apps/details?id=com.brickspace",
     icon: Smartphone,
     accentColor: "blue",
@@ -39,7 +39,7 @@ const products = [
 
 const OurProducts = () => {
   return (
-    <section className="py-20 px-6 bg-background">
+    <section id="products" className="py-20 px-6 bg-background">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold text-primary mb-4">

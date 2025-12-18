@@ -204,11 +204,20 @@ export const HomePage: React.FC = () => {
 
                     <RevealText delay={0.8}>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="px-8 py-4 bg-slate-800 text-white rounded-full font-bold hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(30,41,59,0.5)] hover:shadow-[0_0_30px_rgba(30,41,59,0.7)] border border-white/5">
+                            <button
+                                onClick={() => window.location.href = '/contact'}
+                                className="px-8 py-4 bg-slate-800 text-white rounded-full font-bold hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(30,41,59,0.5)] hover:shadow-[0_0_30px_rgba(30,41,59,0.7)] border border-white/5">
                                 Get Free Estimate
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
-                            <button className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold hover:bg-white/5 transition-colors backdrop-blur-sm hover:border-white/30">
+                            <button
+                                onClick={() => {
+                                    const element = document.getElementById('products');
+                                    if (element) {
+                                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                }}
+                                className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold hover:bg-white/5 transition-colors backdrop-blur-sm hover:border-white/30">
                                 View Our Work
                             </button>
                         </div>

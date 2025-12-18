@@ -52,7 +52,7 @@ export const ContactPage: React.FC = () => {
                                     <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                                         <span className="text-sm">✉️</span>
                                     </div>
-                                    helloatideamanifest@gmail.com
+                                    support@ideamanifest.com
                                 </div>
                             </div>
                         </div>
