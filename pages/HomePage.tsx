@@ -94,7 +94,15 @@ const CollaborateSection = ({ title, description, image, align = 'left' }: { tit
                     <p className="text-secondary leading-relaxed mb-6">
                         {description}
                     </p>
-                    <button className="flex items-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition-colors group border border-white/5">
+                    <button
+                        onClick={() => {
+                            const element = document.getElementById('technology');
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }}
+                        className="flex items-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition-colors group border border-white/5"
+                    >
                         Explore Stack
                         <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </button>
