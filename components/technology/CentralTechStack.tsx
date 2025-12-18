@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CenterBulb from './CenterBulb';
 import TechCard from './TechCard';
+import TechModal from './TechModal';
 import { TechItem } from './types';
 import {
     ReactIcon,
@@ -103,6 +104,19 @@ const TECH_STACK: TechItem[] = [
 import { motion } from 'framer-motion';
 
 export const CentralTechStack: React.FC = () => {
+    const [selectedTech, setSelectedTech] = useState<TechItem | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleLearnMore = (tech: TechItem) => {
+        setSelectedTech(tech);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedTech(null);
+    };
+
     const midPoint = Math.ceil(TECH_STACK.length / 2);
     const leftItems = TECH_STACK.slice(0, midPoint);
     const rightItems = TECH_STACK.slice(midPoint);
@@ -137,47 +151,58 @@ export const CentralTechStack: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-[90rem] mx-auto px-1 sm:px-6 lg:px-8">
-            <motion.div
-                className="flex flex-row items-center lg:items-stretch justify-center relative"
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-            >
+        <>
+            <div className="w-full max-w-[90rem] mx-auto px-1 sm:px-6 lg:px-8">
+                <motion.div
+                    className="flex flex-row items-center lg:items-stretch justify-center relative"
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                >
 
-                {/* Left Column */}
-                <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
-                    {leftItems.map((item, index) => (
-                        <motion.div key={item.id} variants={itemVariants}>
-                            <TechCard
-                                item={item}
-                                align="left"
-                                delay={index * 100}
-                            />
-                        </motion.div>
-                    ))}
-                </div>
+                    {/* Left Column */}
+                    <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
+                        {leftItems.map((item, index) => (
+                            <motion.div key={item.id} variants={itemVariants}>
+                                <TechCard
+                                    item={item}
+                                    align="left"
+                                    delay={index * 100}
+                                    onLearnMore={handleLearnMore}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
 
-                {/* Center Column (Bulb) */}
-                <motion.div className="w-2/12 flex justify-center items-center my-0 relative" variants={centerVariants}>
-                    <CenterBulb />
+                    {/* Center Column (Bulb) */}
+                    <motion.div className="w-2/12 flex justify-center items-center my-0 relative" variants={centerVariants}>
+                        <CenterBulb />
+                    </motion.div>
+
+                    {/* Right Column */}
+                    <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
+                        {rightItems.map((item, index) => (
+                            <motion.div key={item.id} variants={itemVariants}>
+                                <TechCard
+                                    item={item}
+                                    align="right"
+                                    delay={(index + midPoint) * 100}
+                                    onLearnMore={handleLearnMore}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
+
                 </motion.div>
+            </div>
 
-                {/* Right Column */}
-                <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
-                    {rightItems.map((item, index) => (
-                        <motion.div key={item.id} variants={itemVariants}>
-                            <TechCard
-                                item={item}
-                                align="right"
-                                delay={(index + midPoint) * 100}
-                            />
-                        </motion.div>
-                    ))}
-                </div>
-
-            </motion.div>
-        </div>
+            {/* Tech Modal */}
+            <TechModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                tech={selectedTech}
+            />
+        </>
     );
 };

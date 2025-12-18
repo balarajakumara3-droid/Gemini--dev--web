@@ -6,9 +6,10 @@ interface TechCardProps {
     item: TechItem;
     align: 'left' | 'right';
     delay?: number;
+    onLearnMore?: (item: TechItem) => void;
 }
 
-const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0 }) => {
+const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore }) => {
     const isLeft = align === 'left';
     const brandColor = item.color || '#3b82f6';
 
@@ -77,6 +78,7 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0 }) => {
                 </p>
 
                 <button
+                    onClick={() => onLearnMore?.(item)}
                     className={`
             group/btn hidden md:flex items-center gap-2 text-[10px] md:text-xs font-bold tracking-widest mt-1 md:mt-2 uppercase opacity-60 group-hover:opacity-100 transition-all duration-300
             ${isLeft ? 'flex-row' : 'flex-row md:flex-row-reverse'}
