@@ -182,12 +182,7 @@ export const ServicesPage: React.FC = () => {
                                         className="h-px w-12"
                                         style={{ backgroundColor: service.color }}
                                     />
-                                    <span
-                                        className="text-sm font-bold uppercase tracking-widest"
-                                        style={{ color: service.color }}
-                                    >
-                                        Capability 0{index + 1}
-                                    </span>
+                                    {/* Numbering removed per user request */}
                                 </div>
                                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
                                     {service.title}
