@@ -101,7 +101,7 @@ export const ServicesPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-20">
+        <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-32">
             <Helmet>
                 <title>Our Services | Idea Manifest – Engineering Excellence</title>
                 <meta name="description" content="Explore our technical capabilities: Custom Websites, Mobile Apps, Backend Systems, UI/UX Design, and strategic Tech Consulting." />
@@ -140,7 +140,8 @@ export const ServicesPage: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
                             transition={{ duration: 0.7 }}
-                            className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 scroll-mt-32`}
+                            className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 scroll-mt-40
+                                ${hash === `#${service.id}` ? 'ring-2 ring-blue-500/50 rounded-3xl p-4 -m-4 bg-white/5' : ''}`}
                         >
                             {/* Visual Side */}
                             <div className="w-full lg:w-1/2">
