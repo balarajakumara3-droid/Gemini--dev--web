@@ -3,9 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { HeroSection } from '../components/about/HeroSection';
 import { StorySection } from '../components/about/StorySection';
 import { ValuesSection } from '../components/about/ValuesSection';
-import { CapabilitiesSection } from '../components/about/CapabilitiesSection';
-import { FaqSection } from '../components/about/FaqSection';
-import { ContactSection } from '../components/about/ContactSection';
 
 export const AboutPage: React.FC = () => {
     return (
@@ -40,10 +37,7 @@ export const AboutPage: React.FC = () => {
                 <HeroSection />
                 <StorySection />
                 <ValuesSection />
-                <CapabilitiesSection />
-                <FaqSection />
-                <ContactSection />
             </main>
-        </div>
+        </div >
     );
 };
