@@ -46,7 +46,7 @@ const OurProducts = () => {
             Our Products
           </h2>
           <p className="text-xl text-secondary">
-            Real-world apps powered by cutting-edge AI & design
+            Turning Ideas into Powerful Apps & Websites
           </p>
         </div>
 
