@@ -21,26 +21,31 @@ export const ServicesSection: React.FC = () => {
                         title="Custom Websites"
                         description="High-performance, SEO-optimized websites tailored to your brand. We use Next.js and React to build blazing fast platforms that convert visitors into customers."
                         Icon={Monitor}
+                        link="/services#websites"
                     />
                     <ServiceCard
                         title="Mobile Applications"
                         description="Native-quality iOS and Android apps built with Flutter and React Native. Launch on both platforms simultaneously with a single, maintainable codebase."
                         Icon={Smartphone}
+                        link="/services#mobile"
                     />
                     <ServiceCard
                         title="Backend Development"
                         description="Robust, secure, and scalable server-side solutions. We architect APIs and databases that can handle complex logic and high traffic loads with ease."
                         Icon={Server}
+                        link="/services#backend"
                     />
                     <ServiceCard
                         title="UI/UX Design"
                         description="User-centric interfaces that are as beautiful as they are functional. We create intuitive journeys that delight users and drive engagement."
                         Icon={Zap}
+                        link="/services#uiux"
                     />
                     <ServiceCard
                         title="Tech Consulting"
                         description="Strategic guidance to navigate the digital landscape. We help you choose the right stack, plan your roadmap, and leverage AI for business growth."
                         Icon={Settings}
+                        link="/services#consulting"
                     />
                 </div>
             </div>

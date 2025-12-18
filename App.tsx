@@ -11,6 +11,7 @@ import { FaqPage } from './pages/FaqPage';
 import { ContactPage } from './pages/ContactPage';
 import BlogListPage from './pages/BlogListPage';
 import BlogPostPage from './pages/BlogPostPage';
+import ServicesPage from './pages/ServicesPage';
 
 const App: React.FC = () => {
     return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
                         <Route element={<><Navbar /><Outlet /><Footer /></>}>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/about" element={<AboutPage />} />
+                            <Route path="/services" element={<ServicesPage />} />
                             <Route path="/faq" element={<FaqPage />} />
                             <Route path="/contact" element={<ContactPage />} />
                             <Route path="/blogs" element={<BlogListPage />} />
