@@ -270,7 +270,7 @@ export const ServicesSection: React.FC = () => {
                                 return (
                                     <div
                                         key={service.title}
-                                        className={`flex-shrink-0 w-[85vw] md:w-[35vw] min-w-[280px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
+                                        className={`flex-shrink-0 w-[85vw] md:w-[30vw] min-w-[280px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
                                             }`}
                                     >
                                         <div className={`${isCenter ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)]' : ''} rounded-xl`}>

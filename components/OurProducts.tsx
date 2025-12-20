@@ -296,7 +296,7 @@ const OurProducts = () => {
                 );
 
                 const cardClass = `group p-8 bg-surface rounded-xl relative overflow-hidden
-                         flex-shrink-0 w-[85vw] md:w-[35vw] min-w-[280px] transition-all duration-500 ${isCenter
+                         flex-shrink-0 w-[85vw] md:w-[29vw] min-w-[280px] transition-all duration-500 ${isCenter
                     ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)] scale-105'
                     : 'border border-white/5 hover:border-accent/30 shadow-lg hover:shadow-indigo-500/10 opacity-70'
                   }`;
