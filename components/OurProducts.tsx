@@ -44,13 +44,15 @@ const OurProducts = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const isTransitioningRef = useRef(false);
+  const lastLockChangeRef = useRef(0);
 
-  // Calculate translateX to show 3 cards with center one highlighted
+  // Calculate translateX based on currentIndex
   useEffect(() => {
     if (!containerRef.current) return;
 
     const viewportWidth = window.innerWidth;
-    const cardWidth = viewportWidth * 0.35; // 35vw
+    // Mobile: larger cards (85vw), Desktop: 35vw
+    const cardWidth = viewportWidth < 768 ? viewportWidth * 0.85 : viewportWidth * 0.35;
     const gap = 32; // 2rem
 
     // Center position for the active card
@@ -75,158 +77,155 @@ const OurProducts = () => {
     }
   };
 
-  // Scroll lock and horizontal scroll logic + Touch support
+  // Position-based scroll lock (no pointer dependency)
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     let scrollAccumulator = 0;
-    const SCROLL_THRESHOLD = 200;
+    const SCROLL_THRESHOLD = 150;
 
-    // Touch handling variables
+    // Touch handling for mobile
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchEndX = 0;
+    let touchEndY = 0;
     const SWIPE_THRESHOLD = 50;
 
+    const exitCarousel = () => {
+      const now = Date.now();
+      if (now - lastLockChangeRef.current < 500) return; // Cooldown 500ms
+
+      isTransitioningRef.current = true;
+      lastLockChangeRef.current = now;
+
+      setIsLocked(false);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+
+      setTimeout(() => {
+        isTransitioningRef.current = false;
+      }, 300);
+    };
+
+    // Unified scroll handler for both wheel and touch
+    const handleNext = () => {
+      if (currentIndex < products.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+        scrollAccumulator = 0;
+      } else {
+        exitCarousel();
+      }
+    };
+
+    const handlePrevious = () => {
+      if (currentIndex > 0) {
+        setCurrentIndex(prev => prev - 1);
+        scrollAccumulator = 0;
+      } else {
+        exitCarousel();
+      }
+    };
+
+    // Wheel event handler (desktop)
     const handleWheel = (e: WheelEvent) => {
-      if (!isLocked || isTransitioningRef.current) return;
+      if (!isLocked) return;
 
       e.preventDefault();
       e.stopPropagation();
 
       scrollAccumulator += e.deltaY;
 
-      // Move to next card
       if (scrollAccumulator > SCROLL_THRESHOLD) {
-        if (currentIndex < products.length - 1) {
-          setCurrentIndex(prev => prev + 1);
-          scrollAccumulator = 0;
-        } else {
-          // Last card reached - exit
-          isTransitioningRef.current = true;
-          scrollAccumulator = 0;
-
-          setTimeout(() => {
-            setIsLocked(false);
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-
-            setTimeout(() => {
-              isTransitioningRef.current = false;
-            }, 100);
-          }, 200);
-        }
-      }
-      // Move to previous card
-      else if (scrollAccumulator < -SCROLL_THRESHOLD) {
-        if (currentIndex > 0) {
-          setCurrentIndex(prev => prev - 1);
-          scrollAccumulator = 0;
-        } else {
-          // First card - upward exit
-          isTransitioningRef.current = true;
-          scrollAccumulator = 0;
-
-          setTimeout(() => {
-            setIsLocked(false);
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-
-            setTimeout(() => {
-              isTransitioningRef.current = false;
-            }, 100);
-          }, 200);
-        }
+        handleNext();
+      } else if (scrollAccumulator < -SCROLL_THRESHOLD) {
+        handlePrevious();
       }
     };
 
-    // Touch event handlers for mobile
+    // Touch handlers (mobile)
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isLocked) return;
       touchEndX = e.touches[0].clientX;
+      touchEndY = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
-      if (!isLocked || isTransitioningRef.current) return;
+      if (!isLocked) return;
 
-      const swipeDistance = touchStartX - touchEndX;
+      const swipeDistanceX = touchStartX - touchEndX;
+      const swipeDistanceY = Math.abs(touchStartY - touchEndY);
 
-      // Swipe left (next card)
-      if (swipeDistance > SWIPE_THRESHOLD) {
-        if (currentIndex < products.length - 1) {
-          setCurrentIndex(prev => prev + 1);
+      // Only handle horizontal swipes (not vertical scrolls)
+      if (Math.abs(swipeDistanceX) > swipeDistanceY && Math.abs(swipeDistanceX) > SWIPE_THRESHOLD) {
+        if (swipeDistanceX > 0) {
+          handleNext();
         } else {
-          // Last card - exit
-          isTransitioningRef.current = true;
-          setTimeout(() => {
-            setIsLocked(false);
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-            setTimeout(() => {
-              isTransitioningRef.current = false;
-            }, 100);
-          }, 200);
-        }
-      }
-      // Swipe right (previous card)
-      else if (swipeDistance < -SWIPE_THRESHOLD) {
-        if (currentIndex > 0) {
-          setCurrentIndex(prev => prev - 1);
-        } else {
-          // First card - exit
-          isTransitioningRef.current = true;
-          setTimeout(() => {
-            setIsLocked(false);
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-            setTimeout(() => {
-              isTransitioningRef.current = false;
-            }, 100);
-          }, 200);
+          handlePrevious();
         }
       }
 
-      // Reset touch coordinates
       touchStartX = 0;
+      touchStartY = 0;
       touchEndX = 0;
+      touchEndY = 0;
     };
 
-    // IntersectionObserver to detect when section is visible
+    // IntersectionObserver - position-based detection with debouncing
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (isTransitioningRef.current) return;
 
-          // Lock when section is visible (more lenient than requiring exact center)
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3 && !isLocked) {
+          const now = Date.now();
+          if (now - lastLockChangeRef.current < 500) return; // Cooldown 500ms
+
+          const rect = entry.boundingClientRect;
+          const viewportHeight = window.innerHeight;
+          const elementCenter = rect.top + rect.height / 2;
+          const viewportCenter = viewportHeight / 2;
+
+          // Lock when section center is near viewport center (±200px tolerance)
+          const isInActiveZone = Math.abs(elementCenter - viewportCenter) < 200;
+
+          if (entry.isIntersecting && isInActiveZone && !isLocked) {
+            lastLockChangeRef.current = now;
             setIsLocked(true);
+            setCurrentIndex(0);
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
+          } else if (!entry.isIntersecting && isLocked) {
+            exitCarousel();
           }
         });
       },
-      { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] }
+      {
+        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+        rootMargin: '-10% 0px -10% 0px'
+      }
     );
 
     observer.observe(section);
 
+    // Add event listeners only when locked
     if (isLocked) {
       window.addEventListener('wheel', handleWheel, { passive: false });
-      window.addEventListener('touchstart', handleTouchStart, { passive: false });
-      window.addEventListener('touchmove', handleTouchMove, { passive: false });
-      window.addEventListener('touchend', handleTouchEnd);
+      section.addEventListener('touchstart', handleTouchStart, { passive: true });
+      section.addEventListener('touchmove', handleTouchMove, { passive: true });
+      section.addEventListener('touchend', handleTouchEnd);
     }
 
     return () => {
       observer.disconnect();
       window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      section.removeEventListener('touchstart', handleTouchStart);
+      section.removeEventListener('touchmove', handleTouchMove);
+      section.removeEventListener('touchend', handleTouchEnd);
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
@@ -271,11 +270,9 @@ const OurProducts = () => {
 
                 const CardContent = (
                   <>
-                    {/* Gradient overlay on hover */}
                     <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent 
                                 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                    {/* Icon */}
                     <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center 
                                 text-accent mb-6 group-hover:scale-110 
                                 group-hover:bg-accent group-hover:text-background 
@@ -283,16 +280,13 @@ const OurProducts = () => {
                       <product.icon className="w-6 h-6" />
                     </div>
 
-                    {/* Title & Description */}
                     <h3 className="font-serif text-2xl text-primary font-medium mb-3 relative z-10">
                       {product.title}
                     </h3>
-                    <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10 
-                                 line-clamp-3">
+                    <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10 line-clamp-3">
                       {product.description}
                     </p>
 
-                    {/* CTA */}
                     <div className="inline-flex items-center gap-2 text-accent text-xs font-bold 
                                 uppercase tracking-widest hover:gap-3 transition-all relative z-10">
                       {product.isExternal ? 'Visit Live Site' : 'Explore App'}
