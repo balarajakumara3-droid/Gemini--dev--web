@@ -75,13 +75,18 @@ const OurProducts = () => {
     }
   };
 
-  // Scroll lock and horizontal scroll logic
+  // Scroll lock and horizontal scroll logic + Touch support
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     let scrollAccumulator = 0;
     const SCROLL_THRESHOLD = 200;
+
+    // Touch handling variables
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const SWIPE_THRESHOLD = 50;
 
     const handleWheel = (e: WheelEvent) => {
       if (!isLocked || isTransitioningRef.current) return;
@@ -135,6 +140,61 @@ const OurProducts = () => {
       }
     };
 
+    // Touch event handlers for mobile
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isLocked) return;
+      touchEndX = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      if (!isLocked || isTransitioningRef.current) return;
+
+      const swipeDistance = touchStartX - touchEndX;
+
+      // Swipe left (next card)
+      if (swipeDistance > SWIPE_THRESHOLD) {
+        if (currentIndex < products.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+        } else {
+          // Last card - exit
+          isTransitioningRef.current = true;
+          setTimeout(() => {
+            setIsLocked(false);
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            setTimeout(() => {
+              isTransitioningRef.current = false;
+            }, 100);
+          }, 200);
+        }
+      }
+      // Swipe right (previous card)
+      else if (swipeDistance < -SWIPE_THRESHOLD) {
+        if (currentIndex > 0) {
+          setCurrentIndex(prev => prev - 1);
+        } else {
+          // First card - exit
+          isTransitioningRef.current = true;
+          setTimeout(() => {
+            setIsLocked(false);
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            setTimeout(() => {
+              isTransitioningRef.current = false;
+            }, 100);
+          }, 200);
+        }
+      }
+
+      // Reset touch coordinates
+      touchStartX = 0;
+      touchEndX = 0;
+    };
+
     // IntersectionObserver to detect when section is visible
     const observer = new IntersectionObserver(
       (entries) => {
@@ -156,11 +216,17 @@ const OurProducts = () => {
 
     if (isLocked) {
       window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('touchstart', handleTouchStart, { passive: false });
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd);
     }
 
     return () => {
       observer.disconnect();
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
@@ -236,7 +302,7 @@ const OurProducts = () => {
                 );
 
                 const cardClass = `group p-8 bg-surface rounded-xl relative overflow-hidden
-                         flex-shrink-0 w-[35vw] min-w-[320px] transition-all duration-500 ${isCenter
+                         flex-shrink-0 w-[85vw] md:w-[35vw] min-w-[280px] transition-all duration-500 ${isCenter
                     ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)] scale-105'
                     : 'border border-white/5 hover:border-accent/30 shadow-lg hover:shadow-indigo-500/10 opacity-70'
                   }`;
