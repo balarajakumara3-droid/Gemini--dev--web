@@ -238,9 +238,9 @@ export const HomePage: React.FC = () => {
             <ServicesSection />
 
             {/* COLLABORATE / CASE STUDIES SECTION */}
-            <section className="py-32 px-6 md:px-12 bg-background overflow-hidden">
+            <section className="py-16 px-6 md:px-12 bg-background overflow-hidden">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center max-w-3xl mx-auto mb-24">
+                    <div className="text-center max-w-3xl mx-auto mb-12">
                         <h2 className="font-serif text-4xl md:text-6xl text-primary mb-6">Build <span className="italic">With Us</span></h2>
                         <p className="text-secondary text-lg">
                             We adapt our engineering velocity to match your stage of growth, from rapid MVP iteration to enterprise-grade stability.

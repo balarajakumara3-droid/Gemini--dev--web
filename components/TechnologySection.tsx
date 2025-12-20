@@ -4,7 +4,7 @@ import { SectionHeading } from './ui/SectionHeading';
 
 export const TechnologySection: React.FC = () => {
     return (
-        <section id="technology" className="relative py-32 px-6 md:px-12 bg-surface overflow-hidden">
+        <section id="technology" className="relative py-12 px-6 md:px-12 bg-surface overflow-hidden will-change-contents">
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="text-center mb-16">
                     <SectionHeading title="Technology Stack" highlight="Stack" />

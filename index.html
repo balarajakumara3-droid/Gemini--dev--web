@@ -189,6 +189,20 @@
       font-style: italic;
     }
 
+    /* Line clamp utility for truncating text */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Smooth scroll behavior for better UX */
+    html {
+      scroll-behavior: smooth;
+    }
+
     @media (hover: none) and (pointer: coarse) {
       body {
         cursor: auto;

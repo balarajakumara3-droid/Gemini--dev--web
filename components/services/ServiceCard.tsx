@@ -25,7 +25,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, Ic
             <Icon size={24} strokeWidth={1.5} />
         </div>
         <h3 className="font-serif text-2xl text-primary font-medium mb-3 relative z-10">{title}</h3>
-        <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10">{description}</p>
+        <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10 line-clamp-3">{description}</p>
         <Link to={link} className="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest hover:gap-3 transition-all relative z-10">
             Technical Details <ArrowRight size={14} />
         </Link>
