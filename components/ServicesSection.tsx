@@ -57,13 +57,19 @@ export const ServicesSection: React.FC = () => {
             // Responsive gap: 20px (gap-5) on mobile, 32px (gap-8) on desktop
             const gap = viewportWidth < 768 ? 20 : 32;
 
-            // Center position for the active card
-            const centerOffset = (viewportWidth - cardWidth) / 2;
-
-            // Calculate offset to center the current card
-            const offset = centerOffset - (currentIndex * (cardWidth + gap));
-
-            setTranslateX(offset);
+            // On mobile, start from right edge for first card (no left empty space)
+            // On desktop, center the cards
+            if (viewportWidth < 768 && currentIndex === 0) {
+                // Position first card to start from right edge
+                const offset = viewportWidth - cardWidth - 40; // 40px for right padding
+                setTranslateX(offset);
+            } else {
+                // Center position for the active card
+                const centerOffset = (viewportWidth - cardWidth) / 2;
+                // Calculate offset to center the current card
+                const offset = centerOffset - (currentIndex * (cardWidth + gap));
+                setTranslateX(offset);
+            }
         };
 
         updateTransform();
@@ -343,7 +349,7 @@ export const ServicesSection: React.FC = () => {
                                 return (
                                     <div
                                         key={service.title}
-                                        className={`flex-shrink-0 w-[70vw] md:w-[35vw] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
+                                        className={`flex-shrink-0 w-[70vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
                                             }`}
                                     >
                                         <div className={`${isCenter ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)]' : ''} rounded-xl`}>

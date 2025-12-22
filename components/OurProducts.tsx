@@ -57,13 +57,19 @@ const OurProducts = () => {
       // Responsive gap: 20px (gap-5) on mobile, 32px (gap-8) on desktop
       const gap = viewportWidth < 768 ? 20 : 32;
 
-      // Center position for the active card
-      const centerOffset = (viewportWidth - cardWidth) / 2;
-
-      // Calculate offset to center the current card
-      const offset = centerOffset - (currentIndex * (cardWidth + gap));
-
-      setTranslateX(offset);
+      // On mobile, start from right edge for first card (no left empty space)
+      // On desktop, center the cards
+      if (viewportWidth < 768 && currentIndex === 0) {
+        // Position first card to start from right edge
+        const offset = viewportWidth - cardWidth - 40; // 40px for right padding
+        setTranslateX(offset);
+      } else {
+        // Center position for the active card
+        const centerOffset = (viewportWidth - cardWidth) / 2;
+        // Calculate offset to center the current card
+        const offset = centerOffset - (currentIndex * (cardWidth + gap));
+        setTranslateX(offset);
+      }
     };
 
     updateTransform();
@@ -346,30 +352,30 @@ const OurProducts = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent 
                                 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                    <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center 
-                                text-accent mb-6 group-hover:scale-110 
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-lg flex items-center justify-center 
+                                text-accent mb-4 md:mb-6 group-hover:scale-110 
                                 group-hover:bg-accent group-hover:text-background 
                                 transition-all duration-300">
-                      <product.icon className="w-6 h-6" />
+                      <product.icon className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
 
-                    <h3 className="font-serif text-2xl text-primary font-medium mb-3 relative z-10">
+                    <h3 className="font-serif text-lg md:text-2xl text-primary font-medium mb-2 md:mb-3 relative z-10 text-left">
                       {product.title}
                     </h3>
-                    <p className="text-secondary text-sm leading-relaxed mb-6 relative z-10 line-clamp-3">
+                    <p className="text-secondary text-xs md:text-sm leading-relaxed mb-4 md:mb-6 relative z-10 line-clamp-3 text-left">
                       {product.description}
                     </p>
 
                     <div className="inline-flex items-center gap-2 text-accent text-xs font-bold 
                                 uppercase tracking-widest hover:gap-3 transition-all relative z-10">
                       {product.isExternal ? 'Visit Live Site' : 'Explore App'}
-                      <ExternalLink className="w-4 h-4" strokeWidth={2} />
+                      <ExternalLink className="w-3 h-3 md:w-4 md:h-4" strokeWidth={2} />
                     </div>
                   </>
                 );
 
-                const cardClass = `group p-5 md:p-8 bg-surface rounded-xl relative overflow-hidden
-                         flex-shrink-0 w-[70vw] md:w-[35vw] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter
+                const cardClass = `group p-4 md:p-8 bg-surface rounded-xl relative overflow-hidden
+                         flex-shrink-0 w-[70vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter
                     ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)] scale-105'
                     : 'border border-white/5 hover:border-accent/30 shadow-lg hover:shadow-indigo-500/10 opacity-70'
                   }`;
