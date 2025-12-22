@@ -46,22 +46,31 @@ export const ServicesSection: React.FC = () => {
     const isTransitioningRef = useRef(false);
     const lastLockChangeRef = useRef(0);
 
-    // Calculate translateX based on currentIndex
+    // Calculate translateX based on currentIndex with smooth automatic animation
     useEffect(() => {
         if (!containerRef.current) return;
 
-        const viewportWidth = window.innerWidth;
-        // Mobile: larger cards (85vw), Desktop: 35vw
-        const cardWidth = viewportWidth < 768 ? viewportWidth * 0.85 : viewportWidth * 0.35;
-        const gap = 32; // 2rem
+        const updateTransform = () => {
+            const viewportWidth = window.innerWidth;
+            // Mobile: 80vw for better fit, Desktop: 35vw
+            const cardWidth = viewportWidth < 768 ? viewportWidth * 0.80 : viewportWidth * 0.35;
+            // Responsive gap: 24px (gap-6) on mobile, 32px (gap-8) on desktop
+            const gap = viewportWidth < 768 ? 24 : 32;
 
-        // Center position for the active card
-        const centerOffset = (viewportWidth - cardWidth) / 2;
+            // Center position for the active card
+            const centerOffset = (viewportWidth - cardWidth) / 2;
 
-        // Calculate offset to center the current card
-        const offset = centerOffset - (currentIndex * (cardWidth + gap));
+            // Calculate offset to center the current card
+            const offset = centerOffset - (currentIndex * (cardWidth + gap));
 
-        setTranslateX(offset);
+            setTranslateX(offset);
+        };
+
+        updateTransform();
+
+        // Recalculate on window resize for responsive behavior
+        window.addEventListener('resize', updateTransform);
+        return () => window.removeEventListener('resize', updateTransform);
     }, [currentIndex]);
 
     // Manual navigation functions
@@ -77,20 +86,10 @@ export const ServicesSection: React.FC = () => {
         }
     };
 
-    // Position-based scroll lock (no pointer dependency)
+    // IntersectionObserver for scroll lock detection - Auto-centers section
     useEffect(() => {
         const section = sectionRef.current;
         if (!section) return;
-
-        let scrollAccumulator = 0;
-        const SCROLL_THRESHOLD = 150;
-
-        // Touch handling for mobile
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
-        const SWIPE_THRESHOLD = 50;
 
         const exitCarousel = () => {
             const now = Date.now();
@@ -108,65 +107,165 @@ export const ServicesSection: React.FC = () => {
             }, 300);
         };
 
-        // Unified scroll handler for both wheel and touch
-        const handleNext = () => {
-            if (currentIndex < services.length - 1) {
-                setCurrentIndex(prev => prev + 1);
-                scrollAccumulator = 0;
-            } else {
+        // Scroll-based detection for better reliability
+        const checkPosition = () => {
+            if (isTransitioningRef.current) return;
+
+            const rect = section.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const elementCenter = rect.top + rect.height / 2;
+            const viewportCenter = viewportHeight / 2;
+
+            // Calculate distance from center
+            const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+            const isInActiveZone = distanceFromCenter < 300;
+            const isVisible = rect.top < viewportHeight && rect.bottom > 0;
+
+            const now = Date.now();
+            const cooldownPassed = now - lastLockChangeRef.current > 500;
+
+            // Lock when section is in the active zone
+            if (isVisible && isInActiveZone && !isLocked && cooldownPassed) {
+                lastLockChangeRef.current = now;
+                setIsLocked(true);
+                setCurrentIndex(0);
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+                
+                // Smooth scroll to center the section perfectly
+                section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } 
+            // Unlock when section is far from viewport
+            else if (isLocked && !isVisible) {
                 exitCarousel();
             }
         };
 
-        const handlePrevious = () => {
-            if (currentIndex > 0) {
-                setCurrentIndex(prev => prev - 1);
-                scrollAccumulator = 0;
-            } else {
-                exitCarousel();
+        // Use both IntersectionObserver and scroll listener for reliability
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        checkPosition();
+                    } else if (isLocked) {
+                        exitCarousel();
+                    }
+                });
+            },
+            {
+                threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+                rootMargin: '-5% 0px -5% 0px'
             }
+        );
+
+        observer.observe(section);
+        
+        // Add scroll listener for continuous position checking
+        const scrollHandler = () => {
+            if (!isLocked) {
+                checkPosition();
+            }
+        };
+
+        window.addEventListener('scroll', scrollHandler, { passive: true });
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('scroll', scrollHandler);
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [isLocked]);
+
+    // Separate effect for event listeners to avoid recreation issues
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section || !isLocked) return;
+
+        let scrollAccumulator = 0;
+        const SCROLL_THRESHOLD = 150;
+
+        // Touch handling for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        const SWIPE_THRESHOLD = 50;
+
+        const exitCarousel = () => {
+            const now = Date.now();
+            if (now - lastLockChangeRef.current < 500) return;
+
+            isTransitioningRef.current = true;
+            lastLockChangeRef.current = now;
+
+            setIsLocked(false);
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+
+            setTimeout(() => {
+                isTransitioningRef.current = false;
+            }, 300);
         };
 
         // Wheel event handler (desktop)
         const handleWheel = (e: WheelEvent) => {
-            if (!isLocked) return;
-
             e.preventDefault();
             e.stopPropagation();
 
             scrollAccumulator += e.deltaY;
 
             if (scrollAccumulator > SCROLL_THRESHOLD) {
-                handleNext();
+                if (currentIndex < services.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    scrollAccumulator = 0;
+                } else {
+                    exitCarousel();
+                }
             } else if (scrollAccumulator < -SCROLL_THRESHOLD) {
-                handlePrevious();
+                if (currentIndex > 0) {
+                    setCurrentIndex(prev => prev - 1);
+                    scrollAccumulator = 0;
+                } else {
+                    exitCarousel();
+                }
             }
         };
 
-        // Touch handlers (mobile)
+        // Touch handlers (mobile) - Vertical swipe controls horizontal navigation
         const handleTouchStart = (e: TouchEvent) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            if (!isLocked) return;
             touchEndX = e.touches[0].clientX;
             touchEndY = e.touches[0].clientY;
+
+            // Always prevent default scroll when locked
+            e.preventDefault();
         };
 
         const handleTouchEnd = () => {
-            if (!isLocked) return;
+            const swipeDistanceX = Math.abs(touchStartX - touchEndX);
+            const swipeDistanceY = touchStartY - touchEndY; // Positive = swipe up, Negative = swipe down
 
-            const swipeDistanceX = touchStartX - touchEndX;
-            const swipeDistanceY = Math.abs(touchStartY - touchEndY);
-
-            // Only handle horizontal swipes (not vertical scrolls)
-            if (Math.abs(swipeDistanceX) > swipeDistanceY && Math.abs(swipeDistanceX) > SWIPE_THRESHOLD) {
-                if (swipeDistanceX > 0) {
-                    handleNext();
+            // Only handle VERTICAL swipes to control HORIZONTAL navigation
+            if (Math.abs(swipeDistanceY) > swipeDistanceX && Math.abs(swipeDistanceY) > SWIPE_THRESHOLD) {
+                if (swipeDistanceY > 0) {
+                    // Swipe UP - next service (move horizontally right)
+                    if (currentIndex < services.length - 1) {
+                        setCurrentIndex(prev => prev + 1);
+                    } else {
+                        exitCarousel();
+                    }
                 } else {
-                    handlePrevious();
+                    // Swipe DOWN - previous service (move horizontally left)
+                    if (currentIndex > 0) {
+                        setCurrentIndex(prev => prev - 1);
+                    } else {
+                        exitCarousel();
+                    }
                 }
             }
 
@@ -176,58 +275,17 @@ export const ServicesSection: React.FC = () => {
             touchEndY = 0;
         };
 
-        // IntersectionObserver - position-based detection with debouncing
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (isTransitioningRef.current) return;
-
-                    const now = Date.now();
-                    if (now - lastLockChangeRef.current < 500) return; // Cooldown 500ms
-
-                    const rect = entry.boundingClientRect;
-                    const viewportHeight = window.innerHeight;
-                    const elementCenter = rect.top + rect.height / 2;
-                    const viewportCenter = viewportHeight / 2;
-
-                    // Lock when section center is near viewport center (±200px tolerance)
-                    const isInActiveZone = Math.abs(elementCenter - viewportCenter) < 200;
-
-                    if (entry.isIntersecting && isInActiveZone && !isLocked) {
-                        lastLockChangeRef.current = now;
-                        setIsLocked(true);
-                        setCurrentIndex(0);
-                        document.body.style.overflow = 'hidden';
-                        document.documentElement.style.overflow = 'hidden';
-                    } else if (!entry.isIntersecting && isLocked) {
-                        exitCarousel();
-                    }
-                });
-            },
-            {
-                threshold: Array.from({ length: 101 }, (_, i) => i / 100),
-                rootMargin: '-10% 0px -10% 0px'
-            }
-        );
-
-        observer.observe(section);
-
-        // Add event listeners only when locked
-        if (isLocked) {
-            window.addEventListener('wheel', handleWheel, { passive: false });
-            section.addEventListener('touchstart', handleTouchStart, { passive: true });
-            section.addEventListener('touchmove', handleTouchMove, { passive: true });
-            section.addEventListener('touchend', handleTouchEnd);
-        }
+        // Add event listeners
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        section.addEventListener('touchstart', handleTouchStart, { passive: true });
+        section.addEventListener('touchmove', handleTouchMove, { passive: false });
+        section.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         return () => {
-            observer.disconnect();
             window.removeEventListener('wheel', handleWheel);
             section.removeEventListener('touchstart', handleTouchStart);
             section.removeEventListener('touchmove', handleTouchMove);
             section.removeEventListener('touchend', handleTouchEnd);
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
         };
     }, [isLocked, currentIndex]);
 
@@ -235,11 +293,17 @@ export const ServicesSection: React.FC = () => {
         <section id="services" ref={sectionRef} className="relative pt-12 pb-12 px-6 md:px-12 overflow-hidden bg-background">
             <ParticleBackground />
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-16">
+                <div className="text-center mb-12 md:mb-16">
                     <SectionHeading title="Core Capabilities" highlight="Capabilities" />
-                    <p className="text-secondary max-w-2xl mx-auto text-lg mt-6">
+                    <p className="text-secondary max-w-2xl mx-auto text-base md:text-lg mt-6 px-4">
                         End-to-end development from architecture to deployment. We build scalable, high-performance digital solutions tailored to your business needs.
                     </p>
+                    {isLocked && (
+                        <div className="mt-4 inline-flex items-center gap-2 text-accent text-sm animate-pulse">
+                            <span className="inline-block w-2 h-2 bg-accent rounded-full"></span>
+                            Scroll to navigate through services
+                        </div>
+                    )}
                 </div>
 
                 {/* Carousel container with arrows */}
@@ -258,10 +322,10 @@ export const ServicesSection: React.FC = () => {
                     </button>
 
                     {/* Horizontal scroll container */}
-                    <div className="relative w-full overflow-visible px-16">
+                    <div className="relative w-full overflow-visible px-12 md:px-16">
                         <div
                             ref={containerRef}
-                            className="flex gap-8 transition-transform duration-700 ease-out"
+                            className="flex gap-6 md:gap-8 transition-transform duration-700 ease-out"
                             style={{ transform: `translateX(${translateX}px)` }}
                         >
                             {services.map((service, index) => {
@@ -270,7 +334,7 @@ export const ServicesSection: React.FC = () => {
                                 return (
                                     <div
                                         key={service.title}
-                                        className={`flex-shrink-0 w-[85vw] md:w-[35vw] min-w-[280px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
+                                        className={`flex-shrink-0 w-[80vw] md:w-[35vw] min-w-[280px] max-w-[400px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
                                             }`}
                                     >
                                         <div className={`${isCenter ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)]' : ''} rounded-xl`}>
