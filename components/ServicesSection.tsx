@@ -46,6 +46,9 @@ export const ServicesSection: React.FC = () => {
     const isTransitioningRef = useRef(false);
     const lastLockChangeRef = useRef(0);
 
+    const lastScrollYRef = useRef(0);
+    const hasExitedZoneRef = useRef(false);
+
     // Calculate translateX based on currentIndex with smooth automatic animation
     useEffect(() => {
         if (!containerRef.current) return;
@@ -103,6 +106,7 @@ export const ServicesSection: React.FC = () => {
 
             isTransitioningRef.current = true;
             lastLockChangeRef.current = now;
+            hasExitedZoneRef.current = true;
 
             setIsLocked(false);
             document.body.style.overflow = '';
@@ -127,24 +131,37 @@ export const ServicesSection: React.FC = () => {
             const isInActiveZone = distanceFromCenter < 300;
             const isVisible = rect.top < viewportHeight && rect.bottom > 0;
 
+            if (!isInActiveZone) {
+                hasExitedZoneRef.current = false;
+            }
+
             const now = Date.now();
             const cooldownPassed = now - lastLockChangeRef.current > 500;
 
+            const currentScrollY = window.scrollY;
+            const isScrollingDown = currentScrollY > (lastScrollYRef.current || 0);
+
             // Lock when section is in the active zone
-            if (isVisible && isInActiveZone && !isLocked && cooldownPassed) {
+            if (isVisible && isInActiveZone && !isLocked && cooldownPassed && !hasExitedZoneRef.current) {
                 lastLockChangeRef.current = now;
                 setIsLocked(true);
-                setCurrentIndex(0);
+
+                // If scrolling down (from top), start at index 0
+                // If scrolling up (from bottom), start at last index
+                setCurrentIndex(isScrollingDown ? 0 : services.length - 1);
+
                 document.body.style.overflow = 'hidden';
                 document.documentElement.style.overflow = 'hidden';
-                
+
                 // Smooth scroll to center the section perfectly
                 section.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } 
+            }
             // Unlock when section is far from viewport
             else if (isLocked && !isVisible) {
                 exitCarousel();
             }
+
+            lastScrollYRef.current = currentScrollY;
         };
 
         // Use both IntersectionObserver and scroll listener for reliability
@@ -165,7 +182,7 @@ export const ServicesSection: React.FC = () => {
         );
 
         observer.observe(section);
-        
+
         // Add scroll listener for continuous position checking
         const scrollHandler = () => {
             if (!isLocked) {
@@ -231,7 +248,7 @@ export const ServicesSection: React.FC = () => {
                     // At last card, exit carousel on continued scroll down
                     exitCarousel();
                 }
-            } 
+            }
             // Scrolling up (negative deltaY)
             else if (scrollAccumulator < -SCROLL_THRESHOLD) {
                 if (currentIndex > 0) {
