@@ -52,10 +52,10 @@ const OurProducts = () => {
 
     const updateTransform = () => {
       const viewportWidth = window.innerWidth;
-      // Mobile: 80vw for better fit, Desktop: 35vw
-      const cardWidth = viewportWidth < 768 ? viewportWidth * 0.80 : viewportWidth * 0.35;
-      // Responsive gap: 24px (gap-6) on mobile, 32px (gap-8) on desktop
-      const gap = viewportWidth < 768 ? 24 : 32;
+      // Mobile: 70vw for better fit, Desktop: 35vw
+      const cardWidth = viewportWidth < 768 ? viewportWidth * 0.70 : viewportWidth * 0.35;
+      // Responsive gap: 20px (gap-5) on mobile, 32px (gap-8) on desktop
+      const gap = viewportWidth < 768 ? 20 : 32;
 
       // Center position for the active card
       const centerOffset = (viewportWidth - cardWidth) / 2;
@@ -215,18 +215,25 @@ const OurProducts = () => {
 
       scrollAccumulator += e.deltaY;
 
+      // Scrolling down (positive deltaY)
       if (scrollAccumulator > SCROLL_THRESHOLD) {
         if (currentIndex < products.length - 1) {
+          // Go to next card
           setCurrentIndex(prev => prev + 1);
           scrollAccumulator = 0;
         } else {
+          // At last card, exit carousel on continued scroll down
           exitCarousel();
         }
-      } else if (scrollAccumulator < -SCROLL_THRESHOLD) {
+      } 
+      // Scrolling up (negative deltaY)
+      else if (scrollAccumulator < -SCROLL_THRESHOLD) {
         if (currentIndex > 0) {
+          // Go to previous card
           setCurrentIndex(prev => prev - 1);
           scrollAccumulator = 0;
         } else {
+          // At first card, exit carousel on continued scroll up
           exitCarousel();
         }
       }
@@ -257,6 +264,7 @@ const OurProducts = () => {
           if (currentIndex < products.length - 1) {
             setCurrentIndex(prev => prev + 1);
           } else {
+            // At last card, exit carousel to continue normal scroll
             exitCarousel();
           }
         } else {
@@ -264,6 +272,7 @@ const OurProducts = () => {
           if (currentIndex > 0) {
             setCurrentIndex(prev => prev - 1);
           } else {
+            // At first card, exit carousel to continue normal scroll
             exitCarousel();
           }
         }
@@ -323,10 +332,10 @@ const OurProducts = () => {
           </button>
 
           {/* Horizontal scroll container */}
-          <div className="relative w-full overflow-visible px-12 md:px-16">
+          <div className="relative w-full overflow-visible px-10 md:px-16">
             <div
               ref={containerRef}
-              className="flex gap-6 md:gap-8 transition-transform duration-700 ease-out"
+              className="flex gap-5 md:gap-8 transition-transform duration-700 ease-out"
               style={{ transform: `translateX(${translateX}px)` }}
             >
               {products.map((product, index) => {
@@ -359,8 +368,8 @@ const OurProducts = () => {
                   </>
                 );
 
-                const cardClass = `group p-6 md:p-8 bg-surface rounded-xl relative overflow-hidden
-                         flex-shrink-0 w-[80vw] md:w-[35vw] min-w-[280px] max-w-[400px] transition-all duration-500 ${isCenter
+                const cardClass = `group p-5 md:p-8 bg-surface rounded-xl relative overflow-hidden
+                         flex-shrink-0 w-[70vw] md:w-[35vw] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter
                     ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)] scale-105'
                     : 'border border-white/5 hover:border-accent/30 shadow-lg hover:shadow-indigo-500/10 opacity-70'
                   }`;
