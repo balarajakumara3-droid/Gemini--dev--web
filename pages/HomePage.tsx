@@ -219,12 +219,7 @@ export const HomePage: React.FC = () => {
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button
-                                onClick={() => {
-                                    const element = document.getElementById('products');
-                                    if (element) {
-                                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                    }
-                                }}
+                                onClick={() => window.location.href = '/portfolio'}
                                 className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold hover:bg-white/5 transition-colors backdrop-blur-sm hover:border-white/30">
                                 View Our Work
                             </button>

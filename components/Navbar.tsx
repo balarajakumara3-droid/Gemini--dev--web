@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-const navItems = [
-  { label: 'About', path: '/about', section: 'about' },
-  { label: 'Blogs', path: '/blogs', section: 'blogs' },
-  { label: 'FAQ', path: '/faq', section: 'faq' },
-  { label: 'Contact', path: '/contact', section: 'contact' },
+interface NavItem {
+  label: string;
+  path: string;
+  section?: string;
+  isAnchor?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { label: 'Home', path: '/', section: 'home', isAnchor: false },
+  { label: 'Services', path: '/#services', section: 'services', isAnchor: true },
+  { label: 'Products', path: '/#products', section: 'products', isAnchor: true },
+  { label: 'Portfolio', path: '/portfolio', section: 'portfolio', isAnchor: false },
+  { label: 'About', path: '/about', section: 'about', isAnchor: false },
+  { label: 'Blogs', path: '/blogs', section: 'blogs', isAnchor: false },
+  { label: 'Contact', path: '/contact', section: 'contact', isAnchor: false },
 ];
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +34,44 @@ export const Navbar: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Handle hash scrolling after navigation
+  useEffect(() => {
+    if (location.hash) {
+      const sectionId = location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
+  const handleNavClick = (item: NavItem, e: React.MouseEvent) => {
+    if (item.isAnchor && item.section) {
+      e.preventDefault();
+
+      // If we're on the homepage, just scroll
+      if (location.pathname === '/') {
+        const element = document.getElementById(item.section);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // Navigate to homepage with hash
+        navigate(item.path);
+      }
+    } else if (item.path === '/' && item.section === 'home') {
+      // Home link - scroll to top if on homepage
+      if (location.pathname === '/') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -43,12 +93,13 @@ export const Navbar: React.FC = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-10 items-center">
-          <ul className="flex gap-10 items-center list-none m-0 p-0">
+        <nav className="hidden md:flex gap-8 items-center">
+          <ul className="flex gap-8 items-center list-none m-0 p-0">
             {navItems.map((item) => (
               <li key={item.label}>
                 <Link
                   to={item.path}
+                  onClick={(e) => handleNavClick(item, e)}
                   className="text-sm font-medium text-white/80 hover:text-accent transition"
                 >
                   {item.label}
@@ -72,7 +123,7 @@ export const Navbar: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 bg-background/95 z-40 flex items-center justify-center"
+            className="fixed inset-0 bg-background/95 z-40 flex items-center justify-center pt-24"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -83,8 +134,8 @@ export const Navbar: React.FC = () => {
                   <li key={item.label}>
                     <Link
                       to={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className="text-3xl text-white hover:text-accent"
+                      onClick={(e) => handleNavClick(item, e)}
+                      className="text-3xl text-white hover:text-accent transition"
                     >
                       {item.label}
                     </Link>
