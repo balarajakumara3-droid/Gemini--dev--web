@@ -163,7 +163,7 @@ export const CentralTechStack: React.FC = () => {
                 >
 
                     {/* Left Column */}
-                    <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
+                    <div className="w-[38%] md:w-5/12 flex flex-col justify-center gap-4 md:gap-6 lg:gap-10 py-2 lg:py-6">
                         {leftItems.map((item, index) => (
                             <motion.div key={item.id} variants={itemVariants}>
                                 <TechCard
@@ -177,12 +177,14 @@ export const CentralTechStack: React.FC = () => {
                     </div>
 
                     {/* Center Column (Bulb) */}
-                    <motion.div className="w-2/12 flex justify-center items-center my-0 relative" variants={centerVariants}>
-                        <CenterBulb />
+                    <motion.div className="w-[24%] md:w-2/12 flex justify-center items-center my-0 relative" variants={centerVariants}>
+                        <div className="scale-[0.6] md:scale-100">
+                            <CenterBulb />
+                        </div>
                     </motion.div>
 
                     {/* Right Column */}
-                    <div className="w-5/12 flex flex-col justify-center gap-2 md:gap-6 lg:gap-10 py-2 lg:py-6">
+                    <div className="w-[38%] md:w-5/12 flex flex-col justify-center gap-4 md:gap-6 lg:gap-10 py-2 lg:py-6">
                         {rightItems.map((item, index) => (
                             <motion.div key={item.id} variants={itemVariants}>
                                 <TechCard

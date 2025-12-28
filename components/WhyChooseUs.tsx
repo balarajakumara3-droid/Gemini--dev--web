@@ -2,7 +2,7 @@ import React from 'react';
 
 export const WhyChooseUs: React.FC = () => {
     return (
-        <section className="py-32 px-6 md:px-12 bg-surface relative z-10">
+        <section className="py-32 max-md:pt-[5rem] px-6 md:px-12 bg-surface relative z-10">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 items-start">
                     <div className="lg:col-span-2">

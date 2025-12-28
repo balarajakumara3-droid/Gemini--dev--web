@@ -57,7 +57,7 @@ export const ContactPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="md:w-1/2 w-full bg-surface p-8 rounded-2xl shadow-2xl border border-white/5">
+                        <div className="md:w-1/2 w-full bg-surface p-8 max-md:p-[0px] rounded-2xl shadow-2xl border border-white/5">
                             <ContactForm />
                         </div>
                     </div>

@@ -22,8 +22,8 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore
     return (
         <div
             className={`
-        group flex items-center gap-2 md:gap-6 w-full transition-all duration-300 ease-out
-        p-2 md:p-4 rounded-xl md:rounded-2xl border border-transparent hover:border-white/10 hover:bg-white/[0.02] hover:-translate-y-2 hover:shadow-lg hover:shadow-black/20
+        group flex items-center gap-3 md:gap-6 w-full transition-all duration-300 ease-out
+        p-2.5 md:p-4 rounded-xl md:rounded-2xl border border-transparent hover:border-white/10 hover:bg-white/[0.02] hover:-translate-y-2 hover:shadow-lg hover:shadow-black/20
         ${isLeft ? 'flex-row md:flex-row-reverse text-left md:text-right' : 'flex-row text-left'}
       `}
             style={{ animationDelay: `${delay}ms` }}
@@ -38,20 +38,20 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore
 
                 {/* Icon Base */}
                 <div
-                    className="relative z-10 w-8 h-8 md:w-20 md:h-20 rounded-lg md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm shadow-xl transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/30"
+                    className="relative z-10 w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm shadow-xl transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/30"
                     style={{
                         borderColor: 'rgba(255,255,255,0.1)'
                     }}
                 >
                     {/* Active Border Overlay that appears on hover */}
                     <div
-                        className="absolute inset-0 rounded-lg md:rounded-2xl border-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        className="absolute inset-0 rounded-xl md:rounded-2xl border-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         style={{ borderColor: brandColor }}
                     />
 
                     <div className={`transition-transform transform ${animationClass}`}>
                         <item.icon
-                            className="w-4 h-4 md:w-10 md:h-10 transition-all duration-300 text-white group-hover:text-[var(--brand-color)]"
+                            className="w-6 h-6 md:w-10 md:h-10 transition-all duration-300 text-white group-hover:text-[var(--brand-color)]"
                             style={{
                                 '--brand-color': brandColor,
                                 color: 'currentColor'
@@ -67,7 +67,7 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore
         ${isLeft ? 'items-start md:items-end' : 'items-start'}
       `}>
                 <h3
-                    className="text-[10px] md:text-2xl font-bold text-white transition-colors duration-300 group-hover:text-[var(--brand-color)] truncate w-full"
+                    className="text-xs md:text-2xl font-extrabold md:font-bold text-white transition-colors duration-300 group-hover:text-[var(--brand-color)] truncate w-full"
                     style={{ '--brand-color': brandColor } as React.CSSProperties}
                 >
                     {item.name}
