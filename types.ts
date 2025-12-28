@@ -47,3 +47,27 @@ export interface FAQItem {
   question: string;
   answer: string;
 }
+
+export interface PropertyAgent {
+  name: string;
+  phone: string;
+  email: string;
+  image: string;
+}
+
+export interface Property {
+  id: string;
+  title: string;
+  price: number;
+  location: string;
+  description: string;
+  specs: {
+    bedrooms: number;
+    bathrooms: number;
+    sqft: number;
+  };
+  features: string[];
+  images: string[];
+  agent: PropertyAgent;
+  type: 'Sale' | 'Rent';
+}

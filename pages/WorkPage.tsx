@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
     ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp, ShoppingCart, Heart,
-    Monitor, Code, Server, Zap, CheckCircle, Globe, PlayCircle
+    Monitor, Code, Server, Zap, CheckCircle, Globe, PlayCircle, Home
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -139,6 +139,25 @@ const projects: Project[] = [
             { label: 'Uptime', value: '99.9%' },
             { label: 'Providers', value: '500+' },
             { label: 'Compliance', value: 'HIPAA' }
+        ]
+    },
+    {
+        id: 'luxe-estate',
+        title: 'LuxeEstate Demo',
+        category: 'Websites',
+        description: 'A premium real estate platform featuring immersive property listings, agent profiles, and a sophisticated design system.',
+        challenge: 'Creating a high-end visual experience that feels both luxurious and user-friendly, with smooth transitions and responsive layouts.',
+        solution: 'Built a standalone React sub-application with Framer Motion animations and a custom design system isolated from the main app.',
+        results: 'Demonstrates capability to build complex, brand-specific vertical applications within a larger ecosystem.',
+        tech: ['React', 'Framer Motion', 'Tailwind CSS', 'TypeScript'],
+        liveUrl: '/demos/real-estate',
+        isExternal: false,
+        icon: Home,
+        accentColor: '#2563eb',
+        metrics: [
+            { label: 'Properties', value: '10+' },
+            { label: 'Performance', value: '100%' },
+            { label: 'Design', value: 'Custom' }
         ]
     }
 ];
