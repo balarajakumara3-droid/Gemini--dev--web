@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
                     <a href="https://www.linkedin.com/company/ideamanifest/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">LinkedIn</a>
 
                     <a href="https://www.instagram.com/ideamanifest_official/" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-accent transition-colors">Instagram</a>
-                    <a href="/#faq" className="text-secondary hover:text-accent transition-colors">FAQ</a>
+
                 </div>
                 <p className="text-gray-600 text-sm">© 2025 Idea Manifest. All rights reserved.</p>
             </div>

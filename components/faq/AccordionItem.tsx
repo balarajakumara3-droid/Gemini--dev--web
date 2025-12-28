@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface AccordionItemProps {
     question: string;
@@ -16,8 +16,8 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, 
             onClick={onClick}
         >
             <span className={`font-serif text-xl md:text-2xl transition-colors duration-300 ${isOpen ? 'text-accent italic' : 'text-primary group-hover:text-white'}`}>{question}</span>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isOpen ? 'bg-accent border-accent text-background rotate-45' : 'border-white/20 text-white/50 group-hover:border-accent group-hover:text-accent'}`}>
-                <ArrowRight size={16} className={`${isOpen ? '-rotate-45' : ''}`} />
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isOpen ? 'bg-accent border-accent text-background' : 'border-white/20 text-white/50 group-hover:border-accent group-hover:text-accent'}`}>
+                <ChevronDown size={16} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
             </div>
         </button>
         <AnimatePresence>
