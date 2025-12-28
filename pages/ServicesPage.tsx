@@ -475,7 +475,7 @@ export const ServicesPage: React.FC = () => {
                                     <ProcessTimeline steps={service.process} color={service.color} />
 
                                     {/* CTA Section */}
-                                    <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/10">
+                                    {/* <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/10">
                                         <div className="flex-1">
                                             <p className="text-slate-400 text-sm mb-1">Investment starts at</p>
                                             <p className="text-2xl font-bold text-white">{service.pricingIndicator}</p>
@@ -487,7 +487,7 @@ export const ServicesPage: React.FC = () => {
                                             Get a Free Quote
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </motion.section>
