@@ -8,7 +8,6 @@ import {
 import { ParticleBackground } from '../components/ParticleBackground';
 import OurProducts from "@/components/OurProducts";
 import { WhyChooseUs } from '../components/WhyChooseUs';
-import { FaqSection } from '../components/FaqSection';
 import { ServicesSection } from '../components/ServicesSection';
 import { TechnologySection } from '../components/TechnologySection';
 
@@ -162,7 +161,7 @@ export const HomePage: React.FC = () => {
                                 '@type': 'SiteNavigationElement',
                                 position: 4,
                                 name: 'FAQ',
-                                url: 'https://www.ideamanifest.com/faq',
+                                url: 'https://www.ideamanifest.com/#faq',
                             },
                             {
                                 '@type': 'SiteNavigationElement',

@@ -317,7 +317,7 @@ export const ServicesPage: React.FC = () => {
                     </span>
                     <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
                         Engineering{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-blue-400 to-cyan-400">
                             Excellence
                         </span>
                     </h1>

@@ -104,7 +104,7 @@ export const Navbar: React.FC = () => {
                     to={item.path}
                     onClick={(e) => handleNavClick(item, e)}
                     className={`text-sm font-medium transition relative group ${isActive
-                      ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400"
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-accent via-blue-400 to-cyan-400"
                       : "text-white/80 hover:text-accent"
                       }`}
                   >
