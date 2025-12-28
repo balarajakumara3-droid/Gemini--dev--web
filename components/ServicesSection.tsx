@@ -55,24 +55,24 @@ export const ServicesSection: React.FC = () => {
 
         const updateTransform = () => {
             const viewportWidth = window.innerWidth;
-            // Mobile: 70vw for better fit, Desktop: 35vw
-            const cardWidth = viewportWidth < 768 ? viewportWidth * 0.70 : viewportWidth * 0.35;
-            // Responsive gap: 20px (gap-5) on mobile, 32px (gap-8) on desktop
-            const gap = viewportWidth < 768 ? 20 : 32;
+            // Mobile: calc based on available space, Desktop: 35vw max
+            // Account for container padding to prevent overflow
+            const containerPadding = viewportWidth < 768 ? 32 : 64; // px-4 md:px-8 total (both sides)
+            const availableWidth = viewportWidth - containerPadding;
 
-            // On mobile, start from right edge for first card (no left empty space)
-            // On desktop, center the cards
-            if (viewportWidth < 768 && currentIndex === 0) {
-                // Position first card to start from right edge
-                const offset = viewportWidth - cardWidth - 40; // 40px for right padding
-                setTranslateX(offset);
-            } else {
-                // Center position for the active card
-                const centerOffset = (viewportWidth - cardWidth) / 2;
-                // Calculate offset to center the current card
-                const offset = centerOffset - (currentIndex * (cardWidth + gap));
-                setTranslateX(offset);
-            }
+            // More conservative card widths to prevent overflow
+            const cardWidth = viewportWidth < 768
+                ? Math.min(availableWidth * 0.85, 320) // 85% of available width, max 320px
+                : Math.min(viewportWidth * 0.35, 400); // 35vw, max 400px
+
+            // Responsive gap: 16px on mobile, 32px on desktop
+            const gap = viewportWidth < 768 ? 16 : 32;
+
+            // Center position for the active card
+            const centerOffset = (viewportWidth - cardWidth) / 2;
+            // Calculate offset to center the current card
+            const offset = centerOffset - (currentIndex * (cardWidth + gap));
+            setTranslateX(offset);
         };
 
         updateTransform();
@@ -354,7 +354,7 @@ export const ServicesSection: React.FC = () => {
                     </button>
 
                     {/* Horizontal scroll container */}
-                    <div className="relative w-full overflow-visible px-10 md:px-16">
+                    <div className="relative w-full overflow-visible px-4 md:px-8">
                         <div
                             ref={containerRef}
                             className="flex gap-5 md:gap-8 transition-transform duration-700 ease-out"
@@ -366,7 +366,7 @@ export const ServicesSection: React.FC = () => {
                                 return (
                                     <div
                                         key={service.title}
-                                        className={`flex-shrink-0 w-[70vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] min-w-[260px] max-w-[350px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
+                                        className={`flex-shrink-0 w-[85vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] min-w-[240px] max-w-[min(85vw,350px)] md:max-w-[400px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
                                             }`}
                                     >
                                         <div className={`${isCenter ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)]' : ''} rounded-xl`}>

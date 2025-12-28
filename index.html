@@ -160,10 +160,17 @@
   </script>
 
   <style>
+    html {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
     body {
       background-color: #000814;
       color: #f8fafc;
       cursor: none;
+      overflow-x: hidden;
+      max-width: 100%;
     }
 
     /* Custom scrollbar */
@@ -194,6 +201,8 @@
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
+      line-clamp: 3;
+      /* Standard property for compatibility */
       overflow: hidden;
       text-overflow: ellipsis;
     }

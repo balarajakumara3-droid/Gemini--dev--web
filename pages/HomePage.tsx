@@ -114,7 +114,7 @@ const CollaborateSection = ({ title, description, image, align = 'left' }: { tit
 
 export const HomePage: React.FC = () => {
     return (
-        <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
+        <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden max-w-full font-sans">
             <Helmet>
                 <title>Idea Manifest | AI-Powered Websites & Mobile Apps</title>
                 <meta name="description" content="Idea Manifest builds AI-powered custom websites, mobile apps, and software for startups and enterprises. Fast delivery. Scalable architecture. Get a free quote." />

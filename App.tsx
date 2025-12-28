@@ -18,7 +18,7 @@ const App: React.FC = () => {
     return (
         <HelmetProvider>
             <Router>
-                <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
+                <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden max-w-full font-sans">
                     <CustomCursor />
                     <Routes>
                         <Route path="/virtual-trader" element={<VirtualTraderPage />} />
