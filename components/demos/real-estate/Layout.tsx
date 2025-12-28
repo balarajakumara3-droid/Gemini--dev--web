@@ -50,7 +50,7 @@ export const RealEstateLayout: React.FC = () => {
         { label: 'Buy', path: '/demos/real-estate' },
         { label: 'Sell', path: '/demos/real-estate/about' }, // Mapping to About for demo
         { label: 'Rent', path: '/demos/real-estate/properties' }, // Mapping to Properties
-        { label: 'Mortgage', path: '/demos/real-estate/agents' }, // Mapping to Agents
+        { label: 'Mortgage', path: '/demos/real-estate/mortgage' },
         { label: 'Find Realtors', path: '/demos/real-estate/agents' },
     ];
 

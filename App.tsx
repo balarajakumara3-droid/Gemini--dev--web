@@ -19,6 +19,7 @@ import { RealEstateDetails } from './pages/demos/real-estate/DetailsPage';
 import { RealEstateAgents } from './pages/demos/real-estate/AgentsPage';
 import { RealEstateAbout } from './pages/demos/real-estate/AboutPage';
 import { RealEstateContact } from './pages/demos/real-estate/ContactPage';
+import { RealEstateMortgage } from './pages/demos/real-estate/MortgagePage';
 
 const App: React.FC = () => {
     return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
                             <Route path="agents" element={<RealEstateAgents />} />
                             <Route path="about" element={<RealEstateAbout />} />
                             <Route path="contact" element={<RealEstateContact />} />
+                            <Route path="mortgage" element={<RealEstateMortgage />} />
                             {/* Fallback for other demo links */}
                             <Route path="*" element={<RealEstateHome />} />
                         </Route>
