@@ -11,10 +11,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Home', path: '/', section: 'home', isAnchor: false },
-  { label: 'Services', path: '/services', section: 'services', isAnchor: false },
-  { label: 'Work', path: '/work', section: 'work', isAnchor: false },
-  { label: 'Products', path: '/#products', section: 'products', isAnchor: true },
+  { label: 'Our Services', path: '/services', section: 'services', isAnchor: false },
+  { label: 'Our Work', path: '/work', section: 'work', isAnchor: false },
   { label: 'About', path: '/about', section: 'about', isAnchor: false },
   { label: 'Blogs', path: '/blogs', section: 'blogs', isAnchor: false },
   { label: 'Contact', path: '/contact', section: 'contact', isAnchor: false },
