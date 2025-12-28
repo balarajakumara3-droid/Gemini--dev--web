@@ -270,7 +270,7 @@ export const WorkPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-32">
             <Helmet>
-                <title>Our Work - AI-Powered Projects | Idea Manifest</title>
+                <title>Our Works - AI-Powered Projects | Idea Manifest</title>
                 <meta name="description" content="Explore our portfolio of AI-powered websites, mobile apps, and web applications. See how we've helped businesses achieve 50% faster development with cutting-edge technology." />
                 <link rel="canonical" href="https://www.ideamanifest.com/work" />
             </Helmet>
@@ -291,7 +291,7 @@ export const WorkPage: React.FC = () => {
                     <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
                         Our{' '}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400">
-                            Work
+                            Works
                         </span>
                     </h1>
                     <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed mb-8">
@@ -310,8 +310,8 @@ export const WorkPage: React.FC = () => {
                                 key={category}
                                 onClick={() => setActiveCategory(category)}
                                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeCategory === category
-                                        ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)]'
-                                        : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'
+                                    ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)]'
+                                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'
                                     }`}
                             >
                                 {category}

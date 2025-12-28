@@ -12,7 +12,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Our Services', path: '/services', section: 'services', isAnchor: false },
-  { label: 'Our Work', path: '/work', section: 'work', isAnchor: false },
+  { label: 'Our Works', path: '/work', section: 'work', isAnchor: false },
   { label: 'About', path: '/about', section: 'about', isAnchor: false },
   { label: 'Blogs', path: '/blogs', section: 'blogs', isAnchor: false },
   { label: 'Contact', path: '/contact', section: 'contact', isAnchor: false },
@@ -93,17 +93,26 @@ export const Navbar: React.FC = () => {
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-8 items-center">
           <ul className="flex gap-8 items-center list-none m-0 p-0">
-            {navItems.map((item) => (
-              <li key={item.label}>
-                <Link
-                  to={item.path}
-                  onClick={(e) => handleNavClick(item, e)}
-                  className="text-sm font-medium text-white/80 hover:text-accent transition"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const isActive = item.path === '/'
+                ? location.pathname === '/'
+                : location.pathname.startsWith(item.path);
+
+              return (
+                <li key={item.label}>
+                  <Link
+                    to={item.path}
+                    onClick={(e) => handleNavClick(item, e)}
+                    className={`text-sm font-medium transition relative group ${isActive
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400"
+                      : "text-white/80 hover:text-accent"
+                      }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -128,17 +137,26 @@ export const Navbar: React.FC = () => {
           >
             <nav className="flex flex-col gap-8 text-center">
               <ul className="flex flex-col gap-8 list-none m-0 p-0">
-                {navItems.map((item) => (
-                  <li key={item.label}>
-                    <Link
-                      to={item.path}
-                      onClick={(e) => handleNavClick(item, e)}
-                      className="text-3xl text-white hover:text-accent transition"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+                {navItems.map((item) => {
+                  const isActive = item.path === '/'
+                    ? location.pathname === '/'
+                    : location.pathname.startsWith(item.path);
+
+                  return (
+                    <li key={item.label}>
+                      <Link
+                        to={item.path}
+                        onClick={(e) => handleNavClick(item, e)}
+                        className={`text-3xl transition ${isActive
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400"
+                          : "text-white hover:text-accent"
+                          }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           </motion.div>
