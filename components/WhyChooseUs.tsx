@@ -37,7 +37,7 @@ export const WhyChooseUs: React.FC = () => {
 
                         {/* FAQ Section */}
                         <div className="max-w-3xl border-t border-white/10 pt-16">
-                            <h3 className="text-2xl md:text-4xl font-serif text-primary mb-8 italic">Technical FAQ</h3>
+                            <h3 className="text-2xl md:text-4xl font-serif text-primary mb-8">Technical FAQ</h3>
                             <div className="space-y-4">
                                 <AccordionItem
                                     question="What is your typical tech stack?"
