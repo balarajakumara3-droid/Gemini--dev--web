@@ -62,7 +62,7 @@ export const ServicesSection: React.FC = () => {
 
             // More conservative card widths to prevent overflow
             const cardWidth = viewportWidth < 768
-                ? Math.min(availableWidth * 0.85, 320) // 85% of available width, max 320px
+                ? Math.min(availableWidth * 0.80, 320) // 80% of available width, max 320px
                 : Math.min(viewportWidth * 0.35, 400); // 35vw, max 400px
 
             // Responsive gap: 16px on mobile, 32px on desktop
@@ -366,7 +366,7 @@ export const ServicesSection: React.FC = () => {
                                 return (
                                     <div
                                         key={service.title}
-                                        className={`flex-shrink-0 w-[85vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] min-w-[240px] max-w-[min(85vw,350px)] md:max-w-[400px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
+                                        className={`flex-shrink-0 w-[80vw] md:w-[35vw] h-auto md:h-auto min-h-[200px] md:min-h-[280px] max-w-[min(80vw,350px)] md:max-w-[400px] transition-all duration-500 ${isCenter ? 'scale-105' : 'opacity-70'
                                             }`}
                                     >
                                         <div className={`${isCenter ? 'border-2 border-accent shadow-[0_0_30px_rgba(129,140,248,0.3)]' : ''} rounded-xl`}>

@@ -160,9 +160,15 @@
   </script>
 
   <style>
+    /* Prevent horizontal scroll globally */
+    * {
+      box-sizing: border-box;
+    }
+
     html {
       overflow-x: hidden;
       max-width: 100%;
+      width: 100%;
     }
 
     body {
@@ -171,6 +177,14 @@
       cursor: none;
       overflow-x: hidden;
       max-width: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    #root {
+      overflow-x: hidden;
+      max-width: 100%;
+      width: 100%;
     }
 
     /* Custom scrollbar */
