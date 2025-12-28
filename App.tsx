@@ -23,6 +23,7 @@ const App: React.FC = () => {
                     <Routes>
                         <Route path="/virtual-trader" element={<VirtualTraderPage />} />
                         <Route element={<><Navbar /><Outlet /><Footer /></>}>
+                            <Route path="/" element={<HomePage />} />
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/services" element={<ServicesPage />} />
                             <Route path="/work" element={<WorkPage />} />

@@ -10,7 +10,7 @@ export const FaqPage: React.FC = () => {
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
             <Helmet>
-                <title>FAQ | Idea Manifest – Common Questions Answered</title>
+                <title>FAQ | Common Questions Answered - Idea Manifest</title>
                 <meta name="description" content="Find answers to common questions about our services, pricing, development process, and how we use AI to accelerate your project." />
                 <link rel="canonical" href="https://www.ideamanifest.com/faq" />
 

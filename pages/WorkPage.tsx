@@ -270,7 +270,7 @@ export const WorkPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-32">
             <Helmet>
-                <title>Our Works - AI-Powered Projects | Idea Manifest</title>
+                <title>Our Works | AI-Powered Projects Portfolio - Idea Manifest</title>
                 <meta name="description" content="Explore our portfolio of AI-powered websites, mobile apps, and web applications. See how we've helped businesses achieve 50% faster development with cutting-edge technology." />
                 <link rel="canonical" href="https://www.ideamanifest.com/work" />
             </Helmet>

@@ -4,6 +4,8 @@ import { Calendar, Clock, ArrowRight, Search } from 'lucide-react';
 import { BLOG_POSTS } from '../components/blogs/BlogData';
 import { SEOKeywordCloud } from '../components/blogs/SEOKeywordCloud';
 
+import { Helmet } from 'react-helmet-async';
+
 const BlogListPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [selectedCategory, setSelectedCategory] = React.useState('All');
@@ -30,6 +32,10 @@ const BlogListPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-background pt-24">
+            <Helmet>
+                <title>Blogs | Engineering the Future - Idea Manifest</title>
+                <meta name="description" content="Deep dives into AI, Full-Stack Engineering, and Product Strategy from the best application creation teams in Bangalore & Chennai." />
+            </Helmet>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <header className="mb-12 text-center max-w-3xl mx-auto">
                     <h1 className="text-4xl md:text-7xl font-extrabold text-primary leading-[1.1] mb-8 tracking-tight font-serif">

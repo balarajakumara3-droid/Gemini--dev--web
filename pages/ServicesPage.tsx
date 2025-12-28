@@ -277,7 +277,7 @@ export const ServicesPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-32">
             <Helmet>
-                <title>AI-Powered Web & Mobile Development Services | Idea Manifest</title>
+                <title>Our Services | AI-Powered Web & Mobile Development - Idea Manifest</title>
                 <meta name="description" content="Custom websites, mobile apps, backend systems, UI/UX design, and tech consulting. AI-powered development delivers 50% faster results. Get a free quote today." />
                 <link rel="canonical" href="https://www.ideamanifest.com/services" />
 

@@ -15,6 +15,8 @@ const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description:
   </div>
 );
 
+import { Helmet } from 'react-helmet-async';
+
 function VirtualTraderPage() {
   const [activeScreen, setActiveScreen] = useState<AppScreen>('market');
 
@@ -47,6 +49,10 @@ function VirtualTraderPage() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-50 selection:bg-indigo-500/30 overflow-x-hidden font-sans">
+      <Helmet>
+        <title>Virtual Trader | Master the Markets with Zero Risk - Idea Manifest</title>
+        <meta name="description" content="The ultimate virtual trading simulator. Start with ₹10 Lakh virtual cash. Practice strategies, track portfolios, and learn with our AI assistant before you spend a real rupee." />
+      </Helmet>
 
       {/* Navigation */}
       <nav className="fixed w-full z-50 bg-[#020617]/80 backdrop-blur-xl border-b border-white/5">
@@ -152,8 +158,8 @@ function VirtualTraderPage() {
                   key={feature.id}
                   onClick={() => setActiveScreen(feature.id as AppScreen)}
                   className={`p-6 rounded-2xl cursor-pointer transition-all border ${activeScreen === feature.id
-                      ? 'bg-slate-800 border-indigo-500 shadow-lg shadow-indigo-900/20'
-                      : 'bg-transparent border-transparent hover:bg-slate-800/50 hover:border-slate-700'
+                    ? 'bg-slate-800 border-indigo-500 shadow-lg shadow-indigo-900/20'
+                    : 'bg-transparent border-transparent hover:bg-slate-800/50 hover:border-slate-700'
                     }`}
                 >
                   <div className="flex items-start gap-4">

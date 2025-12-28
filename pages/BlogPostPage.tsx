@@ -4,6 +4,8 @@ import { ArrowLeft, Clock } from 'lucide-react';
 import { BLOG_POSTS } from '../components/blogs/BlogData';
 import { SchemaMarkup } from '../components/blogs/SchemaMarkup';
 
+import { Helmet } from 'react-helmet-async';
+
 const BlogPostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
@@ -27,6 +29,10 @@ const BlogPostPage: React.FC = () => {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-background min-h-screen pt-32">
+            <Helmet>
+                <title>{post.title} | Idea Manifest Blog</title>
+                <meta name="description" content={post.subtitle} />
+            </Helmet>
             <SchemaMarkup post={post} />
 
             {/* Navigation */}

@@ -8,7 +8,7 @@ export const ContactPage: React.FC = () => {
     return (
         <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden font-sans">
             <Helmet>
-                <title>Contact Us | Idea Manifest – Start Your Project</title>
+                <title>Contact Us | Start Your Project - Idea Manifest</title>
                 <meta name="description" content="Ready to build something amazing? Contact Idea Manifest for a free consultation. Let's discuss your project and how we can help you succeed." />
                 <link rel="canonical" href="https://www.ideamanifest.com/contact" />
 

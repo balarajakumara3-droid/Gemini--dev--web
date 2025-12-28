@@ -8,7 +8,7 @@ export const AboutPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30">
             <Helmet>
-                <title>About Us | Idea Manifest – Democratizing Premium Engineering</title>
+                <title>About Us | Democratizing Premium Engineering - Idea Manifest</title>
                 <meta name="description" content="Learn about Idea Manifest's mission to democratize premium software engineering. We combine AI efficiency with human expertise to build faster, better, and smarter." />
                 <link rel="canonical" href="https://www.ideamanifest.com/about" />
 
