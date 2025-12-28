@@ -20,86 +20,87 @@ const TECH_STACK: TechItem[] = [
     {
         id: 'react',
         name: 'React',
-        description: 'A JavaScript library for building user interfaces with component-based architecture.',
+        description: 'A component-based library for creating dynamic and interactive user interfaces using JavaScript.',
         icon: ReactIcon,
         category: 'Frontend',
-        color: '#61dafb' // React Blue
+        color: '#61dafb'
     },
     {
         id: 'nextjs',
         name: 'Next.js',
-        description: 'The React Framework for the web, enabling server-side rendering and static site generation.',
+        description: 'A full-stack web development platform focused on performance, routing, and production-ready web applications.',
         icon: NextJsIcon,
         category: 'Frontend',
-        color: '#ffffff' // White
+        color: '#ffffff'
     },
     {
         id: 'nodejs',
         name: 'Node.js',
-        description: 'JavaScript runtime built on Chrome\'s V8 engine for building scalable network applications.',
+        description: 'A server-side JavaScript runtime designed for building fast, scalable, and event-driven applications.',
         icon: NodeJsIcon,
         category: 'Backend',
-        color: '#339933' // Node Green
+        color: '#339933'
     },
     {
         id: 'flutter',
         name: 'Flutter',
-        description: 'Google\'s UI toolkit for building natively compiled applications for mobile, web, and desktop.',
+        description: 'A cross-platform development toolkit for building visually rich applications from a single codebase.',
         icon: FlutterIcon,
         category: 'Mobile',
-        color: '#47C5FB' // Flutter Blue
+        color: '#47C5FB'
     },
     {
         id: 'swift',
         name: 'Swift',
-        description: 'A powerful and intuitive programming language for iOS, iPadOS, macOS, tvOS, and watchOS.',
+        description: 'A modern programming language created by Apple for building high-performance native applications.',
         icon: SwiftIcon,
         category: 'Mobile',
-        color: '#F05138' // Swift Orange
+        color: '#F05138'
     },
 
     // Right Column (5 items)
     {
         id: 'python',
         name: 'Python',
-        description: 'A versatile programming language known for its readability and vast ecosystem of libraries.',
+        description: 'A general-purpose programming language valued for its simplicity, readability, and broad ecosystem.',
         icon: PythonIcon,
         category: 'Backend',
-        color: '#FFD43B' // Python Yellow/Blue
+        color: '#FFD43B'
     },
     {
         id: 'kotlin',
         name: 'Kotlin',
-        description: 'A modern, concise, and safe programming language for Android development.',
+        description: 'A concise and type-safe programming language commonly used for modern Android application development.',
         icon: KotlinIcon,
         category: 'Mobile',
-        color: '#7f52ff' // Kotlin Purple
+        color: '#7f52ff'
     },
     {
         id: 'react-native',
         name: 'React Native',
-        description: 'Create native apps for Android and iOS using React\'s framework.',
+        description: 'A mobile development solution for creating native applications using shared JavaScript logic.',
         icon: ReactIcon,
         category: 'Mobile',
-        color: '#61dafb' // React Blue
+        color: '#61dafb'
     },
     {
         id: 'fastapi',
         name: 'FastAPI',
-        description: 'Modern, high-performance web framework for building APIs with Python 3.8+.',
+        description: 'A lightweight Python framework optimized for building fast, reliable, and scalable API services.',
         icon: FastApiIcon,
         category: 'Backend',
-        color: '#009688' // FastAPI Teal
+        color: '#009688'
     },
     {
         id: 'supabase',
         name: 'Supabase',
-        description: 'The open source Firebase alternative. Instantly scalable backend.',
+        description: 'An open-source backend platform offering databases, authentication, and real-time data services.',
         icon: SupabaseIcon,
         category: 'Backend',
-        color: '#3ecf8e' // Supabase Green
+        color: '#3ecf8e'
     },
 ];
+
 
 import { motion } from 'framer-motion';
 
