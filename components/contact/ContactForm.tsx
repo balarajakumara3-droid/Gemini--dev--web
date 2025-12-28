@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, X } from 'lucide-react';
+import { CheckCircle2, X, ChevronDown, Check } from 'lucide-react';
+
+const PROJECT_TYPES = [
+    { value: 'website', label: 'Website' },
+    { value: 'mobile', label: 'Mobile App' },
+    { value: 'backend', label: 'Backend' },
+    { value: 'custom', label: 'Custom Solution' },
+];
 
 export const ContactForm: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [projectType, setProjectType] = useState("");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,10 +48,12 @@ export const ContactForm: React.FC = () => {
         }
     };
 
+    const selectedLabel = PROJECT_TYPES.find(t => t.value === projectType)?.label || "Project Type";
+
     return (
         <div className="relative">
             <form onSubmit={onSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4">
                     <input
                         type="text"
                         name="name"
@@ -61,29 +71,62 @@ export const ContactForm: React.FC = () => {
                     />
                 </div>
 
-                <select
-                    name="projectType"
-                    value={projectType}
-                    onChange={(e) => setProjectType(e.target.value)}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
-                >
-                    <option value="" disabled className="bg-[#020617] text-gray-400">
-                        Project Type
-                    </option>
-                    <option value="website" className="bg-[#020617] text-white">
-                        Website
-                    </option>
-                    <option value="mobile" className="bg-[#020617] text-white">
-                        Mobile App
-                    </option>
-                    <option value="backend" className="bg-[#020617] text-white">
-                        Backend
-                    </option>
-                    <option value="custom" className="bg-[#020617] text-white">
-                        Custom Solution
-                    </option>
-                </select>
+                <div className="relative">
+                    {/* Hidden input for form submission */}
+                    <input type="hidden" name="projectType" value={projectType} required />
+
+                    <button
+                        type="button"
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg flex items-center justify-between transition-all duration-300 ${isDropdownOpen ? 'border-accent' : 'hover:border-white/20'}`}
+                    >
+                        <span className={`${projectType ? 'text-white' : 'text-gray-400'}`}>
+                            {selectedLabel}
+                        </span>
+                        <motion.div
+                            animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-white/50"
+                        >
+                            <ChevronDown size={20} />
+                        </motion.div>
+                    </button>
+
+                    <AnimatePresence>
+                        {isDropdownOpen && (
+                            <>
+                                {/* Backdrop to close dropdown */}
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                />
+
+                                <motion.ul
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 5, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute left-0 right-0 z-20  border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl"
+                                >
+                                    {PROJECT_TYPES.map((type) => (
+                                        <li key={type.value}>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setProjectType(type.value);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className={`w-full px-4 py-3 text-left flex items-center justify-between transition-colors hover:bg-white/5 font-medium ${projectType === type.value ? 'text-accent' : 'text-slate-300'}`}
+                                            >
+                                                {type.label}
+                                                {projectType === type.value && <Check size={16} className="text-accent" />}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </motion.ul>
+                            </>
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 <textarea
                     name="message"
