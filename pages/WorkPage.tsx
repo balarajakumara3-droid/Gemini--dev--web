@@ -103,44 +103,7 @@ const projects: Project[] = [
             { label: 'Data Updates', value: 'Real-time' }
         ]
     },
-    {
-        id: 'ecommerce',
-        title: 'StyleHub E-commerce',
-        category: 'Websites',
-        description: 'A modern e-commerce platform for fashion retail with seamless checkout, inventory management, and personalized recommendations.',
-        challenge: 'Optimizing checkout flow to reduce cart abandonment and improving page load speeds for product-heavy pages.',
-        solution: 'Implemented Next.js for server-side rendering, Stripe for secure payments, and AI-powered product recommendations.',
-        results: '30% improvement in conversion rate. Page load times under 2 seconds. 25% increase in average order value.',
-        tech: ['Next.js', 'Shopify', 'Stripe', 'PostgreSQL', 'AWS'],
-        liveUrl: 'https://stylehub-demo.ideamanifest.com',
-        isExternal: true,
-        icon: ShoppingCart,
-        accentColor: '#ec4899',
-        metrics: [
-            { label: 'Conversion', value: '+30%' },
-            { label: 'Load Time', value: '<2s' },
-            { label: 'AOV Increase', value: '+25%' }
-        ]
-    },
-    {
-        id: 'healthcare',
-        title: 'MediConnect Portal',
-        category: 'Websites',
-        description: 'A HIPAA-compliant patient management system enabling healthcare providers to manage appointments, records, and communications securely.',
-        challenge: 'Ensuring complete HIPAA compliance while maintaining excellent user experience and system reliability.',
-        solution: 'Architected a secure, role-based access system with end-to-end encryption. Deployed on HIPAA-compliant infrastructure with 99.9% SLA.',
-        results: '99.9% uptime achieved. Zero security breaches. 500+ healthcare providers using the platform.',
-        tech: ['React', 'Node.js', 'PostgreSQL', 'AWS', 'Redis'],
-        liveUrl: 'https://mediconnect-demo.ideamanifest.com',
-        isExternal: true,
-        icon: Heart,
-        accentColor: '#ef4444',
-        metrics: [
-            { label: 'Uptime', value: '99.9%' },
-            { label: 'Providers', value: '500+' },
-            { label: 'Compliance', value: 'HIPAA' }
-        ]
-    },
+
     {
         id: 'luxe-estate',
         title: 'LuxeEstate Demo',
