@@ -195,9 +195,9 @@ export const ContactForm: React.FC = () => {
                                     <CheckCircle2 size={32} className="text-blue-400" />
                                 </motion.div>
 
-                                <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
+                                <h3 className="text-2xl font-bold text-white mb-2">Your Message Has Been Sent!</h3>
                                 <p className="text-slate-400 leading-relaxed mb-8">
-                                    Thanks, we'll connect with you soon. Our team is reviewing your project details.
+                                    Thanks, we'll connect with you soon.
                                 </p>
 
                                 <button
