@@ -47,10 +47,11 @@ export const RealEstateLayout: React.FC = () => {
     }, []);
 
     const navLinks = [
-        { label: 'Home', path: '/demos/real-estate' },
-        { label: 'Properties', path: '/demos/real-estate/properties' },
-        { label: 'Agents', path: '/demos/real-estate/agents' }, // Future placeholder
-        { label: 'About', path: '/demos/real-estate/about' }, // Future placeholder
+        { label: 'Buy', path: '/demos/real-estate' },
+        { label: 'Sell', path: '/demos/real-estate/about' }, // Mapping to About for demo
+        { label: 'Rent', path: '/demos/real-estate/properties' }, // Mapping to Properties
+        { label: 'Mortgage', path: '/demos/real-estate/agents' }, // Mapping to Agents
+        { label: 'Find Realtors', path: '/demos/real-estate/agents' },
     ];
 
     return (
@@ -62,38 +63,41 @@ export const RealEstateLayout: React.FC = () => {
             </div>
 
             {/* Navbar */}
-            <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
+            {/* Navbar - Portal Style (Solid White) */}
+            <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 py-4 shadow-sm">
                 <div className="container mx-auto px-6 flex justify-between items-center">
-                    <Link to="/demos/real-estate" className="flex items-center gap-2 text-2xl font-bold text-slate-900">
-                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
-                            <Home size={20} />
-                        </div>
-                        <span>LuxeEstate</span>
-                    </Link>
-
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-8">
-                        {navLinks.map(link => (
-                            <Link
-                                key={link.path}
-                                to={link.path}
-                                className={`text-sm font-medium hover:text-blue-600 transition-colors ${location.pathname === link.path ? 'text-blue-600' : 'text-slate-600'}`}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        <Link
-                            to="/demos/real-estate/contact"
-                            className="inline-flex items-center justify-center rounded-full font-medium transition-colors px-6 py-2.5 bg-blue-600 text-white hover:bg-blue-700"
-                        >
-                            Contact Us
+                    <div className="flex items-center gap-8">
+                        <Link to="/demos/real-estate" className="flex items-center gap-2 text-2xl font-extrabold text-[#d93025]">
+                            <span>Realtor</span><span className="text-slate-400 font-light">.demo</span>
                         </Link>
+
+                        {/* Desktop Nav - Portal Links */}
+                        <div className="hidden md:flex items-center gap-6">
+                            {navLinks.map(link => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    className={`text-base font-medium hover:text-[#d93025] hover:underline decoration-2 underline-offset-4 transition-all ${location.pathname === link.path ? 'text-slate-900 underline decoration-[#d93025]' : 'text-slate-700'}`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Mobile Toggle */}
-                    <button className="md:hidden text-slate-900" onClick={() => setIsOpen(!isOpen)}>
-                        {isOpen ? <X /> : <Menu />}
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button className="hidden md:block text-slate-700 font-bold hover:text-[#d93025]">Log In</button>
+                        <Link
+                            to="/demos/real-estate/contact"
+                            className="hidden md:inline-flex items-center justify-center rounded-full font-bold transition-colors px-5 py-2 bg-[#d93025] text-white hover:bg-[#b02018]"
+                        >
+                            Sign Up
+                        </Link>
+                        {/* Mobile Toggle */}
+                        <button className="md:hidden text-slate-900" onClick={() => setIsOpen(!isOpen)}>
+                            {isOpen ? <X /> : <Menu />}
+                        </button>
+                    </div>
                 </div>
             </nav>
 
