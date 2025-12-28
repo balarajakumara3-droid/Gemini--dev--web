@@ -221,6 +221,7 @@ const OurProducts = () => {
 
       isTransitioningRef.current = true;
       lastLockChangeRef.current = now;
+      hasExitedZoneRef.current = true; // Added this line
 
       setIsLocked(false);
       document.body.style.overflow = '';
