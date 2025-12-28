@@ -87,7 +87,7 @@ const projects: Project[] = [
     {
         id: 'virtual-trader',
         title: 'Virtual Trader',
-        category: 'Web Apps',
+        category: 'Mobile Apps',
         description: 'A stock market simulator providing risk-free trading practice with ₹10 lakh virtual cash and real-time market data integration.',
         challenge: 'Integrating real-time stock market data while ensuring accurate trade execution simulation without actual financial transactions.',
         solution: 'Connected with market data APIs, built a sophisticated trade simulation engine, and created an intuitive dashboard for portfolio tracking.',
