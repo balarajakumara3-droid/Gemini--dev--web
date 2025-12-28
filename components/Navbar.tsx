@@ -12,7 +12,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', path: '/', section: 'home', isAnchor: false },
-  { label: 'Services', path: '/#services', section: 'services', isAnchor: true },
+  { label: 'Services', path: '/services', section: 'services', isAnchor: false },
   { label: 'Products', path: '/#products', section: 'products', isAnchor: true },
   { label: 'Portfolio', path: '/portfolio', section: 'portfolio', isAnchor: false },
   { label: 'About', path: '/about', section: 'about', isAnchor: false },
