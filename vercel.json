@@ -14,24 +14,8 @@
   ],
   "rewrites": [
     {
-      "source": "/virtual-trader",
-      "destination": "/"
-    },
-    {
-      "source": "/services",
-      "destination": "/"
-    },
-    {
-      "source": "/technology",
-      "destination": "/"
-    },
-    {
-      "source": "/faq",
-      "destination": "/"
-    },
-    {
-      "source": "/contact",
-      "destination": "/"
+      "source": "/((?!api/|.*\\.).*)",
+      "destination": "/index.html"
     }
   ]
 }
