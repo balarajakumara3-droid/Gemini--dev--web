@@ -221,7 +221,7 @@ export const HomePage: React.FC = () => {
                             <button
                                 onClick={() => window.location.href = '/portfolio'}
                                 className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold hover:bg-white/5 transition-colors backdrop-blur-sm hover:border-white/30">
-                                View Our Work
+                                View Our Works
                             </button>
                         </div>
                     </RevealText>
