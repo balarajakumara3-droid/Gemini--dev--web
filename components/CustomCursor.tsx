@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 
 export const CustomCursor: React.FC = () => {
+  const { pathname } = useLocation();
+  const isRealEstateDemo = pathname.startsWith('/demos/real-estate');
+
+  if (isRealEstateDemo) return null;
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  
+
   const springConfig = { damping: 25, stiffness: 700 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
@@ -49,13 +55,13 @@ export const CustomCursor: React.FC = () => {
       }}
       transition={{ duration: 0.2 }}
     >
-        <motion.div 
-            className="w-1.5 h-1.5 bg-white rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            animate={{ 
-                scale: hovered ? 0.5 : 1,
-                backgroundColor: hovered ? '#818cf8' : '#ffffff' // Accent on hover, White default
-            }}
-        />
+      <motion.div
+        className="w-1.5 h-1.5 bg-white rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        animate={{
+          scale: hovered ? 0.5 : 1,
+          backgroundColor: hovered ? '#818cf8' : '#ffffff' // Accent on hover, White default
+        }}
+      />
     </motion.div>
   );
 };

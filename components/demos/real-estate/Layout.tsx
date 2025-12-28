@@ -38,6 +38,14 @@ export const RealEstateLayout: React.FC = () => {
     // Close mobile menu on route change
     useEffect(() => setIsOpen(false), [location]);
 
+    // Force default cursor for demo pages
+    useEffect(() => {
+        document.body.style.cursor = 'auto';
+        return () => {
+            document.body.style.cursor = '';
+        };
+    }, []);
+
     const navLinks = [
         { label: 'Home', path: '/demos/real-estate' },
         { label: 'Properties', path: '/demos/real-estate/properties' },

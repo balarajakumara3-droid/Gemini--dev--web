@@ -63,7 +63,7 @@ export const DEMO_PROPERTIES: Property[] = [
         },
         features: ['Beach Access', 'Ocean View', 'Gourmet Kitchen', 'Master Suite', 'Outdoor Shower'],
         images: [
-            'https://images.unsplash.com/photo-1600596542815-37a9a5db2816?q=80&w=2670&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2670&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1512915922610-182dd0748925?q=80&w=2670&auto=format&fit=crop'
         ],
         agent: {
