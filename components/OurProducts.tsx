@@ -1,6 +1,6 @@
 // components/OurProducts.tsx
 import React, { useRef, useEffect, useState } from 'react';
-import { ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp, ChevronLeft, ChevronRight, Home, Pizza } from 'lucide-react';
 
 const products = [
   {
@@ -33,6 +33,14 @@ const products = [
     url: "https://play.google.com/store/apps/details?id=com.brickspace",
     icon: Smartphone,
     accentColor: "blue",
+    isExternal: true,
+  },
+  {
+    title: "Topping Tale Studio",
+    description: "Build Your Perfect Slice. Fresh ingredients, endless customizations, and flavors that make every bite unforgettable. Craft your dream pizza today!",
+    url: "https://topping-tale-studio-git-main-bala-rajas-projects-4cdcde3b.vercel.app/",
+    icon: Pizza,
+    accentColor: "orange",
     isExternal: true,
   },
   {
