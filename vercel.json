@@ -10,6 +10,11 @@
       "source": "/nammaooruspl/:path*",
       "destination": "https://nammaooruspl.ideamanifest.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/thamizh-veedu-home/:path*",
+      "destination": "https://thamizh-veedu-homes.ideamanifest.com/:path*",
+      "permanent": true
     }
   ],
   "rewrites": [
