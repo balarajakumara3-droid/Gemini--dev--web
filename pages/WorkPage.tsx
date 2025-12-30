@@ -113,7 +113,7 @@ const projects: Project[] = [
         solution: 'Developed a robust Full-stack application using React for the frontend, Node.js/Express for the backend, and PostgreSQL for structured data management.',
         results: 'Streamlined property discovery for niche heritage buyers, resulting in a 40% increase in lead generation and improved platform reliability.',
         tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS', 'Express'],
-        liveUrl: 'https://thamizh-veedu-homes.vercel.app/',
+        liveUrl: 'https://thamizh-veedu-homes.ideamanifest.com/',
         isExternal: true,
         icon: Home,
         accentColor: '#C2410C',
