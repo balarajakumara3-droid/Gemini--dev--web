@@ -1,14 +1,14 @@
 // components/OurProducts.tsx
 import React, { useRef, useEffect, useState } from 'react';
-import { ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Sparkles, MapPin, Smartphone, TrendingUp, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 
 const products = [
   {
-    title: "Summarizer",
-    description: "An AI-based tool that turns long content into short summaries. Save time and understand faster.",
-    url: "summarizer",
-    icon: Sparkles,
-    accentColor: "indigo",
+    title: "Thamizh Veedu Homes",
+    description: "Discover and buy Heritage Homes in Tamil Nadu. The trusted marketplace to buy, sell, or rent properties.",
+    url: "https://thamizh-veedu-homes.vercel.app/",
+    icon: Home,
+    accentColor: "orange",
     isExternal: true,
   },
   {
@@ -17,6 +17,14 @@ const products = [
     url: "nammaooruspl",
     icon: MapPin,
     accentColor: "emerald",
+    isExternal: true,
+  },
+  {
+    title: "Summarizer",
+    description: "An AI-based tool that turns long content into short summaries. Save time and understand faster.",
+    url: "summarizer",
+    icon: Sparkles,
+    accentColor: "indigo",
     isExternal: true,
   },
   {
