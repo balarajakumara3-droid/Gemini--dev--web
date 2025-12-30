@@ -226,13 +226,13 @@ function VirtualTraderPage() {
             <div className="order-2 lg:order-1 sticky top-24">
               <AiAssistantDemo />
               <p className="text-center text-slate-500 text-xs mt-4">
-                * Actual AI model running live via Google Gemini API
+                * Actual AI model running live via our Advanced AI API
               </p>
             </div>
             <div className="order-1 lg:order-2 pt-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-6">
                 <Zap size={14} />
-                Powered by Gemini 2.5
+                Powered by Advanced AI
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
                 Your Personal <br />
