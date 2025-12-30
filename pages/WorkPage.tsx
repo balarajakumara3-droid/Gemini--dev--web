@@ -105,6 +105,25 @@ const projects: Project[] = [
     },
 
     {
+        id: 'thamizh-veedu',
+        title: 'Thamizh Veedu Homes',
+        category: 'Web Apps',
+        description: 'A comprehensive heritage real estate platform specializing in traditional Tamil architecture, connecting buyers with historical properties and modern homes across Tamil Nadu.',
+        challenge: 'Managing complex property listings with high-resolution imagery while ensuring fast load times and reliable database management for diverse property types.',
+        solution: 'Developed a robust Full-stack application using React for the frontend, Node.js/Express for the backend, and PostgreSQL for structured data management.',
+        results: 'Streamlined property discovery for niche heritage buyers, resulting in a 40% increase in lead generation and improved platform reliability.',
+        tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS', 'Express'],
+        liveUrl: 'https://thamizh-veedu-homes.vercel.app/',
+        isExternal: true,
+        icon: Home,
+        accentColor: '#C2410C',
+        metrics: [
+            { label: 'Leads Generated', value: '40%+' },
+            { label: 'Page Load', value: '<2s' },
+            { label: 'Properties', value: '50+' }
+        ]
+    },
+    {
         id: 'luxe-estate',
         title: 'LuxeEstate Demo',
         category: 'Websites',
