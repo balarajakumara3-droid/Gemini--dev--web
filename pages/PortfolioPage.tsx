@@ -69,14 +69,14 @@ const projects: Project[] = [
     },
     {
         id: 'brickspace',
-        title: 'BrickSpace Real Estate',
+        title: 'TrueEstate',
         category: 'mobile-app',
         tagline: 'Modern property search made simple',
         description: 'A feature-rich mobile application for buying, selling, and renting properties. Seamless property search with advanced filters, virtual tours, and direct agent communication all in one place.',
         challenge: 'Creating a smooth, native-feeling cross-platform experience with complex map interactions, real-time property updates, and offline capability for saved searches.',
         result: '10,000+ downloads, 4.5★ rating, 60% users find properties within 2 weeks',
         tech: ['Flutter', 'Firebase', 'Google Maps', 'Cloud Functions', 'FCM'],
-        link: 'https://play.google.com/store/apps/details?id=com.brickspace',
+        link: 'https://true-estate-ashen.vercel.app/',
         isExternal: true,
         color: '#3b82f6',
         stats: [
@@ -247,8 +247,8 @@ export const PortfolioPage: React.FC = () => {
                                     key={category.id}
                                     onClick={() => setActiveCategory(category.id)}
                                     className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${activeCategory === category.id
-                                            ? 'bg-accent text-white shadow-lg shadow-accent/20'
-                                            : 'bg-surface text-secondary hover:text-white hover:bg-white/10 border border-white/10'
+                                        ? 'bg-accent text-white shadow-lg shadow-accent/20'
+                                        : 'bg-surface text-secondary hover:text-white hover:bg-white/10 border border-white/10'
                                         }`}
                                 >
                                     <category.icon className="w-4 h-4" />

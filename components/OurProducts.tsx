@@ -28,9 +28,9 @@ const products = [
     isExternal: true,
   },
   {
-    title: "Real Estate App",
+    title: "TrueEstate",
     description: "Buy, sell, and rent properties easily. Search listings and connect with agents seamlessly.",
-    url: "https://play.google.com/store/apps/details?id=com.brickspace",
+    url: "https://true-estate-ashen.vercel.app/",
     icon: Smartphone,
     accentColor: "blue",
     isExternal: true,
