@@ -28,7 +28,7 @@ const products = [
     isExternal: true,
   },
   {
-    title: "TrueEstate",
+    title: "True Estate",
     description: "Buy, sell, and rent properties easily. Search listings and connect with agents seamlessly.",
     url: "https://true-estate-ashen.vercel.app/",
     icon: Smartphone,

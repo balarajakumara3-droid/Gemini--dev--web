@@ -67,7 +67,7 @@ const projects: Project[] = [
     },
     {
         id: 'real-estate',
-        title: 'TrueEstate',
+        title: 'True Estate',
         category: 'Mobile Apps',
         description: 'A comprehensive real estate platform enabling users to browse, search, and connect with agents for buying, selling, or renting properties.',
         challenge: 'Delivering real-time property availability and high-quality images on mobile while maintaining smooth performance.',

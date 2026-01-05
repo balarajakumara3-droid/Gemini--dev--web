@@ -69,7 +69,7 @@ const projects: Project[] = [
     },
     {
         id: 'brickspace',
-        title: 'TrueEstate',
+        title: 'True Estate',
         category: 'mobile-app',
         tagline: 'Modern property search made simple',
         description: 'A feature-rich mobile application for buying, selling, and renting properties. Seamless property search with advanced filters, virtual tours, and direct agent communication all in one place.',
