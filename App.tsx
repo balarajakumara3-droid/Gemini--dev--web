@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { CustomCursor } from './components/CustomCursor';
+import { WhatsAppButton } from './components/WhatsAppButton';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
@@ -27,6 +28,7 @@ const App: React.FC = () => {
             <Router>
                 <div className="bg-background text-primary min-h-screen selection:bg-accent selection:text-white overflow-x-hidden max-w-full font-sans">
                     <CustomCursor />
+                    <WhatsAppButton />
                     <Routes>
                         <Route path="/virtual-trader" element={<VirtualTraderPage />} />
 

@@ -7,6 +7,8 @@ import {
     Sparkles, Brain, LineChart, Palette, Lightbulb, Layers
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { NotGoodFitSection } from '../components/NotGoodFitSection';
+import { GlobalProcessSection } from '../components/GlobalProcessSection';
 
 interface ServiceBenefit {
     icon: React.ElementType;
@@ -14,11 +16,7 @@ interface ServiceBenefit {
     description: string;
 }
 
-interface ProcessStep {
-    step: number;
-    title: string;
-    description: string;
-}
+// ProcessStep interface removed as we use GlobalProcessSection
 
 interface Service {
     id: string;
@@ -31,16 +29,15 @@ interface Service {
     features: string[];
     tech: string[];
     benefits: ServiceBenefit[];
-    process: ProcessStep[];
+    // process removed
     aiAdvantage: string;
-    pricingIndicator: string;
 }
 
 const services: Service[] = [
     {
         id: 'websites',
-        title: 'Custom Websites',
-        tagline: 'High-performance digital experiences tailored to your brand',
+        title: 'Websites That Convert',
+        tagline: 'High-performance, mobile-optimized sites designed to turn visitors into customers',
         icon: Monitor,
         description: 'We build blazing-fast, SEO-optimized websites that drive growth.',
         extendedDescription: `Your website is your most powerful digital asset—it works for you 24/7, converting visitors into customers. At Idea Manifest, we don't just build websites; we engineer high-performance digital experiences that rank on Google, load in milliseconds, and convert at industry-leading rates.
@@ -63,19 +60,12 @@ Every site we build is mobile-first, accessibility-compliant, and optimized for 
             { icon: Rocket, title: 'Fast Load Times', description: 'Sub-second page loads for better UX' },
             { icon: Target, title: 'More Conversions', description: 'Design optimized for user action' }
         ],
-        process: [
-            { step: 1, title: 'Discovery', description: 'Understand your goals, audience, and competitors' },
-            { step: 2, title: 'Design', description: 'Create wireframes and high-fidelity mockups' },
-            { step: 3, title: 'Development', description: 'Build with modern tech stack and best practices' },
-            { step: 4, title: 'Launch', description: 'Deploy, optimize, and go live with confidence' }
-        ],
-        aiAdvantage: '50% faster prototyping with AI-assisted design and code generation',
-        pricingIndicator: 'Starting from $5,000'
+        aiAdvantage: 'AI accelerates prototyping → Engineers review and refine every design',
     },
     {
         id: 'mobile',
-        title: 'Mobile Applications',
-        tagline: 'Native-quality apps for iOS and Android from a single codebase',
+        title: 'Native Apps That Scale',
+        tagline: 'iOS and Android apps built for growth, not just launch',
         icon: Smartphone,
         description: 'Cross-platform mobile apps that feel native and perform flawlessly.',
         extendedDescription: `In today's mobile-first world, your app needs to be where your customers are—on both iOS and Android. Our cross-platform development expertise using Flutter and React Native allows us to deliver stunning, high-performance apps for both platforms simultaneously, cutting your development time and budget in half.
@@ -98,19 +88,12 @@ From concept to App Store deployment, we handle the entire lifecycle. Our team n
             { icon: Clock, title: 'Faster Launch', description: '40% faster development time' },
             { icon: Shield, title: 'Reliable Quality', description: 'AI-powered testing reduces bugs' }
         ],
-        process: [
-            { step: 1, title: 'Research', description: 'Define user personas and core features' },
-            { step: 2, title: 'Prototype', description: 'Interactive prototypes for early validation' },
-            { step: 3, title: 'Build', description: 'Agile development with regular demos' },
-            { step: 4, title: 'Deploy', description: 'App Store optimization and launch' }
-        ],
-        aiAdvantage: 'AI-powered testing reduces bugs by 40% and accelerates QA cycles',
-        pricingIndicator: 'Starting from $15,000'
+        aiAdvantage: 'AI-powered testing reduces bugs → Engineers validate logic and flows',
     },
     {
         id: 'backend',
-        title: 'Backend Development',
-        tagline: 'Robust, secure, and scalable server-side implementation',
+        title: 'Infrastructure That Doesn\'t Break',
+        tagline: 'Secure, scalable server-side systems engineered for reliability',
         icon: Server,
         description: 'The engine of your application—built to handle anything.',
         extendedDescription: `The backend is the heart of your application. It needs to be bulletproof, scalable, and secure. Our backend engineering team designs systems that can handle millions of requests, protect sensitive data, and integrate seamlessly with any third-party service.
@@ -133,14 +116,7 @@ Security isn't an afterthought—it's built into every layer. We implement OAuth
             { icon: Shield, title: 'Enterprise Security', description: 'Bank-level data protection' },
             { icon: Layers, title: 'Easy Integration', description: 'Connect with any third-party service' }
         ],
-        process: [
-            { step: 1, title: 'Architecture', description: 'Design scalable system architecture' },
-            { step: 2, title: 'API Design', description: 'Define endpoints and data contracts' },
-            { step: 3, title: 'Implementation', description: 'Build with security-first approach' },
-            { step: 4, title: 'Audit', description: 'Security review and performance testing' }
-        ],
-        aiAdvantage: 'AI code review ensures 99.9% uptime and catches vulnerabilities early',
-        pricingIndicator: 'Starting from $8,000'
+        aiAdvantage: 'AI code review ensures uptime → Engineers architect security and scale',
     },
     {
         id: 'uiux',
@@ -168,14 +144,7 @@ From initial wireframes to pixel-perfect prototypes in Figma, we iterate rapidly
             { icon: Users, title: 'Happy Users', description: 'Intuitive experiences users love' },
             { icon: Palette, title: 'Brand Consistency', description: 'Unified look across all platforms' }
         ],
-        process: [
-            { step: 1, title: 'Research', description: 'User interviews and competitive analysis' },
-            { step: 2, title: 'Wireframe', description: 'Low-fidelity layouts and user flows' },
-            { step: 3, title: 'Prototype', description: 'Interactive high-fidelity designs' },
-            { step: 4, title: 'Test & Handoff', description: 'Usability testing and dev-ready specs' }
-        ],
-        aiAdvantage: 'AI-driven user behavior analysis identifies hidden optimization opportunities',
-        pricingIndicator: 'Starting from $4,000'
+        aiAdvantage: 'AI analysis identifies friction → Designers optimize the experience',
     },
     {
         id: 'consulting',
@@ -203,44 +172,9 @@ Our AI-powered recommendation engine analyzes your specific requirements against
             { icon: Shield, title: 'Risk Reduction', description: 'Avoid costly technical mistakes' },
             { icon: TrendingUp, title: 'Future-Proofing', description: 'Build for scale from day one' }
         ],
-        process: [
-            { step: 1, title: 'Audit', description: 'Assess current state and challenges' },
-            { step: 2, title: 'Strategy', description: 'Define goals and success metrics' },
-            { step: 3, title: 'Roadmap', description: 'Create actionable implementation plan' },
-            { step: 4, title: 'Support', description: 'Ongoing guidance through execution' }
-        ],
-        aiAdvantage: 'AI-powered tech stack recommendations based on your specific needs',
-        pricingIndicator: 'Custom Quote'
+        aiAdvantage: 'AI suggests stacks → Senior Architects validate the strategy',
     }
 ];
-
-const ProcessTimeline: React.FC<{ steps: ProcessStep[]; color: string }> = ({ steps, color }) => (
-    <div className="mt-8">
-        <h4 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-            <Sparkles className="w-5 h-5" style={{ color }} />
-            Our Process
-        </h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {steps.map((step, index) => (
-                <div key={step.step} className="relative">
-                    <div className="flex flex-col items-center text-center">
-                        <div
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mb-3 border-2"
-                            style={{ borderColor: color, color: color, backgroundColor: `${color}15` }}
-                        >
-                            {step.step}
-                        </div>
-                        <h5 className="font-semibold text-white text-sm mb-1">{step.title}</h5>
-                        <p className="text-slate-500 text-xs leading-relaxed">{step.description}</p>
-                    </div>
-                    {index < steps.length - 1 && (
-                        <div className="hidden md:block absolute top-6 left-[calc(50%+24px)] w-[calc(100%-48px)] h-[2px] bg-gradient-to-r from-white/20 to-transparent" />
-                    )}
-                </div>
-            ))}
-        </div>
-    </div>
-);
 
 const BenefitCard: React.FC<{ benefit: ServiceBenefit; color: string }> = ({ benefit, color }) => (
     <motion.div
@@ -278,28 +212,9 @@ export const ServicesPage: React.FC = () => {
         <div className="min-h-screen bg-[#050A14] text-slate-200 font-sans selection:bg-blue-500/30 pt-32">
             <Helmet>
                 <title>Our Services | AI-Powered Web & Mobile Development - Idea Manifest</title>
-                <meta name="description" content="Custom websites, mobile apps, backend systems, UI/UX design, and tech consulting. AI-powered development delivers 50% faster results. Get a free quote today." />
+                <meta name="description" content="Custom websites, mobile apps, backend systems, UI/UX design, and tech consulting. AI-powered development delivers 50% faster results. " />
                 <link rel="canonical" href="https://www.ideamanifest.com/services" />
-
-                {/* Structured Data for Services */}
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "ItemList",
-                        "name": "Our Services",
-                        "itemListElement": services.map((service, index) => ({
-                            "@type": "Service",
-                            "position": index + 1,
-                            "name": service.title,
-                            "description": service.description,
-                            "url": `https://www.ideamanifest.com/services#${service.id}`,
-                            "provider": {
-                                "@type": "Organization",
-                                "name": "Idea Manifest"
-                            }
-                        }))
-                    })}
-                </script>
+                {/* Structured Data simplified */}
             </Helmet>
 
             {/* Hero Section */}
@@ -322,23 +237,18 @@ export const ServicesPage: React.FC = () => {
                         </span>
                     </h1>
                     <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed mb-8">
-                        We don't just write code; we solve complex business problems with cutting-edge technology.
-                        Our AI-enhanced workflow delivers results <strong className="text-white">50% faster</strong> than traditional agencies.
+                        Our workflow is designed to reduce friction, speed up delivery, and keep quality predictable.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            to="/contact"
-                            className="inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold hover:bg-slate-200 transition-colors"
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => window.open('https://calendly.com/ideamanifest-support/30min', '_blank')}
+                            className="inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]"
                         >
-                            Get a Free Quote
+                            Book a 30-Min Strategy Call
                             <ArrowRight className="w-4 h-4" />
-                        </Link>
-                        <a
-                            href="#websites"
-                            className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/5 transition-colors"
-                        >
-                            Explore Services
-                        </a>
+                        </motion.button>
                     </div>
                 </motion.div>
             </section>
@@ -470,30 +380,30 @@ export const ServicesPage: React.FC = () => {
                                             ))}
                                         </div>
                                     </div>
-
-                                    {/* Process Timeline */}
-                                    <ProcessTimeline steps={service.process} color={service.color} />
-
-                                    {/* CTA Section */}
-                                    {/* <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/10">
-                                        <div className="flex-1">
-                                            <p className="text-slate-400 text-sm mb-1">Investment starts at</p>
-                                            <p className="text-2xl font-bold text-white">{service.pricingIndicator}</p>
-                                        </div>
-                                        <Link
-                                            to="/contact"
-                                            className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-slate-200 transition-colors"
-                                        >
-                                            Get a Free Quote
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Link>
-                                    </div> */}
                                 </div>
                             </div>
                         </motion.section>
                     );
                 })}
             </div>
+
+            <GlobalProcessSection />
+
+            {/* Pricing Section */}
+            <section className="py-20 bg-background text-center px-6">
+                <div className="max-w-3xl mx-auto">
+                    <h2 className="text-3xl font-bold text-white mb-6">How We Price</h2>
+                    <p className="text-lg text-slate-300 mb-6">
+                        Every project is unique, so we price based on scope, complexity, and timeline.
+                        After our discovery call, we'll provide a custom proposal tailored to your needs.
+                    </p>
+                    <p className="text-slate-400">
+                        No hidden fees. No surprise charges. Just transparent, fair pricing.
+                    </p>
+                </div>
+            </section>
+
+            <NotGoodFitSection />
 
             {/* Final CTA */}
             <section className="py-24 bg-gradient-to-t from-blue-900/20 via-violet-900/10 to-transparent text-center border-t border-white/5">
@@ -514,13 +424,15 @@ export const ServicesPage: React.FC = () => {
                             Let's discuss your project and explore how our AI-powered development can bring your vision to life—faster and better.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                to="/contact"
-                                className="inline-flex items-center justify-center gap-2 bg-white text-black px-10 py-5 rounded-full text-lg font-bold hover:bg-slate-200 transition-colors shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => window.open('https://calendly.com/ideamanifest-support/30min', '_blank')}
+                                className="inline-flex items-center justify-center gap-2 bg-white text-black px-10 py-5 rounded-full text-lg font-bold hover:bg-slate-200 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)]"
                             >
-                                Start Your Project
+                                Book a 30-Min Strategy Call
                                 <ArrowRight className="w-5 h-5" />
-                            </Link>
+                            </motion.button>
                         </div>
                     </motion.div>
                 </div>

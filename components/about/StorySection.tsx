@@ -10,36 +10,31 @@ export const StorySection: React.FC = () => {
                     {/* Content */}
                     <div>
                         <h2 className="text-4xl font-bold text-white mb-6">
-                            Our <span className="font-serif italic text-blue-500">Philosophy</span>
+                            A Note From <span className="font-serif italic text-blue-500">The Team</span>
                         </h2>
                         <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
                             <p>
-                                Idea Manifest started with a simple observation: dev cycles were too slow, and quality was often sacrificed for speed. We knew there had to be a better way.
+                                We are builders, not salespeople. We don't have account managers. We don't have a ping-pong table. We definitely don't have a "sales pipeline."
                             </p>
                             <p>
-                                Our core values center on <strong className="text-white">Client-Centricity</strong> and <strong className="text-white">Transparent Quality</strong>. We don't just write code; we build assets. Our agile, AI-powered process allows us to iterate fast, adapt to feedback, and deliver a polished product that scales with you.
+                                <strong className="text-white">We just build software.</strong>
                             </p>
                             <p>
-                                Whether you're a startup sparking innovation or an enterprise scaling big, we bring your ideas to life — launch-ready, faster, and smarter.
+                                We rely on seniority and AI to move fast. Seniority means we don't make rookie mistakes. AI means we don't waste time on boilerplate.
+                                This combination allows us to deliver enterprise-grade quality at startup speed.
                             </p>
-                        </div>
-
-                        <div className="mt-12 grid grid-cols-3 gap-6">
-                            {STATS.map((stat, idx) => (
-                                <div key={idx} className="border-l border-blue-500/30 pl-6">
-                                    <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                                    <div className="text-sm text-gray-500 uppercase tracking-wide">{stat.label}</div>
-                                </div>
-                            ))}
+                            <p>
+                                When you hire us, you're not hiring a "vendor." You're hiring a dedicated engineering team that cares about your product as much as you do.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Visual/Image Placeholder - Simulating the office/team vibe from reference */}
+                    {/* Visual/Image Placeholder */}
                     <div className="relative">
                         <div className="aspect-[4/5] md:aspect-square rounded-2xl overflow-hidden border border-white/10 relative group">
                             {/* Using a placeholder that fits the 'office' 'tech' vibe */}
                             <img
-                                src="https://picsum.photos/800/800?grayscale"
+                                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80"
                                 alt="Our Team Working"
                                 className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
                             />
@@ -48,13 +43,13 @@ export const StorySection: React.FC = () => {
                             <div className="absolute bottom-8 left-8 right-8">
                                 <div className="glass-card p-6 rounded-xl border border-white/10">
                                     <p className="text-white font-medium italic">
-                                        "The team listened intently and understood the client's needs, enabling them to offer suggestions and complete tasks on time."
+                                        "They didn't just take requirements; they challenged our assumptions and built something better than we imagined."
                                     </p>
                                     <div className="mt-4 flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">OC</div>
                                         <div className="text-sm">
-                                            <div className="text-white font-bold">Obuli Chandran</div>
-                                            <div className="text-gray-500 text-xs">Founder, Mango Education</div>
+                                            <div className="text-white font-bold">Confidential Client</div>
+                                            <div className="text-gray-500 text-xs">Healthcare Startup Founder</div>
                                         </div>
                                     </div>
                                 </div>

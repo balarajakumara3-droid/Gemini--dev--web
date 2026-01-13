@@ -1,33 +1,59 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, X, ChevronDown, Check } from 'lucide-react';
+import { Send, Loader2, CheckCircle2, X, ChevronDown, Check } from 'lucide-react';
 
 const PROJECT_TYPES = [
     { value: 'website', label: 'Website' },
     { value: 'mobile', label: 'Mobile App' },
     { value: 'backend', label: 'Backend' },
+    { value: 'ai-integration', label: 'AI Integration' },
     { value: 'custom', label: 'Custom Solution' },
 ];
 
 export const ContactForm: React.FC = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        whatsapp: '',
+        projectType: '',
+        message: ''
+    });
+
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [projectType, setProjectType] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleProjectTypeSelect = (value: string) => {
+        setFormData(prev => ({ ...prev, projectType: value }));
+        setIsDropdownOpen(false);
+    };
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
         setError(null);
 
-        const form = event.currentTarget;
-        const formData = new FormData(form);
+        // Create a new FormData object for submission (if using Formspree or similar)
+        // Or just use the state if sending JSON. 
+        // Preserving the original logic of creating FormData from event.currentTarget if needed, but here we have controlled state.
+        // Let's use the controlled state to ensure everything is captured.
+
+        const submissionData = new FormData();
+        submissionData.append('name', formData.name);
+        submissionData.append('email', formData.email);
+        submissionData.append('whatsapp', formData.whatsapp);
+        submissionData.append('projectType', formData.projectType);
+        submissionData.append('message', formData.message);
 
         try {
             const response = await fetch("https://formspree.io/f/xwvkqknw", {
                 method: "POST",
-                body: formData,
+                body: submissionData,
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -35,8 +61,13 @@ export const ContactForm: React.FC = () => {
 
             if (response.ok) {
                 setShowSuccess(true);
-                form.reset();
-                setProjectType("");
+                setFormData({
+                    name: '',
+                    email: '',
+                    whatsapp: '',
+                    projectType: '',
+                    message: ''
+                });
             } else {
                 const data = await response.json();
                 setError(data.errors?.[0]?.message || "Something went wrong. Please try again.");
@@ -48,7 +79,7 @@ export const ContactForm: React.FC = () => {
         }
     };
 
-    const selectedLabel = PROJECT_TYPES.find(t => t.value === projectType)?.label || "Project Type";
+    const selectedLabel = PROJECT_TYPES.find(t => t.value === formData.projectType)?.label || "Project Type";
 
     return (
         <div className="relative">
@@ -59,7 +90,9 @@ export const ContactForm: React.FC = () => {
                         name="name"
                         placeholder="Name"
                         required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white placeholder:text-slate-500"
                     />
 
                     <input
@@ -67,20 +100,30 @@ export const ContactForm: React.FC = () => {
                         name="email"
                         placeholder="Email Address"
                         required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white placeholder:text-slate-500"
+                    />
+                </div>
+
+                <div>
+                    <input
+                        type="tel"
+                        name="whatsapp"
+                        placeholder="WhatsApp (Optional)"
+                        value={formData.whatsapp}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white placeholder:text-slate-500"
                     />
                 </div>
 
                 <div className="relative">
-                    {/* Hidden input for form submission */}
-                    <input type="hidden" name="projectType" value={projectType} required />
-
                     <button
                         type="button"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg flex items-center justify-between transition-all duration-300 ${isDropdownOpen ? 'border-accent' : 'hover:border-white/20'}`}
                     >
-                        <span className={`${projectType ? 'text-white' : 'text-gray-400'}`}>
+                        <span className={`${formData.projectType ? 'text-white' : 'text-gray-400'}`}>
                             {selectedLabel}
                         </span>
                         <motion.div
@@ -95,7 +138,6 @@ export const ContactForm: React.FC = () => {
                     <AnimatePresence>
                         {isDropdownOpen && (
                             <>
-                                {/* Backdrop to close dropdown */}
                                 <div
                                     className="fixed inset-0 z-10"
                                     onClick={() => setIsDropdownOpen(false)}
@@ -105,20 +147,17 @@ export const ContactForm: React.FC = () => {
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 5, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute left-0 right-0 z-20  border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl"
+                                    className="absolute left-0 right-0 z-20 bg-[#0A0F1E] border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl mt-2"
                                 >
                                     {PROJECT_TYPES.map((type) => (
                                         <li key={type.value}>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    setProjectType(type.value);
-                                                    setIsDropdownOpen(false);
-                                                }}
-                                                className={`w-full px-4 py-3 text-left flex items-center justify-between transition-colors hover:bg-white/5 font-medium ${projectType === type.value ? 'text-accent' : 'text-slate-300'}`}
+                                                onClick={() => handleProjectTypeSelect(type.value)}
+                                                className={`w-full px-4 py-3 text-left flex items-center justify-between transition-colors hover:bg-white/5 font-medium ${formData.projectType === type.value ? 'text-accent' : 'text-slate-300'}`}
                                             >
                                                 {type.label}
-                                                {projectType === type.value && <Check size={16} className="text-accent" />}
+                                                {formData.projectType === type.value && <Check size={16} className="text-accent" />}
                                             </button>
                                         </li>
                                     ))}
@@ -131,9 +170,11 @@ export const ContactForm: React.FC = () => {
                 <textarea
                     name="message"
                     rows={4}
-                    placeholder="Message"
+                    placeholder="Tell us a bit about your project..."
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white resize-none"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white resize-none placeholder:text-slate-500"
                 ></textarea>
 
                 <button
@@ -148,19 +189,25 @@ export const ContactForm: React.FC = () => {
                                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                 className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                             />
-                            Sending...
+                            Starting Conversation...
                         </span>
                     ) : (
-                        "Book Free Consultation"
+                        <span className="flex items-center justify-center gap-2">
+                            Start Conversation
+                            <Send className="w-5 h-5" />
+                        </span>
                     )}
                 </button>
 
                 {error && (
                     <p className="text-center text-rose-400 text-sm mt-2">{error}</p>
                 )}
+
+                <p className="text-center text-xs text-slate-500 mt-4">
+                    By sending this, you agree to our privacy policy. Your idea is safe with us.
+                </p>
             </form>
 
-            {/* Success Popup */}
             <AnimatePresence>
                 {showSuccess && (
                     <motion.div
@@ -175,7 +222,6 @@ export const ContactForm: React.FC = () => {
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
                             className="bg-[#050A14] border border-white/10 p-8 rounded-2xl max-w-md w-full relative overflow-hidden group shadow-2xl"
                         >
-                            {/* Gradient Background Decoration */}
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400" />
 
                             <button
@@ -195,9 +241,9 @@ export const ContactForm: React.FC = () => {
                                     <CheckCircle2 size={32} className="text-blue-400" />
                                 </motion.div>
 
-                                <h3 className="text-2xl font-bold text-white mb-2">Your Message Has Been Sent!</h3>
+                                <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
                                 <p className="text-slate-400 leading-relaxed mb-8">
-                                    Thanks, we'll connect with you soon.
+                                    Thanks for reaching out. An engineer (not a bot) will review your message and get back to you within 24 hours.
                                 </p>
 
                                 <button

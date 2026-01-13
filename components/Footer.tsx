@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
                     © {new Date().getFullYear()} Idea Manifest. All rights reserved.
                 </p>
                 <p className="text-gray-600 text-[10px] uppercase tracking-[0.2em]">
-                    Delivering Future with AI
+                    Delivering the Future with AI + Senior Engineering
                 </p>
             </div>
         </footer>

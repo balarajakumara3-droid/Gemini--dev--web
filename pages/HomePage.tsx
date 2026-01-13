@@ -4,12 +4,14 @@ import { Helmet } from 'react-helmet-async';
 import {
     ArrowRight,
     ArrowUpRight,
+    ShieldCheck, // Added ShieldCheck
 } from 'lucide-react';
 import { ParticleBackground } from '../components/ParticleBackground';
 import OurProducts from "@/components/OurProducts";
 import { WhyChooseUs } from '../components/WhyChooseUs';
 import { ServicesSection } from '../components/ServicesSection';
 import { TechnologySection } from '../components/TechnologySection';
+import { ProofMetricsSection } from '../components/ProofMetricsSection';
 
 // --- Helper Components ---
 
@@ -190,43 +192,54 @@ export const HomePage: React.FC = () => {
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full text-center md:text-left mt-20">
                     <RevealText>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white text-xs font-medium uppercase tracking-widest mb-6 hover:bg-white/10 transition-colors cursor-default">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(129,140,248,0.8)]"></span>
-                            <StaggeredTitle text="Full-Stack AI Foundry" delay={0.1} />
+                        {/* Reassurance Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-500/20 text-blue-300 text-sm font-medium mb-6 hover:bg-blue-500/20 transition-colors cursor-default">
+                            <ShieldCheck size={16} className="text-accent" />
+                            <span>AI-Accelerated Development, Human-Accountable Quality</span>
                         </div>
                     </RevealText>
 
                     <div className="mb-8 max-w-5xl">
                         <h1 className="font-sans font-bold text-4xl md:text-7xl lg:text-8xl text-white leading-[1.1] tracking-tight">
                             <span className="text-accent">Your Ideas</span> <motion.span className="inline-block text-[#ffdc00]" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>→</motion.span> Websites & Apps
-                            <h1 className="block text-2xl md:text-4xl mt-4 text-white/80 font-normal">Idea Manifest</h1>
+                            <h1 className="block text-2xl md:text-3xl mt-4 text-white/80 font-normal">Senior Engineering. AI-Accelerated. Human-Accountable.</h1>
                         </h1>
                     </div>
 
                     <RevealText delay={0.6}>
                         <p className="text-secondary text-lg md:text-xl w-full md:max-w-[70%] leading-relaxed mb-10">
-                            Tired of ideas stuck in slow-motion dev cycles? We turn your vision into stunning web and mobile apps 50% faster, blending top-tier engineering with cutting-edge AI. Whether you're a startup sparking innovation or an enterprise scaling big, we bring your ideas to life — launch-ready, faster, and smarter.
+                            We use AI to deliver faster. Our engineers own every line of code. Whether you're a startup sparking innovation or an enterprise scaling big, we bring your ideas to life — launch-ready, faster, and smarter.
                         </p>
                     </RevealText>
 
                     <RevealText delay={0.8}>
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                            {/* Primary Action: Talk to us (Highlighted) */}
                             <button
-                                onClick={() => window.location.href = '/contact'}
-                                className="px-8 py-4 bg-slate-800 text-white rounded-full font-bold hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(30,41,59,0.5)] hover:shadow-[0_0_30px_rgba(30,41,59,0.7)] border border-white/5">
-                                Get Free Estimate
+                                onClick={() => window.open('https://calendly.com/ideamanifest-support/30min', '_blank')}
+                                className="px-8 py-4 bg-accent hover:bg-blue-600 text-white rounded-full font-bold transition-colors flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(37,99,235,0.5)] hover:shadow-[0_0_30px_rgba(37,99,235,0.7)]"
+                            >
+                                Talk to us
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
+
+                            {/* Secondary Action: Work (Subtle) */}
                             <button
-                                onClick={() => window.location.href = '/portfolio'}
-                                className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold hover:bg-white/5 transition-colors backdrop-blur-sm hover:border-white/30">
-                                View Our Works
+                                onClick={() => {
+                                    const element = document.getElementById('our-works');
+                                    if (element) element.scrollIntoView({ behavior: 'smooth' });
+                                    else window.location.href = '/work';
+                                }}
+                                className="px-8 py-4 border border-white/10 text-white rounded-full font-semibold bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm shadow-lg shadow-white/5"
+                            >
+                                Our Work in Action
                             </button>
                         </div>
                     </RevealText>
                 </div>
             </section>
 
+            <ProofMetricsSection />
             <OurProducts />
             <TechnologySection />
             <ServicesSection />

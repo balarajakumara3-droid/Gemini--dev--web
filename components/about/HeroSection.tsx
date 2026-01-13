@@ -19,7 +19,7 @@ export const HeroSection: React.FC = () => {
                     <span className="font-serif italic text-blue-500">Premium Engineering</span>
                 </h1>
                 <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    We believe every business deserves world-class digital tools. By leveraging AI-driven efficiency, we work smarter to deliver superior results for startups and enterprises alike.
+                    We're not an agency. We're a senior engineering team that uses AI to build software 50% faster. No fluff. No overhead. just code that works.
                 </p>
             </div>
         </section>
