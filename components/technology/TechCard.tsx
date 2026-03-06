@@ -49,9 +49,9 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore
                         style={{ borderColor: brandColor }}
                     />
 
-                    <div className={`transition-transform transform ${animationClass}`}>
+                    <div className={`w-6 h-6 md:w-10 md:h-10 transition-transform transform ${animationClass}`}>
                         <item.icon
-                            className="w-6 h-6 md:w-10 md:h-10 transition-all duration-300 text-white group-hover:text-[var(--brand-color)]"
+                            className="w-full h-full transition-all duration-300 text-white group-hover:text-[var(--brand-color)] object-contain"
                             style={{
                                 '--brand-color': brandColor,
                                 color: 'currentColor'
@@ -94,4 +94,3 @@ const TechCard: React.FC<TechCardProps> = ({ item, align, delay = 0, onLearnMore
 };
 
 export default TechCard;
-
