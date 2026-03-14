@@ -10,6 +10,8 @@ type TeamProfile = {
     coverImageSrc?: string;
     skills: string[];
     coverGradient: string;
+    imagePosition?: string;
+    coverPosition?: string;
 };
 
 const teamProfiles: TeamProfile[] = [
@@ -42,6 +44,8 @@ const teamProfiles: TeamProfile[] = [
         coverImageSrc: '/team/narayanasamy-cover.jpg',
         skills: ['React', 'Tailwind CSS', 'React Native', 'Kotlin', 'Supabase', 'Figma'],
         coverGradient: 'from-[#2a6496] via-[#3a7fc1] to-[#1a4f7a]',
+        imagePosition: 'object-top',
+        coverPosition: 'object-center',
     },
 ];
 
@@ -73,7 +77,7 @@ const LinkedInProfileCard = ({ profile, delay }: { profile: TeamProfile; delay: 
                     <img
                         src={profile.coverImageSrc}
                         alt=""
-                        className="h-full w-full object-cover"
+                        className={`h-full w-full object-cover ${profile.coverPosition || 'object-center'}`}
                         onError={() => setCoverError(true)}
                     />
                 ) : (
@@ -99,7 +103,7 @@ const LinkedInProfileCard = ({ profile, delay }: { profile: TeamProfile; delay: 
                         <img
                             src={profile.imageSrc}
                             alt={profile.name}
-                            className="h-full w-full object-cover"
+                            className={`h-full w-full object-cover ${profile.imagePosition || 'object-center'}`}
                             onError={() => setImgError(true)}
                         />
                     ) : (
